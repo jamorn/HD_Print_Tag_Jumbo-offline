@@ -3,6 +3,9 @@ import { updateShift } from './shift_compare.js'; // นำเข้า updateSh
 
 // GAS API URL
 const GAS_API = 'https://script.google.com/macros/s/AKfycbyWY2vTrEFAIcw20YD69xFhwOWaLVD_sanHuArPpP4Y07SpFUOmNClZ8aUn8qVPlVJw/exec';
+const PELLET_DATA_KEY = 'hdpe_pellet_cache';
+const CACHE_EXPIRY_KEY = 'hdpe_pellet_cache_expiry';
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 ชั่วโมง
 
 // ตรวจสอบว่ามี id="statusMessage" ใน HTML
 const statusMessageElement = document.getElementById('statusMessage');
@@ -10,8 +13,54 @@ if (!statusMessageElement) {
     console.error('Element with id="statusMessage" not found in the DOM.');
 }
 
+// ฟังก์ชันสำหรับจัดการ Local Storage
+function savePelletDataToCache(data) {
+    const now = new Date().getTime();
+    localStorage.setItem(PELLET_DATA_KEY, JSON.stringify(data));
+    localStorage.setItem(CACHE_EXPIRY_KEY, now.toString());
+    console.log('💾 บันทึกข้อมูลใน Local Storage เรียบร้อย');
+}
+
+function getPelletDataFromCache() {
+    const cachedData = localStorage.getItem(PELLET_DATA_KEY);
+    const cacheTime = localStorage.getItem(CACHE_EXPIRY_KEY);
+    
+    if (!cachedData || !cacheTime) {
+        console.log('📂 ไม่พบข้อมูลใน Local Storage');
+        return null;
+    }
+    
+    const now = new Date().getTime();
+    const timeDiff = now - parseInt(cacheTime);
+    
+    if (timeDiff > CACHE_DURATION) {
+        console.log('⏰ ข้อมูลใน Local Storage หมดอายุแล้ว');
+        localStorage.removeItem(PELLET_DATA_KEY);
+        localStorage.removeItem(CACHE_EXPIRY_KEY);
+        return null;
+    }
+    
+    console.log('📂 ใช้ข้อมูลจาก Local Storage');
+    return JSON.parse(cachedData);
+}
+
+function clearPelletDataCache() {
+    localStorage.removeItem(PELLET_DATA_KEY);
+    localStorage.removeItem(CACHE_EXPIRY_KEY);
+    console.log('🗑️ ลบข้อมูล cache แล้ว');
+}
+
 // ฟังก์ชันสำหรับเรียกข้อมูลจาก GAS API
-async function fetchDataFromGAS() {
+async function fetchDataFromGAS(forceRefresh = false) {
+    // ตรวจสอบ cache ก่อน (ถ้าไม่ใช่ force refresh)
+    if (!forceRefresh) {
+        const cachedData = getPelletDataFromCache();
+        if (cachedData) {
+            updateDataSourceInfo('Local Storage', cachedData.pellets.length, false);
+            return cachedData;
+        }
+    }
+    
     try {
         console.log('🔄 กำลังเรียกข้อมูลจาก GAS API...');
         
@@ -44,12 +93,11 @@ async function fetchDataFromGAS() {
         console.log('✅ เรียกข้อมูลจาก GAS API สำเร็จ');
         console.log(`📊 ได้รับข้อมูล ${data.total_expanded_records} รายการ`);
         
+        // บันทึกข้อมูลใน Local Storage
+        savePelletDataToCache(data);
+        
         // แสดงข้อความสถานะสำเร็จ
-        if (statusMessageElement) {
-            statusMessageElement.textContent = `✅ ใช้ข้อมูลจาก Google Apps Script API (${data.total_expanded_records} รายการ)`;
-            statusMessageElement.className = 'mb-4 p-4 rounded-lg bg-green-50 border border-green-200 text-green-800';
-            statusMessageElement.classList.remove('hidden');
-        }
+        updateDataSourceInfo('Google Apps Script API', data.total_expanded_records, true);
         
         return data;
     } catch (error) {
@@ -69,23 +117,68 @@ async function fetchDataFromGAS() {
         }
         
         // แสดงข้อความสถานะ fallback
-        if (statusMessageElement) {
-            statusMessageElement.textContent = `⚠️ ใช้ข้อมูลจากไฟล์ท้องถิ่น (${hdpe_pellet_data.pellets.length} รายการ) - เหตุผล: ${errorMessage}`;
-            statusMessageElement.className = 'mb-4 p-4 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-800';
-            statusMessageElement.classList.remove('hidden');
-        }
+        updateDataSourceInfo('ไฟล์ท้องถิ่น', hdpe_pellet_data.pellets.length, false, errorMessage);
         
         return hdpe_pellet_data; // fallback ไปใช้ข้อมูลท้องถิ่น
+    }
+}
+
+// ฟังก์ชันสำหรับอัพเดทข้อมูลสถานะ
+function updateDataSourceInfo(source, count, isOnline, errorMessage = null) {
+    const dataControls = document.getElementById('dataControls');
+    const dataSourceElement = document.getElementById('dataSource');
+    const preloader = document.getElementById('preloader');
+    
+    // ซ่อน preloader
+    if (preloader) {
+        preloader.classList.add('hidden');
+    }
+    
+    // แสดง data controls
+    if (dataControls) {
+        dataControls.classList.remove('hidden');
+    }
+    
+    // อัพเดทข้อมูลแหล่งที่มา
+    if (dataSourceElement) {
+        const statusIcon = isOnline ? '🌐' : '📂';
+        const statusColor = isOnline ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+        
+        dataSourceElement.textContent = `${statusIcon} ${source} (${count} รายการ)`;
+        dataSourceElement.className = `px-3 py-1 ${statusColor} rounded-full text-sm font-medium`;
+    }
+    
+    // แสดงข้อความใน status message
+    if (statusMessageElement) {
+        if (errorMessage) {
+            statusMessageElement.textContent = `⚠️ ใช้ข้อมูลจาก${source} (${count} รายการ) - เหตุผล: ${errorMessage}`;
+            statusMessageElement.className = 'mb-4 p-4 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-800';
+        } else if (isOnline) {
+            statusMessageElement.textContent = `✅ อัพเดทข้อมูลจาก ${source} เรียบร้อย (${count} รายการ)`;
+            statusMessageElement.className = 'mb-4 p-4 rounded-lg bg-green-50 border border-green-200 text-green-800';
+        } else {
+            statusMessageElement.textContent = `📂 ใช้ข้อมูลจาก ${source} (${count} รายการ)`;
+            statusMessageElement.className = 'mb-4 p-4 rounded-lg bg-blue-50 border border-blue-200 text-blue-800';
+        }
+        statusMessageElement.classList.remove('hidden');
+        
+        // ซ่อนข้อความหลังจาก 5 วินาที
+        setTimeout(() => {
+            if (statusMessageElement) {
+                statusMessageElement.classList.add('hidden');
+            }
+        }, 5000);
     }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
     const tableBody = document.querySelector('#dataTable tbody');
     const searchInput = document.querySelector('#searchInput');
+    const refreshDataBtn = document.getElementById('refreshDataBtn');
     
     // เรียกข้อมูลจาก GAS API หรือ fallback ไปใช้ข้อมูลท้องถิ่น
-    const dataSource = await fetchDataFromGAS();
-    const pellets = dataSource.pellets;
+    let dataSource = await fetchDataFromGAS();
+    let pellets = dataSource.pellets;
 
     console.log('📊 Data source:', dataSource); // ตรวจสอบว่าข้อมูลถูกนำเข้ามา
     console.log('🔢 Total pellets:', pellets.length); // ตรวจสอบว่า pellets มีข้อมูล
@@ -243,6 +336,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // เรียกใช้ setupRowEventListeners ครั้งแรกเมื่อโหลดหน้า
     setupRowEventListeners();
+
+    // Event listener สำหรับปุ่ม Refresh Data
+    if (refreshDataBtn) {
+        refreshDataBtn.addEventListener('click', async () => {
+            refreshDataBtn.disabled = true;
+            refreshDataBtn.textContent = '🔄 กำลังอัพเดท...';
+            
+            try {
+                // ลบ cache และเรียกข้อมูลใหม่
+                clearPelletDataCache();
+                dataSource = await fetchDataFromGAS(true);
+                pellets = dataSource.pellets;
+                
+                // เรนเดอร์ตารางใหม่
+                renderTable(pellets);
+                
+                console.log('✅ อัพเดทข้อมูลเรียบร้อย');
+            } catch (error) {
+                console.error('❌ เกิดข้อผิดพลาดในการอัพเดทข้อมูล:', error);
+            } finally {
+                refreshDataBtn.disabled = false;
+                refreshDataBtn.textContent = '🔄 อัพเดทข้อมูล';
+            }
+        });
+    }
 
     // ใช้ SweetAlert2 สำหรับการแจ้งเตือน
     const Swal = window.Swal;
