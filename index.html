@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HDPE Pellet Data - Tailwind</title>
     <link rel="stylesheet" href="css/tailwind.min.css">
+    <link rel="shortcut icon" href="#"><!-- fix favicon.ico -->
     <style>
         /* Custom styles for SweetAlert2 wide popup */
         .swal-wide {
@@ -46,12 +47,13 @@
                 <!-- Lot Field -->
                 <div class="space-y-2">
                     <label for="lot" class="block text-sm font-semibold text-gray-700">Lot</label>
-                    <input type="text" id="lot" 
+                    <input type="number" id="lot" 
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" 
                            placeholder="ใส่ Lot การผลิต" 
                            maxlength="10" 
                            pattern="[0-9]{1,10}" 
-                           title="กรุณากรอกตัวเลข 0-9 ไม่เกิน 10 หลัก">
+                           title="กรุณากรอกตัวเลข 0-9 ไม่เกิน 10 หลัก"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
                     <span id="lot-error" class="text-red-500 text-sm"></span>
                 </div>
 
@@ -206,14 +208,40 @@
         <!-- Status Message -->
         <div id="statusMessage" class="mb-4 p-4 rounded-lg hidden"></div>
 
+        <!-- Preloader -->
+        <div id="preloader" class="mb-4 p-8 bg-white rounded-lg shadow-lg text-center">
+            <div class="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-blue-600 rounded-full mb-4"></div>
+            <p class="text-gray-600 font-medium">🔄 กำลังโหลดข้อมูล...</p>
+        </div>
+
+        <!-- Data Controls -->
+        <div id="dataControls" class="mb-4 p-4 bg-white rounded-lg shadow-lg hidden">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm font-medium text-gray-600">แหล่งข้อมูล:</span>
+                    <span id="dataSource" class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium"></span>
+                </div>
+                <button id="refreshDataBtn" 
+                        class="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition duration-200">
+                    🔄 อัพเดทข้อมูล
+                </button>
+            </div>
+        </div>
+
         <!-- Data Table -->
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
             <div class="overflow-x-auto">
                 <table id="dataTable" class="w-full">
-                    <thead class="bg-gray-50 border-b border-gray-200">
+                    <thead class="bg-gradient-to-r from-blue-600 to-blue-700 border-b-4 border-blue-800">
                         <tr>
-                            <th class="px-8 py-5 text-left text-lg font-bold text-gray-800 uppercase tracking-wider">Grade</th>
-                            <th class="px-8 py-5 text-left text-lg font-bold text-gray-800 uppercase tracking-wider">TIS</th>
+                            <th class="px-8 py-10 text-left text-xl font-black uppercase tracking-widest shadow-lg" 
+                                style="color: white !important; background: linear-gradient(to right, #2563eb, #1d4ed8) !important; height: 80px;">
+                                📦 Grade
+                            </th>
+                            <th class="px-8 py-10 text-left text-xl font-black uppercase tracking-widest shadow-lg"
+                                style="color: white !important; background: linear-gradient(to right, #2563eb, #1d4ed8) !important; height: 80px;">
+                                ✅ TIS
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
