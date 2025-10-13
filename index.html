@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HDPE Pellet Data - Tailwind</title>
+    <link rel="stylesheet" href="css/tailwind.min.css">
+    <style>
+        /* Custom styles for SweetAlert2 wide popup */
+        .swal-wide {
+            font-family: 'Courier New', monospace !important;
+        }
+        .swal-wide .swal2-html-container {
+            font-size: 11px !important;
+            line-height: 1.4 !important;
+        }
+        
+        /* Enhanced Table Styles */
+        .data-table-row {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .data-table-row:hover {
+            background-color: #10b981 !important; /* เขียวสด Tailwind green-500 */
+            color: white !important;
+            transform: scale(1.01);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .data-table-row:hover td {
+            color: white !important;
+            font-weight: 600 !important;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">HDPE Print Tag Jumbo</h1>
+        
+        <form class="bg-white rounded-lg shadow-lg p-8 mb-8">
+            <!-- Form Fields Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Lot Field -->
+                <div class="space-y-2">
+                    <label for="lot" class="block text-sm font-semibold text-gray-700">Lot</label>
+                    <input type="text" id="lot" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" 
+                           placeholder="ใส่ Lot การผลิต" 
+                           maxlength="10" 
+                           pattern="[0-9]{1,10}" 
+                           title="กรุณากรอกตัวเลข 0-9 ไม่เกิน 10 หลัก">
+                    <span id="lot-error" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Grade Field -->
+                <div class="space-y-2">
+                    <label for="grade" class="block text-sm font-semibold text-gray-700">Grade</label>
+                    <input type="text" id="grade" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" 
+                           readonly>
+                    <span id="grade-error" class="text-red-500 text-sm hidden"></span>
+                </div>
+
+                <!-- Net Weight Field -->
+                <div class="space-y-2">
+                    <label for="netweight" class="block text-sm font-semibold text-gray-700">Net Weight</label>
+                    <input type="number" id="netweight" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" 
+                           readonly>
+                    <span id="netweight-error" class="text-red-500 text-sm hidden"></span>
+                </div>
+
+                <!-- TIS Field -->
+                <div class="space-y-2">
+                    <label for="tis" class="block text-sm font-semibold text-gray-700">เครื่องหมาย มอก</label>
+                    <input type="text" id="tis" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" 
+                           readonly>
+                </div>
+
+                <!-- Shift Field -->
+                <div class="space-y-2">
+                    <label for="shift" class="block text-sm font-semibold text-gray-700">Shift</label>
+                    <select id="shift" name="shift" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                        <option value="M">กะเช้า</option>
+                        <option value="E">กะบ่าย</option>
+                        <option value="N">กะดึก</option>
+                    </select>
+                </div>
+
+                <!-- Date Field -->
+                <div class="space-y-2">
+                    <label for="idate" class="block text-sm font-semibold text-gray-700">Date</label>
+                    <select id="idate" name="idate" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                        <option value="21">21</option>
+                        <option value="22">22</option>
+                        <option value="23">23</option>
+                        <option value="24">24</option>
+                        <option value="25">25</option>
+                        <option value="26">26</option>
+                        <option value="27">27</option>
+                        <option value="28">28</option>
+                        <option value="29">29</option>
+                        <option value="30">30</option>
+                        <option value="31">31</option>
+                    </select>
+                </div>
+
+                <!-- From Page Field -->
+                <div class="space-y-2">
+                    <label for="frompage" class="block text-sm font-semibold text-gray-700">From Page</label>
+                    <input type="number" id="frompage" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" 
+                           pattern="[0-9]+" 
+                           title="กรุณากรอกค่าตัวเลขที่มากกว่าหรือเท่ากับ 0">
+                    <span id="frompage-error" class="text-red-500 text-sm hidden"></span>
+                </div>
+
+                <!-- To Page Field -->
+                <div class="space-y-2">
+                    <label for="topage" class="block text-sm font-semibold text-gray-700">To Page</label>
+                    <input type="number" id="topage" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" 
+                           pattern="[0-9]+" 
+                           title="กรุณากรอกค่าตัวเลขที่มากกว่าหรือเท่ากับ 0">
+                    <span id="topage-error" class="text-red-500 text-sm hidden"></span>
+                </div>
+            </div>
+            
+            <!-- Control Print Checkboxes -->
+            <div class="mb-8">
+                <label class="block text-sm font-semibold text-gray-700 mb-4">การแสดงผล:</label>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="flex items-center space-x-3">
+                        <input type="checkbox" id="ft" name="controlprint" value="8"
+                               class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <label for="ft" class="text-sm font-medium text-gray-700 cursor-pointer">FT</label>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <input type="checkbox" id="lt" name="controlprint" value="4"
+                               class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <label for="lt" class="text-sm font-medium text-gray-700 cursor-pointer">LT</label>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <input type="checkbox" id="mfg" name="controlprint" value="2" checked
+                               class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <label for="mfg" class="text-sm font-medium text-gray-700 cursor-pointer">เครื่องหมาย มอก.</label>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <input type="checkbox" id="sirim" name="controlprint" value="1" checked
+                               class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <label for="sirim" class="text-sm font-medium text-gray-700 cursor-pointer">Sirim logo</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-4 justify-center">
+                <button id="btn_hd_push" type="submit"
+                        class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition duration-200 transform hover:scale-105">
+                    Submit
+                </button>
+                <button id="btn_view_report" type="button" disabled
+                        class="px-8 py-3 bg-gray-400 text-white font-semibold rounded-lg cursor-not-allowed opacity-50">
+                    ดูรายงาน
+                </button>
+            </div>
+        </form>
+
+        <!-- Search Container -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex items-center space-x-4">
+                <div class="flex-1">
+                    <input type="text" id="searchInput" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" 
+                           placeholder="🔍 ค้นหา Grade...">
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Message -->
+        <div id="statusMessage" class="mb-4 p-4 rounded-lg hidden"></div>
+
+        <!-- Data Table -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table id="dataTable" class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="px-8 py-5 text-left text-lg font-bold text-gray-800 uppercase tracking-wider">Grade</th>
+                            <th class="px-8 py-5 text-left text-lg font-bold text-gray-800 uppercase tracking-wider">TIS</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <!-- Data rows will be rendered here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex items-center justify-between mt-6 p-4 bg-white rounded-lg shadow">
+            <button id="prevPage" disabled
+                    class="px-6 py-2 bg-gray-300 text-gray-500 font-medium rounded-lg cursor-not-allowed opacity-50">
+                ก่อนหน้า
+            </button>
+            <span id="pageInfo" class="text-sm font-medium text-gray-700">หน้า 1</span>
+            <button id="nextPage"
+                    class="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition duration-200">
+                ถัดไป
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/hdpe_pellet.js"></script>
+    <script type="module" src="js/script_hdpe.js"></script>
+    <script src="js/sweetalert2.all.min.js"></script>
+    
+    <!-- Tailwind Dynamic Styling for Active States -->
+    <script>
+        // Enable/Disable button styling
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to update button states
+            function updateButtonStates() {
+                const reportBtn = document.getElementById('btn_view_report');
+                
+                // This will be updated by script_hdpe.js when form is submitted
+                if (reportBtn && !reportBtn.disabled) {
+                    reportBtn.className = "px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition duration-200 transform hover:scale-105";
+                }
+            }
+            
+            // Status message styling
+            const statusMessage = document.getElementById('statusMessage');
+            if (statusMessage) {
+                // This will be updated by script_hdpe.js
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                            const message = statusMessage.textContent.trim();
+                            if (message) {
+                                statusMessage.className = "mb-4 p-4 rounded-lg bg-blue-50 border border-blue-200 text-blue-800";
+                                statusMessage.classList.remove('hidden');
+                            } else {
+                                statusMessage.classList.add('hidden');
+                            }
+                        }
+                    });
+                });
+                
+                observer.observe(statusMessage, {
+                    childList: true,
+                    characterData: true,
+                    subtree: true
+                });
+            }
+            
+            // Pagination button states
+            function updatePaginationStates() {
+                const prevBtn = document.getElementById('prevPage');
+                const nextBtn = document.getElementById('nextPage');
+                
+                if (prevBtn && !prevBtn.disabled) {
+                    prevBtn.className = "px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition duration-200";
+                }
+                
+                if (nextBtn && nextBtn.disabled) {
+                    nextBtn.className = "px-6 py-2 bg-gray-300 text-gray-500 font-medium rounded-lg cursor-not-allowed opacity-50";
+                }
+            }
+            
+            // Monitor for state changes
+            setInterval(updateButtonStates, 500);
+            setInterval(updatePaginationStates, 500);
+        });
+    </script>
+</body>
+</html>

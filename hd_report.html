@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jumbo HD</title>
+  <!--fix favicon.ico-->
+  <link rel="shortcut icon" href="#" />
+  <!-- Normalize or reset CSS with your favorite library -->
+  <!-- https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css -->
+  <link rel="stylesheet" href="css/normalize.min.css" />
+
+  <!-- Load paper.css for happy printing -->
+  <!-- https://cdnjs.cloudflare.com/ajax/libs/paper-css/0.4.1/paper.css -->
+  <link rel="stylesheet" href="css/paper.css" />
+
+  <!-- Set page size here: A5, A4 or A3 -->
+  <!-- Set also "landscape" if you need -->
+  <style>
+    @page {
+      size: A4 landscape;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+
+    .bno {
+      border: 2px solid black;
+      height: 40px;
+      width: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      margin: 0 5px;
+    }
+
+    .bno-middle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      margin: 0 5px;
+    }
+
+    .sheet {
+      padding: 10mm;
+      background-image: url(images/polimaxx.jpg);
+      background-size: cover;
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .header {
+      position: absolute;
+      top: 150px;
+      /* Adjusted for better alignment */
+      left: 50px;
+      /* Adjusted for better alignment */
+      text-align: center;
+      width: 90%;
+      /* Ensure it spans across the page */
+    }
+
+    .header-title {
+      position: absolute;
+      top: 200px;
+      left: 25px;
+      text-align: center;
+      line-height: 0.1cm;
+      padding-top: 1px;
+      font-size: 70px;
+    }
+
+    .header-subtitle {
+      font-size: 30px;
+      padding-left: 50px;
+    }
+
+    .ft-text {
+      position: absolute;
+      top: 340px;
+      left: 180px;
+      font-size: 50px;
+      display: none;
+    }
+
+    .header p:first-child {
+      font-size: 70px;
+      margin: 0;
+    }
+
+    .header p:last-child {
+      font-size: 30px;
+      margin: 0;
+    }
+
+    .page-info {
+      position: absolute;
+      top: 300px;
+      /* Adjusted for better alignment */
+      left: 180px;
+      font-size: 50px;
+      text-align: center;
+    }
+
+    .lot-info {
+      position: absolute;
+      top: 500px;
+      /* Adjusted for better alignment */
+      left: 100px;
+      /* Adjusted for better alignment */
+      display: flex;
+      flex-wrap: nowrap;
+    }
+
+    .logo-image {
+      width: 120px !important;
+      height: auto !important;
+      max-width: 120px !important;
+      z-index: 3;
+    }
+
+    .sirim-logo {
+      width: 100px !important;
+      height: auto !important;
+      max-width: 100px !important;
+      z-index: 3;
+    }
+
+    .tis-logo {
+      width: 120px !important;
+      height: auto !important;
+    }
+
+    .irpc-logo {
+      width: 100px !important;
+      height: auto !important;
+    }
+
+    .sirim-logo-new {
+      width: 80px !important;
+      height: auto !important;
+    }
+
+    .sirim-logo-adjustable {
+      /* ไม่ต้องกำหนด width ที่นี่ */
+      height: auto !important;
+      z-index: 3;
+    }
+
+    /* สำหรับรูปที่ต้องการปรับขนาดได้ */
+    .logo-adjustable {
+      height: auto !important;
+      z-index: 3;
+    }
+
+    /* หรือจะแยกเฉพาะสำหรับแต่ละประเภทก็ได้ */
+    .mfg-adjustable {
+      height: auto !important;
+    }
+
+    .qrcode-adjustable {
+      height: auto !important;
+    }
+
+    .sirim-adjustable {
+      height: auto !important;
+    }
+
+    /* Floating Button Styles */
+    .print-guide-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .print-guide-btn:hover {
+      background: #0056b3;
+      transform: scale(1.1);
+    }
+
+    /* Guide Panel */
+    .print-guide-panel {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      background: white;
+      border: 2px solid #007bff;
+      border-radius: 10px;
+      padding: 20px;
+      width: 350px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      z-index: 999;
+      display: none;
+    }
+
+    .print-guide-panel.show {
+      display: block;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .guide-header {
+      background: #007bff;
+      color: white;
+      padding: 10px;
+      margin: -20px -20px 15px -20px;
+      border-radius: 8px 8px 0 0;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .browser-section {
+      margin-bottom: 15px;
+      border-left: 3px solid #007bff;
+      padding-left: 10px;
+    }
+
+    .browser-title {
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 5px;
+    }
+
+    .step {
+      margin: 8px 0;
+      padding-left: 15px;
+      position: relative;
+    }
+
+    .step:before {
+      content: "•";
+      color: #007bff;
+      position: absolute;
+      left: 0;
+    }
+
+    .close-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .close-btn:hover {
+      background: #c82333;
+    }
+
+    /* Print specific styles */
+    @media print {
+
+      .print-guide-btn,
+      .print-guide-panel {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="A4 landscape">
+  <!-- Floating Button -->
+  <button class="print-guide-btn" onclick="toggleGuide()">🖨️</button>
+
+  <!-- Guide Panel -->
+  <div class="print-guide-panel" id="guidePanel">
+    <div class="guide-header">📋 วิธีตั้งค่าการพิมพ์</div>
+
+    <div class="browser-section">
+      <div class="browser-title">🌐 Chrome / Microsoft Edge</div>
+      <div class="step">กด <strong>Ctrl + P</strong></div>
+      <div class="step">คลิก <strong>"More settings"</strong></div>
+      <div class="step"><strong>Margin:</strong> เลือก <strong>"None"</strong></div>
+      <div class="step"><strong>Options:</strong> → <strong>"Headers and footers"</strong> →
+        <strong>ยกเลิกเลือก</strong></div>
+      <div class="step"><strong>Background graphics</strong> → <strong>เลือก</strong> (เพื่อแสดงพื้นหลัง)</div>
+    </div>
+
+    <div class="browser-section">
+      <div class="browser-title">🦊 Firefox</div>
+      <div class="step">กด <strong>Ctrl + P</strong></div>
+      <div class="step">คลิก <strong>"Page Setup"</strong></div>
+      <div class="step">แท็บ <strong>"Margins & Header/Footer"</strong></div>
+      <div class="step">ตั้งค่าทั้งหมดเป็น <strong>"--blank--"</strong></div>
+      <div class="step"><strong>Margins:</strong> ตั้งค่าทั้งหมดเป็น <strong>0</strong></div>
+    </div>
+
+    <div class="browser-section">
+      <div class="browser-title">⚠️ ข้อควรระวัง</div>
+      <div class="step">ตรวจสอบให้แน่ใจว่าไม่มี header/footer ก่อนพิมพ์</div>
+      <div class="step">เลือกขนาดกระดาษ <strong>A4 Landscape</strong></div>
+      <div class="step">ทดสอบพิมพ์ 1 แผ่นก่อนพิมพ์ทั้งหมด</div>
+    </div>
+
+    <button class="close-btn" onclick="closeGuide()">ปิดคำแนะนำ</button>
+  </div>
+  <main></main>
+  <script>
+    function generateBoxes(runningNumber, date, shift, leftOffset = 675, topOffset = -52) {
+      const boxes = [];
+      // Running number boxes
+      for (let i = 0; i < runningNumber.length; i++) {
+        boxes.push(`<div class="bno" style="border: 2px solid black; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; margin: 0 3px; position: relative; left: ${leftOffset}px; top: ${topOffset}px;">${runningNumber[i]}</div>`);
+      }
+      // Separator
+      boxes.push(`<div class="bno-middle" style="display: flex; align-items: center; justify-content: center; width: 15px; height: 35px; margin: 0 3px; position: relative; left: ${leftOffset}px; top: ${topOffset}px;">-</div>`);
+      // Date boxes
+      for (let i = 0; i < date.length; i++) {
+        boxes.push(`<div class="bno" style="border: 2px solid black; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; margin: 0 3px; position: relative; left: ${leftOffset}px; top: ${topOffset}px;">${date[i]}</div>`);
+      }
+      // Separator
+      boxes.push(`<div class="bno-middle" style="display: flex; align-items: center; justify-content: center; width: 15px; height: 35px; margin: 0 3px; position: relative; left: ${leftOffset}px; top: ${topOffset}px;">-</div>`);
+      // Shift box
+      boxes.push(`<div class="bno" style="border: 2px solid black; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; margin: 0 3px; position: relative; left: ${leftOffset}px; top: ${topOffset}px;">${shift}</div>`);
+      return boxes.join('');
+    }
+    function polimaxx_blank(pageNumber, data) {
+      const runningNumber = String(pageNumber).padStart(3, "0");
+      const date = String(data.idate).padStart(2, "0");
+      const shift = data.shift;
+
+      // Decode controlprint to determine visibility
+      const control = parseInt(data.controlprint, 10);
+      const ftDisplay = (control & 8) !== 0 && pageNumber === parseInt(data.fromPage, 10) ? "block" : "none"; // Checkbox 1
+      const ltDisplay = (control & 4) !== 0 && pageNumber === parseInt(data.toPage, 10) ? "block" : "none"; // Checkbox 2
+      const mfgDisplay = (control & 2) !== 0 ? "block" : "none"; // Checkbox 3
+      const silimDisplay = (control & 1) !== 0 ? "block" : "none"; // Checkbox 4
+
+      return `
+        <div class="sheet">
+          <div class="header">
+            ${adjustGradePosition(data.grade, 30, -35)}          
+          </div>
+          ${adjustLotPosition(data.lot || "N/A", 780, 220)}
+          <div class="lot-info" style="position: absolute; top: 500px; left: 100px;">
+            ${generateBoxes(runningNumber, date, shift)}
+          </div>
+          ${adjustNetWeightPosition(data.netweight || "N/A", 900, 330)}
+
+          ${adjustTextPosition(data.title1, 175, 240, 60)}
+          ${adjustTextPosition(data.title2, 50, 320, 30, "block")} <!-- FT "none" and "block"-->
+
+          ${adjustMfgPosition(35, 430, 120, mfgDisplay)}
+          ${adjustQRCodePosition(180, 430, 110, mfgDisplay)}
+          ${adjustSilimPosition(320, 430, 150, silimDisplay)}
+          ${adjustSilimDetailPosition(data.sirim_title1, data.sirim_title2, data.sirim_title3, -13, 550, silimDisplay)}
+          ${adjustFTPosition(820, 315, 50, ftDisplay)}
+          ${adjustLTPosition(820, 495, 50, ltDisplay)}
+        </div>
+      `;
+    }
+
+    function adjustGradePosition(grade, rightOffset = 150, topOffset = 200) {
+      return `
+        <div style="
+          position: absolute; 
+          right: ${rightOffset}px; 
+          top: ${topOffset}px; 
+          font-size: 60px;
+          color: black; 
+          margin: 0; 
+          text-align: right; 
+          white-space: nowrap;
+        ">${grade}</div>
+      `;
+    }
+
+    function adjustLotPosition(lot, leftOffset = 150, topOffset = 250) {
+      return `
+        <div style="
+          position: absolute; 
+          left: ${leftOffset}px; 
+          top: ${topOffset}px; 
+          font-size: 50px; 
+          color: black; 
+          margin: 0; 
+          text-align: left; 
+          white-space: nowrap;
+        ">${lot}</div>
+      `;
+    }
+
+    function adjustNetWeightPosition(netWeight, leftOffset = 150, topOffset = 600) {
+      return `
+        <div style="
+          position: absolute; 
+          left: ${leftOffset}px; 
+          top: ${topOffset}px; 
+          font-size: 50px; 
+          color: black;
+          margin: 0; 
+          text-align: left; 
+          white-space: nowrap;
+        ">${netWeight}</div>
+      `;
+    }
+
+    function adjustTextPosition(text, leftOffset = 150, topOffset = 200, fontSize = 30, display = "block") {
+      return `
+        <div style="
+          position: absolute; 
+          left: ${leftOffset}px; 
+          top: ${topOffset}px; 
+          font-size: ${fontSize}px; 
+          display: ${display}; 
+          text-align: left; 
+          white-space: nowrap;
+        ">${text}</div>
+      `;
+    }
+
+    function adjustMfgPosition(leftOffset = 10, topOffset = 430, width = 120, display = "block") {
+      if (display === "none") {
+        return ""; // ไม่แสดงอะไรถ้า display เป็น none
+      }
+      return `
+    <div style="position: absolute; top: ${topOffset}px; left: ${leftOffset}px; display: ${display};">
+      <img src="images/TIS2559-2544.png" class="logo-adjustable" style="width: ${width}px !important;" />
+    </div>
+  `;
+    }
+
+    function adjustQRCodePosition(leftOffset = 160, topOffset = 430, width = 100, display = "block") {
+      if (display === "none") {
+        return ""; // ไม่แสดงอะไรถ้า display เป็น none
+      }
+      return `
+    <div style="position: absolute; top: ${topOffset}px; left: ${leftOffset}px; display: ${display};">
+      <img src="images/irpc_tis.png" class="logo-adjustable" style="width: ${width}px !important;" />
+    </div>
+  `;
+    }
+
+    function adjustSilimPosition(leftOffset = 320, topOffset = 430, width = 80, display = "block") {
+      if (display === "none") {
+        return ""; // ไม่แสดงอะไรถ้า display เป็น none
+      }
+      return `
+    <div style="position: absolute; top: ${topOffset}px; left: ${leftOffset}px; display: ${display};">
+      <img src="images/sirim_logo-removebg-preview.svg" class="logo-adjustable" style="width: ${width}px !important;" />
+    </div>
+  `;
+    }
+
+    function adjustSilimDetailPosition(sirimTitle1, sirimTitle2, sirimTitle3, leftOffset = 50, topOffset = 542, display = "block") {
+      if (display === "none") {
+        return ""; // ไม่แสดงอะไรถ้า display เป็น none
+      }
+      return `
+    <div style="
+      position: absolute; 
+      top: ${topOffset}px; 
+      left: ${leftOffset}%; 
+      text-align: center;
+      width: 100%;
+      display: ${display};
+    ">
+      <p style="margin: 2px 0; font-size: 14px;">${sirimTitle1}</p>
+      <p style="margin: 2px 0; font-size: 14px;">${sirimTitle2}</p>
+      <p style="margin: 2px 0; font-size: 14px;">${sirimTitle3}</p>
+    </div>
+  `;
+    }
+
+    function adjustFTPosition(rightOffset = 180, topOffset = 340, fontSize = 50, display = "none") {
+      return `
+        <div style="
+          position: absolute; 
+          top: ${topOffset}px; 
+          right: ${rightOffset}px; 
+          display: ${display}; 
+        ">
+          <p style="font-size: ${fontSize}px">(F/T)</p>
+        </div>
+      `;
+    }
+    function adjustLTPosition(rightOffset = 180, topOffset = 340, fontSize = 50, display = "none") {
+      return `
+        <div style="
+          position: absolute; 
+          top: ${topOffset}px; 
+          right: ${rightOffset}px; 
+          display: ${display}; 
+        ">
+          <p style="font-size: ${fontSize}px">(L/T)</p>
+        </div>
+      `;
+    }
+
+    function generateReport(fromPage, toPage, data) {
+      const main = document.querySelector("main");
+      main.innerHTML = ""; // Clear previous content
+
+      for (let page = fromPage; page <= toPage; page++) {
+        const sectionHTML = polimaxx_blank(page, data);
+        const section = document.createElement("section");
+        section.innerHTML = sectionHTML;
+        main.appendChild(section);
+      }
+    }
+
+    // Example usage
+    const reportData = {
+      grade: "P901BK-LS/750",
+      netweight: "750",
+      lot: "7207896112",
+      fromPage: "1",
+      toPage: "6",
+      shift: "E",
+      idate: "11",
+      tis: "Y",
+      title1: "HDPE",
+      title2: "HIGHT DENSITY POLYETHYLENE",
+      sirim_title1: "Certified to MS1058 : PART 1 : 2005",
+      sirim_title2: "Certified No. : PC004152",
+      sirim_title3: "PE100",
+      controlprint: "3"
+    };
+    // ฟังก์ชันสำหรับโหลดข้อมูลจาก sessionStorage
+    function loadDataFromSessionStorage() {
+      const savedData = sessionStorage.getItem('recent_hd_print');
+      if (savedData) {
+        return JSON.parse(savedData);
+      }
+      
+      // ข้อมูล fallback หากไม่พบใน sessionStorage
+      return {
+        "grade": "P901BK/750",
+        "netweight": "750",
+        "lot": "7204568752",
+        "fromPage": "1",
+        "toPage": "5",
+        "shift": "M",
+        "idate": "13",
+        "tis": "Y",
+        "controlprint": "3",
+        "title1": "HDPE",
+        "title2": "HIGHT DENSITY POLYETHYLENE",
+        "sirim_title1": "Certified to MS1058 : PART 1 : 2005",
+        "sirim_title2": "Certified No. : PC004152",
+        "sirim_title3": "PE100"
+      };
+    }
+
+    // ฟังก์ชันแสดงสถานะข้อมูล
+    function displayDataStatus(data, isFromSessionStorage) {
+      console.log('📋 Report Data Source:', isFromSessionStorage ? 'SessionStorage' : 'Fallback');
+      console.log('📊 Report Data:', data);
+      
+      // แสดงข้อความแจ้งเตือนหากใช้ข้อมูล fallback
+      if (!isFromSessionStorage) {
+        console.warn('⚠️ ไม่พบข้อมูลใน sessionStorage กำลังใช้ข้อมูลตัวอย่าง');
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // โหลดข้อมูลจาก sessionStorage
+      const reportData = loadDataFromSessionStorage();
+      const isFromSessionStorage = sessionStorage.getItem('recent_hd_print') !== null;
+      
+      // แสดงสถานะข้อมูล
+      displayDataStatus(reportData, isFromSessionStorage);
+      
+      // สร้างรายงาน
+      const fromPage = parseInt(reportData.fromPage, 10);
+      const toPage = parseInt(reportData.toPage, 10);
+      generateReport(fromPage, toPage, reportData);
+    });
+
+    let guideVisible = false;
+
+    function toggleGuide() {
+      const panel = document.getElementById('guidePanel');
+      guideVisible = !guideVisible;
+
+      if (guideVisible) {
+        panel.classList.add('show');
+      } else {
+        panel.classList.remove('show');
+      }
+    }
+
+    function closeGuide() {
+      document.getElementById('guidePanel').classList.remove('show');
+      guideVisible = false;
+    }
+
+    // ปิด guide เมื่อคลิกนอกพื้นที่
+    document.addEventListener('click', function (event) {
+      const panel = document.getElementById('guidePanel');
+      const btn = document.querySelector('.print-guide-btn');
+
+      if (!panel.contains(event.target) && !btn.contains(event.target)) {
+        closeGuide();
+      }
+    });
+
+    // ปิด guide เมื่อกด ESC
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        closeGuide();
+      }
+    });
+
+  </script>
+</body>
+
+</html>
