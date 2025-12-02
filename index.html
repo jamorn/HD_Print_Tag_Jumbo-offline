@@ -1,332 +1,500 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HDPE Pellet Data - Tailwind</title>
-    <link rel="stylesheet" href="css/tailwind.min.css">
+    <title>HDPE Print Tag Jumbo - SPA Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="#"><!-- fix favicon.ico -->
+    <!-- Dynamic Theme CSS -->
+    <link id="theme-stylesheet" rel="stylesheet" href="">
+    
     <style>
-        /* Custom styles for SweetAlert2 wide popup */
-        .swal-wide {
-            font-family: 'Courier New', monospace !important;
-        }
-        .swal-wide .swal2-html-container {
-            font-size: 11px !important;
-            line-height: 1.4 !important;
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            transition: background-color 0.3s ease;
         }
         
-        /* Enhanced Table Styles */
-        .data-table-row {
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
+        /* Theme Variables - Will be overridden by theme files */
+        :root {
+            --primary-color: #7c3aed;
+            --secondary-color: #10b981;
+            --bg-primary: #030815;
+            --bg-secondary: #101828;
+            --border-color: #374151;
+            --text-primary: #e5e7eb;
+            --text-secondary: #9ca3af;
         }
         
-        .data-table-row:hover {
-            background-color: #10b981 !important; /* เขียวสด Tailwind green-500 */
+        /* Component Transitions */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Theme Switcher Button */
+        .theme-btn {
+            transition: all 0.3s ease;
+        }
+        
+        /* Floating Animated Border */
+        #theme-selector-border {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+        
+        #theme-selector-border.active {
+            opacity: 1;
+        }
+        
+        @keyframes borderDash {
+            0% {
+                stroke-dashoffset: 400;
+            }
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        #theme-selector-border rect {
+            fill: none;
+            stroke-width: 3;
+            stroke-dasharray: 100;
+            animation: borderDash 1.5s linear infinite;
+        }
+        
+        /* Theme Preview Gradients */
+        .theme-preview-dark {
+            background: linear-gradient(135deg, #030815 0%, #101828 100%);
+        }
+        
+        .theme-preview-green {
+            background: linear-gradient(135deg, #d1f7d3 0%, #4CAF50 100%);
+        }
+        
+        .theme-preview-purple {
+            background: linear-gradient(135deg, #e5d1f7 0%, #9C27B0 100%);
+        }
+        
+        .theme-preview-pink {
+            background: linear-gradient(135deg, #f7d1d1 0%, #F44336 100%);
+        }
+        
+        .theme-preview-blue {
+            background: linear-gradient(135deg, #d1e7f7 0%, #2196F3 100%);
+        }
+        
+        /* Theme-aware Component Styles */
+        .theme-card {
+            background: var(--bg-card);
+            border-color: var(--border-color);
+        }
+        
+        .theme-card-header {
+            background: var(--bg-card-header);
+        }
+        
+        .theme-input {
+            background-color: var(--bg-input) !important;
+            border-color: var(--border-input) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        .theme-input:focus {
+            border-color: var(--primary-color) !important;
+            ring-color: var(--primary-color) !important;
+        }
+        
+        .theme-label {
+            color: var(--text-label) !important;
+        }
+        
+        .theme-text-primary {
+            color: var(--text-primary) !important;
+        }
+        
+        .theme-text-secondary {
+            color: var(--text-secondary) !important;
+        }
+        
+        .theme-border {
+            border-color: var(--border-color) !important;
+        }
+        
+        .theme-btn-primary {
+            background-color: var(--primary-color) !important;
             color: white !important;
-            transform: scale(1.01);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
         
-        .data-table-row:hover td {
+        .theme-btn-primary:hover {
+            opacity: 0.9;
+        }
+        
+        .theme-btn-secondary {
+            background-color: var(--secondary-color) !important;
             color: white !important;
-            font-weight: 600 !important;
+        }
+        
+        .theme-btn-secondary:hover {
+            opacity: 0.9;
         }
     </style>
 </head>
+<body>
+    <!-- Theme Switcher Floating Button -->
+    <div class="fixed top-4 right-4 z-50 flex gap-2">
+        <button id="help-btn" 
+                class="bg-white dark:bg-gray-800 rounded-full p-3 shadow-lg hover:shadow-xl transition-all"
+                title="วิธีตั้งค่าการพิมพ์"
+                aria-label="เปิดคู่มือการตั้งค่าการพิมพ์">
+            <svg class="w-6 h-6 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </button>
+        <button id="theme-switcher-btn" 
+                class="bg-white dark:bg-gray-800 rounded-full p-3 shadow-lg hover:shadow-xl transition-all"
+                title="เปลี่ยนธีม"
+                aria-label="เปิดเมนูเลือกธีม">
+            <svg class="w-6 h-6 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+            </svg>
+        </button>
+    </div>
 
-<body class="bg-gray-50 min-h-screen">
-    <div class="max-w-7xl mx-auto p-6">
-        <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">HDPE Print Tag Jumbo</h1>
-        
-        <form class="bg-white rounded-lg shadow-lg p-8 mb-8">
-            <!-- Form Fields Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                <!-- Lot Field -->
-                <div class="space-y-2">
-                    <label for="lot" class="block text-sm font-semibold text-gray-700">Lot</label>
-                    <input type="number" id="lot" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" 
-                           placeholder="ใส่ Lot การผลิต" 
-                           maxlength="10" 
-                           pattern="[0-9]{1,10}" 
-                           title="กรุณากรอกตัวเลข 0-9 ไม่เกิน 10 หลัก"
-                           oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
-                    <span id="lot-error" class="text-red-500 text-sm"></span>
-                </div>
-
-                <!-- Grade Field -->
-                <div class="space-y-2">
-                    <label for="grade" class="block text-sm font-semibold text-gray-700">Grade</label>
-                    <input type="text" id="grade" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" 
-                           readonly>
-                    <span id="grade-error" class="text-red-500 text-sm hidden"></span>
-                </div>
-
-                <!-- Net Weight Field -->
-                <div class="space-y-2">
-                    <label for="netweight" class="block text-sm font-semibold text-gray-700">Net Weight</label>
-                    <input type="number" id="netweight" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" 
-                           readonly>
-                    <span id="netweight-error" class="text-red-500 text-sm hidden"></span>
-                </div>
-
-                <!-- TIS Field -->
-                <div class="space-y-2">
-                    <label for="tis" class="block text-sm font-semibold text-gray-700">เครื่องหมาย มอก</label>
-                    <input type="text" id="tis" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" 
-                           readonly>
-                </div>
-
-                <!-- Shift Field -->
-                <div class="space-y-2">
-                    <label for="shift" class="block text-sm font-semibold text-gray-700">Shift</label>
-                    <select id="shift" name="shift" 
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
-                        <option value="M">กะเช้า</option>
-                        <option value="E">กะบ่าย</option>
-                        <option value="N">กะดึก</option>
-                    </select>
-                </div>
-
-                <!-- Date Field -->
-                <div class="space-y-2">
-                    <label for="idate" class="block text-sm font-semibold text-gray-700">Date</label>
-                    <select id="idate" name="idate" 
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
-                        <option value="13">13</option>
-                        <option value="14">14</option>
-                        <option value="15">15</option>
-                        <option value="16">16</option>
-                        <option value="17">17</option>
-                        <option value="18">18</option>
-                        <option value="19">19</option>
-                        <option value="20">20</option>
-                        <option value="21">21</option>
-                        <option value="22">22</option>
-                        <option value="23">23</option>
-                        <option value="24">24</option>
-                        <option value="25">25</option>
-                        <option value="26">26</option>
-                        <option value="27">27</option>
-                        <option value="28">28</option>
-                        <option value="29">29</option>
-                        <option value="30">30</option>
-                        <option value="31">31</option>
-                    </select>
-                </div>
-
-                <!-- From Page Field -->
-                <div class="space-y-2">
-                    <label for="frompage" class="block text-sm font-semibold text-gray-700">From Page</label>
-                    <input type="number" id="frompage" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" 
-                           pattern="[0-9]+" 
-                           title="กรุณากรอกค่าตัวเลขที่มากกว่าหรือเท่ากับ 0">
-                    <span id="frompage-error" class="text-red-500 text-sm hidden"></span>
-                </div>
-
-                <!-- To Page Field -->
-                <div class="space-y-2">
-                    <label for="topage" class="block text-sm font-semibold text-gray-700">To Page</label>
-                    <input type="number" id="topage" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" 
-                           pattern="[0-9]+" 
-                           title="กรุณากรอกค่าตัวเลขที่มากกว่าหรือเท่ากับ 0">
-                    <span id="topage-error" class="text-red-500 text-sm hidden"></span>
-                </div>
+    <!-- Help Modal - Print Settings Guide -->
+    <div id="help-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="theme-card rounded-2xl shadow-2xl max-w-4xl w-full p-6 fade-in" style="background-color: var(--bg-card); max-height: 90vh; overflow-y: auto;">
+            <div class="flex items-center justify-between mb-6 sticky top-0 z-10" style="background: var(--bg-card-header); margin: -1.5rem -1.5rem 1.5rem -1.5rem; padding: 1.5rem; border-radius: 1rem 1rem 0 0;">
+                <h2 class="text-2xl font-bold text-white">📖 วิธีตั้งค่าการพิมพ์</h2>
+                <button id="close-help-modal" 
+                        class="text-white hover:text-gray-200"
+                        title="ปิด"
+                        aria-label="ปิดหน้าต่างคู่มือ">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
             
-            <!-- Control Print Checkboxes -->
-            <div class="mb-8">
-                <label class="block text-sm font-semibold text-gray-700 mb-4">การแสดงผล:</label>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="flex items-center space-x-3">
-                        <input type="checkbox" id="ft" name="controlprint" value="8"
-                               class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                        <label for="ft" class="text-sm font-medium text-gray-700 cursor-pointer">FT</label>
+            <!-- Tab Navigation -->
+            <div class="flex border-b theme-border mb-6">
+                <button class="help-tab px-6 py-3 font-semibold transition-colors border-b-2 border-transparent hover:border-current active" 
+                        data-tab="overview"
+                        style="color: var(--primary-color);">
+                    ภาพรวม
+                </button>
+                <button class="help-tab px-6 py-3 font-semibold transition-colors border-b-2 border-transparent hover:border-current theme-text-secondary" 
+                        data-tab="fonts">
+                    ฟอนต์และขนาด
+                </button>
+                <button class="help-tab px-6 py-3 font-semibold transition-colors border-b-2 border-transparent hover:border-current theme-text-secondary" 
+                        data-tab="controls">
+                    Print Controls
+                </button>
+            </div>
+            
+            <!-- Tab Content -->
+            <div id="tab-overview" class="tab-content">
+                <h3 class="text-xl font-bold theme-text-primary mb-4">🎯 ภาพรวมการใช้งาน</h3>
+                <div class="space-y-4 theme-text-primary">
+                    <div class="p-4 rounded-lg" style="background-color: var(--bg-input);">
+                        <h4 class="font-bold mb-2">1. เลือก Grade จากตาราง</h4>
+                        <p class="text-sm theme-text-secondary">คลิกที่แถวในตาราง "รายการเม็ดพลาสติก" เพื่อเลือก Grade ที่ต้องการ</p>
                     </div>
-                    <div class="flex items-center space-x-3">
-                        <input type="checkbox" id="lt" name="controlprint" value="4"
-                               class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                        <label for="lt" class="text-sm font-medium text-gray-700 cursor-pointer">LT</label>
+                    <div class="p-4 rounded-lg" style="background-color: var(--bg-input);">
+                        <h4 class="font-bold mb-2">2. กรอกข้อมูลการผลิต</h4>
+                        <p class="text-sm theme-text-secondary">ระบุ Lot, Shift, Date, From/To Page ตามต้องการ</p>
                     </div>
-                    <div class="flex items-center space-x-3">
-                        <input type="checkbox" id="mfg" name="controlprint" value="2" checked
-                               class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                        <label for="mfg" class="text-sm font-medium text-gray-700 cursor-pointer">เครื่องหมาย มอก.</label>
+                    <div class="p-4 rounded-lg" style="background-color: var(--bg-input);">
+                        <h4 class="font-bold mb-2">3. เลือก Print Controls</h4>
+                        <p class="text-sm theme-text-secondary">ติ๊กเลือกส่วนที่ต้องการแสดงในการพิมพ์ (FT, LT, มอก., Sirim)</p>
                     </div>
-                    <div class="flex items-center space-x-3">
-                        <input type="checkbox" id="sirim" name="controlprint" value="1" checked
-                               class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                        <label for="sirim" class="text-sm font-medium text-gray-700 cursor-pointer">Sirim logo</label>
+                    <div class="p-4 rounded-lg" style="background-color: var(--bg-input);">
+                        <h4 class="font-bold mb-2">4. Submit และ Preview</h4>
+                        <p class="text-sm theme-text-secondary">กดปุ่ม "ยืนยันและบันทึกข้อมูล" แล้วกด "Print Preview" เพื่อดูตัวอย่าง</p>
                     </div>
                 </div>
             </div>
             
-            <!-- Action Buttons -->
-            <div class="flex flex-wrap gap-4 justify-center">
-                <button id="btn_hd_push" type="submit"
-                        class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition duration-200 transform hover:scale-105">
-                    Submit
-                </button>
-                <button id="btn_view_report" type="button" disabled
-                        class="px-8 py-3 bg-gray-400 text-white font-semibold rounded-lg cursor-not-allowed opacity-50">
-                    ดูรายงาน
-                </button>
-            </div>
-        </form>
-
-        <!-- Search Container -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <div class="flex items-center space-x-4">
-                <div class="flex-1">
-                    <input type="text" id="searchInput" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" 
-                           placeholder="🔍 ค้นหา Grade...">
+            <div id="tab-fonts" class="tab-content hidden">
+                <h3 class="text-xl font-bold theme-text-primary mb-4">🔤 การกำหนดฟอนต์และขนาด</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm theme-text-primary">
+                        <thead class="theme-card-header">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-white font-bold">ส่วนของเอกสาร</th>
+                                <th class="px-4 py-3 text-left text-white font-bold">ฟอนต์</th>
+                                <th class="px-4 py-3 text-center text-white font-bold">ขนาด (pt)</th>
+                                <th class="px-4 py-3 text-left text-white font-bold">หมายเหตุ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b theme-border" style="background-color: var(--bg-input);">
+                                <td class="px-4 py-3 font-semibold">Grade / Product Name</td>
+                                <td class="px-4 py-3">Arial, Helvetica</td>
+                                <td class="px-4 py-3 text-center">18-22</td>
+                                <td class="px-4 py-3 text-sm theme-text-secondary">ตัวหนา, ชัดเจน</td>
+                            </tr>
+                            <tr class="border-b theme-border">
+                                <td class="px-4 py-3 font-semibold">Net Weight</td>
+                                <td class="px-4 py-3">Arial, Helvetica</td>
+                                <td class="px-4 py-3 text-center">16-18</td>
+                                <td class="px-4 py-3 text-sm theme-text-secondary">ตัวหนา</td>
+                            </tr>
+                            <tr class="border-b theme-border" style="background-color: var(--bg-input);">
+                                <td class="px-4 py-3 font-semibold">Lot Number</td>
+                                <td class="px-4 py-3">Courier New, Monospace</td>
+                                <td class="px-4 py-3 text-center">14-16</td>
+                                <td class="px-4 py-3 text-sm theme-text-secondary">ตัวหนา, Monospace</td>
+                            </tr>
+                            <tr class="border-b theme-border">
+                                <td class="px-4 py-3 font-semibold">MFG Date / Shift</td>
+                                <td class="px-4 py-3">Arial, Helvetica</td>
+                                <td class="px-4 py-3 text-center">12-14</td>
+                                <td class="px-4 py-3 text-sm theme-text-secondary">ตัวปกติ</td>
+                            </tr>
+                            <tr class="border-b theme-border" style="background-color: var(--bg-input);">
+                                <td class="px-4 py-3 font-semibold">Product Description (Title1, Title2)</td>
+                                <td class="px-4 py-3">Arial, Helvetica</td>
+                                <td class="px-4 py-3 text-center">10-12</td>
+                                <td class="px-4 py-3 text-sm theme-text-secondary">ตัวปกติ</td>
+                            </tr>
+                            <tr class="border-b theme-border">
+                                <td class="px-4 py-3 font-semibold">Sirim Certification Text</td>
+                                <td class="px-4 py-3">Arial, Helvetica</td>
+                                <td class="px-4 py-3 text-center">8-10</td>
+                                <td class="px-4 py-3 text-sm theme-text-secondary">ตัวเล็ก, อ่านได้ชัดเจน</td>
+                            </tr>
+                            <tr class="border-b theme-border" style="background-color: var(--bg-input);">
+                                <td class="px-4 py-3 font-semibold">TIS Logo / Sirim Logo</td>
+                                <td class="px-4 py-3">-</td>
+                                <td class="px-4 py-3 text-center">-</td>
+                                <td class="px-4 py-3 text-sm theme-text-secondary">รูปภาพ (PNG/SVG)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-6 p-4 rounded-lg border-l-4" style="background-color: var(--bg-input); border-color: var(--primary-color);">
+                    <p class="font-bold theme-text-primary mb-2">💡 คำแนะนำ:</p>
+                    <ul class="text-sm theme-text-secondary space-y-1 list-disc list-inside">
+                        <li>ใช้ฟอนต์ที่อ่านง่าย ไม่มีหัวโค้ง (Sans-serif) เช่น Arial, Helvetica</li>
+                        <li>Lot Number ควรใช้ Monospace เพื่อความชัดเจน</li>
+                        <li>ขนาดฟอนต์ขึ้นกับขนาดการพิมพ์ (A4, A5, Label)</li>
+                        <li>ตรวจสอบ contrast สีให้มองเห็นชัดเจนเมื่อพิมพ์</li>
+                    </ul>
                 </div>
             </div>
-        </div>
-
-        <!-- Status Message -->
-        <div id="statusMessage" class="mb-4 p-4 rounded-lg hidden"></div>
-
-        <!-- Preloader -->
-        <div id="preloader" class="mb-4 p-8 bg-white rounded-lg shadow-lg text-center">
-            <div class="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-blue-600 rounded-full mb-4"></div>
-            <p class="text-gray-600 font-medium">🔄 กำลังโหลดข้อมูล...</p>
-        </div>
-
-        <!-- Data Controls -->
-        <div id="dataControls" class="mb-4 p-4 bg-white rounded-lg shadow-lg hidden">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm font-medium text-gray-600">แหล่งข้อมูล:</span>
-                    <span id="dataSource" class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium"></span>
+            
+            <div id="tab-controls" class="tab-content hidden">
+                <h3 class="text-xl font-bold theme-text-primary mb-4">⚙️ Print Control Options</h3>
+                <div class="space-y-4">
+                    <div class="p-4 rounded-lg border-l-4" style="background-color: var(--bg-input); border-color: var(--primary-color);">
+                        <h4 class="font-bold theme-text-primary mb-2">✅ FT (Food Contact)</h4>
+                        <p class="text-sm theme-text-secondary mb-2">แสดงสัญลักษณ์ "Food Contact" บนฉลาก</p>
+                        <ul class="text-sm theme-text-secondary space-y-1 list-disc list-inside ml-4">
+                            <li><strong>ฟอนต์:</strong> Arial Bold</li>
+                            <li><strong>ขนาด:</strong> 12-14 pt</li>
+                            <li><strong>ตำแหน่ง:</strong> ด้านบนซ้ายหรือใกล้กับ Grade</li>
+                            <li><strong>สี:</strong> ดำ หรือตามสี brand</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="p-4 rounded-lg border-l-4" style="background-color: var(--bg-input); border-color: var(--secondary-color);">
+                        <h4 class="font-bold theme-text-primary mb-2">✅ LT (Light Transmission)</h4>
+                        <p class="text-sm theme-text-secondary mb-2">แสดงข้อมูลการส่งผ่านแสง (สำหรับท่อ PE100)</p>
+                        <ul class="text-sm theme-text-secondary space-y-1 list-disc list-inside ml-4">
+                            <li><strong>ฟอนต์:</strong> Arial Bold</li>
+                            <li><strong>ขนาด:</strong> 10-12 pt</li>
+                            <li><strong>ตำแหน่ง:</strong> ใกล้กับข้อมูล technical spec</li>
+                            <li><strong>ข้อความ:</strong> "Light Transmission: < 2%"</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="p-4 rounded-lg border-l-4" style="background-color: var(--bg-input); border-color: #4CAF50;">
+                        <h4 class="font-bold theme-text-primary mb-2">✅ เครื่องหมาย มอก. (TIS)</h4>
+                        <p class="text-sm theme-text-secondary mb-2">แสดงโลโก้และหมายเลข มอก. (Thailand Industrial Standard)</p>
+                        <ul class="text-sm theme-text-secondary space-y-1 list-disc list-inside ml-4">
+                            <li><strong>รูปแบบ:</strong> Logo PNG/SVG + หมายเลข TIS</li>
+                            <li><strong>ขนาดโลโก้:</strong> 30-40px (height)</li>
+                            <li><strong>ฟอนต์หมายเลข:</strong> Arial Bold, 10-12 pt</li>
+                            <li><strong>ข้อความ:</strong> "TIS 2559-2544" (ตามมาตรฐาน)</li>
+                            <li><strong>ตำแหน่ง:</strong> ด้านล่างหรือมุมบนขวา</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="p-4 rounded-lg border-l-4" style="background-color: var(--bg-input); border-color: #F44336;">
+                        <h4 class="font-bold theme-text-primary mb-2">✅ Sirim Logo</h4>
+                        <p class="text-sm theme-text-secondary mb-2">แสดงโลโก้ SIRIM (สำหรับการส่งออก Malaysia)</p>
+                        <ul class="text-sm theme-text-secondary space-y-1 list-disc list-inside ml-4">
+                            <li><strong>รูปแบบ:</strong> Logo PNG + Certification Text</li>
+                            <li><strong>ขนาดโลโก้:</strong> 35-45px (height)</li>
+                            <li><strong>ฟอนต์ข้อความ:</strong> Arial Regular, 8-10 pt</li>
+                            <li><strong>ข้อความบรรทัด 1:</strong> "Certified to MS1058 : PART 1 : 2005"</li>
+                            <li><strong>ข้อความบรรทัด 2:</strong> "Certified No. : PC004152"</li>
+                            <li><strong>ข้อความบรรทัด 3:</strong> "PE100" (สำหรับท่อ PE100)</li>
+                            <li><strong>ตำแหน่ง:</strong> ด้านล่างหรือติดกับ TIS Logo</li>
+                        </ul>
+                    </div>
                 </div>
-                <button id="refreshDataBtn" 
-                        class="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition duration-200">
-                    🔄 อัพเดทข้อมูล
-                </button>
+                
+                <div class="mt-6 p-4 rounded-lg" style="background-color: var(--bg-input);">
+                    <h4 class="font-bold theme-text-primary mb-3">📊 ตัวอย่างการใช้งาน</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm theme-text-secondary">
+                        <div class="p-3 border rounded" style="border-color: var(--border-color);">
+                            <p class="font-bold mb-2">สำหรับผลิตภัณฑ์ทั่วไป:</p>
+                            <p>☑️ เครื่องหมาย มอก.<br>☑️ Sirim logo</p>
+                        </div>
+                        <div class="p-3 border rounded" style="border-color: var(--border-color);">
+                            <p class="font-bold mb-2">สำหรับท่อ PE100:</p>
+                            <p>☑️ FT<br>☑️ LT<br>☑️ เครื่องหมาย มอก.<br>☑️ Sirim logo</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <!-- Data Table -->
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div class="overflow-x-auto">
-                <table id="dataTable" class="w-full">
-                    <thead class="bg-gradient-to-r from-blue-600 to-blue-700 border-b-4 border-blue-800">
-                        <tr>
-                            <th class="px-8 py-10 text-left text-xl font-black uppercase tracking-widest shadow-lg" 
-                                style="color: white !important; background: linear-gradient(to right, #2563eb, #1d4ed8) !important; height: 80px;">
-                                📦 Grade
-                            </th>
-                            <th class="px-8 py-10 text-left text-xl font-black uppercase tracking-widest shadow-lg"
-                                style="color: white !important; background: linear-gradient(to right, #2563eb, #1d4ed8) !important; height: 80px;">
-                                ✅ TIS
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        <!-- Data rows will be rendered here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Pagination -->
-        <div class="flex items-center justify-between mt-6 p-4 bg-white rounded-lg shadow">
-            <button id="prevPage" disabled
-                    class="px-6 py-2 bg-gray-300 text-gray-500 font-medium rounded-lg cursor-not-allowed opacity-50">
-                ก่อนหน้า
-            </button>
-            <span id="pageInfo" class="text-sm font-medium text-gray-700">หน้า 1</span>
-            <button id="nextPage"
-                    class="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition duration-200">
-                ถัดไป
-            </button>
         </div>
     </div>
 
+    <!-- Theme Selector Modal -->
+    <div id="theme-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="theme-card rounded-2xl shadow-2xl max-w-2xl w-full p-6 fade-in" style="background-color: var(--bg-card);">
+            <div class="flex items-center justify-center mb-6" style="background: var(--bg-card-header); margin: -1.5rem -1.5rem 1.5rem -1.5rem; padding: 1.5rem; border-radius: 1rem 1rem 0 0;">
+                <h2 class="text-2xl font-bold text-white flex-grow">เลือกธีม</h2>
+                <button id="close-theme-modal" 
+                        class="text-white hover:text-gray-200"
+                        title="ปิด"
+                        aria-label="ปิดหน้าต่างเลือกธีม">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 relative">
+                <!-- Floating Animated Border -->
+                <svg id="theme-selector-border" xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+                    <rect x="1" y="1" rx="12" ry="12" width="calc(100% - 2px)" height="calc(100% - 2px)" stroke="#7c3aed"/>
+                </svg>
+                
+                <!-- Theme Options -->
+                <button data-theme="dark" 
+                        class="theme-btn group relative overflow-visible rounded-xl p-4 text-center bg-white transition-all duration-300 hover:shadow-xl border-2 border-gray-200 outline-none focus:outline-none"
+                        title="เลือกธีม Dark"
+                        aria-label="เลือกธีมสีเข้ม Dark พร้อมสี Violet และ Emerald">
+                    <!-- Active Checkmark -->
+                    <div class="absolute top-2 right-2 w-6 h-6 bg-violet-500 rounded-full items-center justify-center hidden theme-active-dark">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <div class="w-full h-24 rounded-lg mb-3 flex items-center justify-center">
+                        <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 24 24" style="color: #7c3aed;">
+                            <path d="M12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2Z"/>
+                        </svg>
+                    </div>
+                    <p class="font-semibold text-gray-900">Dark (Default)</p>
+                    <p class="text-xs text-gray-600">Violet & Emerald</p>
+                </button>
+                
+                <button data-theme="green" 
+                        class="theme-btn group relative overflow-visible rounded-xl p-4 text-center bg-white transition-all duration-300 hover:shadow-xl border-2 border-gray-200 outline-none focus:outline-none"
+                        title="เลือกธีม Green Fresh"
+                        aria-label="เลือกธีมสีเขียวสดใส Green Fresh สว่างและสะอาดตา">
+                    <!-- Active Checkmark -->
+                    <div class="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full items-center justify-center hidden theme-active-green">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <div class="w-full h-24 rounded-lg mb-3 flex items-center justify-center">
+                        <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 24 24" style="color: #4CAF50;">
+                            <path d="M12,2C11.5,2 11,2.19 10.59,2.59L2.59,10.59C1.8,11.37 1.8,12.63 2.59,13.41L10.59,21.41C11.37,22.2 12.63,22.2 13.41,21.41L21.41,13.41C22.2,12.63 22.2,11.37 21.41,10.59L13.41,2.59C13,2.19 12.5,2 12,2M12,4L14.5,6.5L12,9L9.5,6.5L12,4M7.5,8.5L10,11L7.5,13.5L5,11L7.5,8.5M16.5,8.5L19,11L16.5,13.5L14,11L16.5,8.5M12,13L14.5,15.5L12,18L9.5,15.5L12,13Z"/>
+                        </svg>
+                    </div>
+                    <p class="font-semibold text-gray-900">Green Fresh</p>
+                    <p class="text-xs text-gray-600">Light & Clean</p>
+                </button>
+                
+                <button data-theme="purple" 
+                        class="theme-btn group relative overflow-visible rounded-xl p-4 text-center bg-white transition-all duration-300 hover:shadow-xl border-2 border-gray-200 outline-none focus:outline-none"
+                        title="เลือกธีม Purple Dream"
+                        aria-label="เลือกธีมสีม่วง Purple Dream ดูหรูหราและทันสมัย">
+                    <!-- Active Checkmark -->
+                    <div class="absolute top-2 right-2 w-6 h-6 bg-purple-500 rounded-full items-center justify-center hidden theme-active-purple">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <div class="w-full h-24 rounded-lg mb-3 flex items-center justify-center">
+                        <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 24 24" style="color: #9C27B0;">
+                            <path d="M12,2C11.5,2 11,2.19 10.59,2.59C10.19,3 10,3.5 10,4H14C14,3.5 13.81,3 13.41,2.59C13,2.19 12.5,2 12,2M12,22C13.11,22 14,21.11 14,20H10C10,21.11 10.9,22 12,22M18,10.5C18,6.36 15.27,3 12,3C8.73,3 6,6.36 6,10.5C6,12.38 6.67,14.11 7.81,15.5H16.19C17.33,14.11 18,12.38 18,10.5M12,17.23C10.89,17.23 10,17.5 10,18.5V19H14V18.5C14,17.5 13.11,17.23 12,17.23Z"/>
+                        </svg>
+                    </div>
+                    <p class="font-semibold text-gray-900">Purple Dream</p>
+                    <p class="text-xs text-gray-600">Elegant & Modern</p>
+                </button>
+                
+                <button data-theme="pink" 
+                        class="theme-btn group relative overflow-visible rounded-xl p-4 text-center bg-white transition-all duration-300 hover:shadow-xl border-2 border-gray-200 outline-none focus:outline-none"
+                        title="เลือกธีม Pink Vibrant"
+                        aria-label="เลือกธีมสีชมพูสดใส Pink Vibrant ดูกล้าหาญและมีพลัง">
+                    <!-- Active Checkmark -->
+                    <div class="absolute top-2 right-2 w-6 h-6 bg-pink-500 rounded-full items-center justify-center hidden theme-active-pink">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <div class="w-full h-24 rounded-lg mb-3 flex items-center justify-center">
+                        <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 24 24" style="color: #F44336;">
+                            <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
+                        </svg>
+                    </div>
+                    <p class="font-semibold text-gray-900">Pink Vibrant</p>
+                    <p class="text-xs text-gray-600">Bold & Energetic</p>
+                </button>
+                
+                <button data-theme="blue" 
+                        class="theme-btn group relative overflow-visible rounded-xl p-4 text-center bg-white transition-all duration-300 hover:shadow-xl border-2 border-gray-200 outline-none focus:outline-none"
+                        title="เลือกธีม Blue Sky"
+                        aria-label="เลือกธีมสีฟ้า Blue Sky ดูเย็นสบายและเป็นมืออาชีพ">
+                    <!-- Active Checkmark -->
+                    <div class="absolute top-2 right-2 w-6 h-6 bg-blue-500 rounded-full items-center justify-center hidden theme-active-blue">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <div class="w-full h-24 rounded-lg mb-3 flex items-center justify-center">
+                        <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 24 24" style="color: #2196F3;">
+                            <path d="M12,2L2,12L12,22L22,12L12,2M12,4.5L19.5,12L12,19.5L4.5,12L12,4.5Z"/>
+                        </svg>
+                    </div>
+                    <p class="font-semibold text-gray-900">Blue Sky</p>
+                    <p class="text-xs text-gray-600">Cool & Professional</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app" class="container mx-auto px-4 py-6 max-w-7xl">
+        <!-- Content will be injected by SPA -->
+    </div>
+
     <!-- Scripts -->
-    <script type="module" src="js/hdpe_pellet.js"></script>
-    <script type="module" src="js/script_hdpe.js"></script>
+    <script src="js/hdpe_pellet.js"></script>
+    <script src="js/shift_compare.js"></script>
     <script src="js/sweetalert2.all.min.js"></script>
     
-    <!-- Tailwind Dynamic Styling for Active States -->
-    <script>
-        // Enable/Disable button styling
-        document.addEventListener('DOMContentLoaded', function() {
-            // Function to update button states
-            function updateButtonStates() {
-                const reportBtn = document.getElementById('btn_view_report');
-                
-                // This will be updated by script_hdpe.js when form is submitted
-                if (reportBtn && !reportBtn.disabled) {
-                    reportBtn.className = "px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition duration-200 transform hover:scale-105";
-                }
-            }
-            
-            // Status message styling
-            const statusMessage = document.getElementById('statusMessage');
-            if (statusMessage) {
-                // This will be updated by script_hdpe.js
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.type === 'childList' || mutation.type === 'characterData') {
-                            const message = statusMessage.textContent.trim();
-                            if (message) {
-                                statusMessage.className = "mb-4 p-4 rounded-lg bg-blue-50 border border-blue-200 text-blue-800";
-                                statusMessage.classList.remove('hidden');
-                            } else {
-                                statusMessage.classList.add('hidden');
-                            }
-                        }
-                    });
-                });
-                
-                observer.observe(statusMessage, {
-                    childList: true,
-                    characterData: true,
-                    subtree: true
-                });
-            }
-            
-            // Pagination button states
-            function updatePaginationStates() {
-                const prevBtn = document.getElementById('prevPage');
-                const nextBtn = document.getElementById('nextPage');
-                
-                if (prevBtn && !prevBtn.disabled) {
-                    prevBtn.className = "px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition duration-200";
-                }
-                
-                if (nextBtn && nextBtn.disabled) {
-                    nextBtn.className = "px-6 py-2 bg-gray-300 text-gray-500 font-medium rounded-lg cursor-not-allowed opacity-50";
-                }
-            }
-            
-            // Monitor for state changes
-            setInterval(updateButtonStates, 500);
-            setInterval(updatePaginationStates, 500);
-        });
-    </script>
+    <!-- SPA Core Scripts -->
+    <script type="module" src="./js/modules/themeManager.js"></script>
+    <script type="module" src="./js/modules/app.js"></script>
 </body>
 </html>

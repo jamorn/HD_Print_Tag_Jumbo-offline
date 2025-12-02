@@ -1,5 +1,10 @@
-import { hdpe_pellet_data } from './hdpe_pellet.js';
-import { updateShift } from './shift_compare.js'; // นำเข้า updateShift
+// hdpe_pellet_data และ updateShift จะถูกโหลดจาก global scope
+// จาก hdpe_pellet.js และ shift_compare.js
+
+// ตรวจสอบว่า global variables ถูกโหลดแล้ว
+console.log('🔍 Checking global variables...');
+console.log('🔍 hdpe_pellet_data available:', typeof hdpe_pellet_data !== 'undefined');
+console.log('🔍 updateShift available:', typeof updateShift !== 'undefined');
 
 // GAS API URL
 const GAS_API = 'https://script.google.com/macros/s/AKfycbyWY2vTrEFAIcw20YD69xFhwOWaLVD_sanHuArPpP4Y07SpFUOmNClZ8aUn8qVPlVJw/exec';
@@ -15,10 +20,21 @@ if (!statusMessageElement) {
 
 // ฟังก์ชันสำหรับจัดการ Local Storage
 function savePelletDataToCache(data) {
-    const now = new Date().getTime();
-    localStorage.setItem(PELLET_DATA_KEY, JSON.stringify(data));
-    localStorage.setItem(CACHE_EXPIRY_KEY, now.toString());
-    console.log('💾 บันทึกข้อมูลใน Local Storage เรียบร้อย');
+    console.log('💾 Attempting to save data to cache...');
+    console.log('💾 Data structure:', {
+        hasPellets: !!data?.pellets,
+        pelletsLength: data?.pellets?.length || 0,
+        totalRecords: data?.total_expanded_records || 'unknown'
+    });
+    
+    try {
+        const now = new Date().getTime();
+        localStorage.setItem(PELLET_DATA_KEY, JSON.stringify(data));
+        localStorage.setItem(CACHE_EXPIRY_KEY, now.toString());
+        console.log('💾 บันทึกข้อมูลใน Local Storage เรียบร้อย');
+    } catch (error) {
+        console.error('❌ Error saving to localStorage:', error);
+    }
 }
 
 function getPelletDataFromCache() {
@@ -52,20 +68,37 @@ function clearPelletDataCache() {
 
 // ฟังก์ชันสำหรับเรียกข้อมูลจาก GAS API
 async function fetchDataFromGAS(forceRefresh = false) {
+    console.log('🔍 fetchDataFromGAS called with forceRefresh:', forceRefresh);
+    
     // ตรวจสอบ cache ก่อน (ถ้าไม่ใช่ force refresh)
     if (!forceRefresh) {
+        console.log('🔍 Checking cache...');
         const cachedData = getPelletDataFromCache();
         if (cachedData) {
+            console.log('✅ Using cached data');
             updateDataSourceInfo('Local Storage', cachedData.pellets.length, false);
             return cachedData;
         }
+        console.log('❌ No valid cache found');
     }
     
     try {
         console.log('🔄 กำลังเรียกข้อมูลจาก GAS API...');
+        console.log('🌐 Current protocol:', window.location.protocol);
+        console.log('🌐 GAS_API URL:', GAS_API);
+        
+        // ตรวจสอบ protocol หากเป็น file:// ให้ใช้ fallback ทันที
+        if (window.location.protocol === 'file:') {
+            console.log('⚠️ ตรวจพบ file:// protocol - ข้ามการเรียก API');
+            console.log('🔄 Forcing fallback to local data...');
+            throw new Error('File protocol detected - CORS will block API calls');
+        }
+        
+        console.log('✅ Protocol check passed, proceeding with API call...');
         
         // แสดงข้อความ loading
         if (statusMessageElement) {
+            console.log('📱 Updating status message element...');
             statusMessageElement.textContent = '🔄 กำลังโหลดข้อมูลจาก Google Apps Script API...';
             statusMessageElement.className = 'mb-4 p-4 rounded-lg bg-blue-50 border border-blue-200 text-blue-800';
             statusMessageElement.classList.remove('hidden');
@@ -73,8 +106,12 @@ async function fetchDataFromGAS(forceRefresh = false) {
         
         // เพิ่ม timeout และ enhanced CORS options
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+        const timeoutId = setTimeout(() => {
+            console.log('⏰ API call timeout triggered');
+            controller.abort();
+        }, 15000); // 15 second timeout
         
+        console.log('🌐 Making fetch request...');
         const response = await fetch(GAS_API, {
             method: 'GET',
             mode: 'cors', // เพิ่ม CORS mode
@@ -84,11 +121,13 @@ async function fetchDataFromGAS(forceRefresh = false) {
         });
         
         clearTimeout(timeoutId);
+        console.log('📡 Fetch response received, status:', response.status);
         
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
+        console.log('📊 Parsing JSON response...');
         const data = await response.json();
         console.log('✅ เรียกข้อมูลจาก GAS API สำเร็จ');
         console.log(`📊 ได้รับข้อมูล ${data.total_expanded_records} รายการ`);
@@ -102,23 +141,49 @@ async function fetchDataFromGAS(forceRefresh = false) {
         return data;
     } catch (error) {
         console.error('❌ ไม่สามารถเรียกข้อมูลจาก GAS API:', error);
+        console.error('❌ Error details:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
         
         // แสดงข้อมูล error แบบละเอียด
+        console.log('🔍 Analyzing error type...');
         let errorMessage = error.message;
         if (error.name === 'AbortError') {
             errorMessage = 'Timeout - การเรียก API ใช้เวลานานเกินไป';
             console.error('⏰ Timeout: การเรียก API ใช้เวลานานเกินไป');
-        } else if (error.message.includes('CORS') || error.message.includes('Access to fetch')) {
-            errorMessage = 'CORS Error - Browser บล็อกการเรียก API (ลองใช้ Brave browser)';
-            console.error('🚫 CORS Error: Browser block การเรียก API');
+        } else if (error.message.includes('CORS') || 
+                   error.message.includes('Access to fetch') ||
+                   error.message.includes('Cross-Origin') ||
+                   error.message.includes('cors') ||
+                   error.name === 'TypeError' ||
+                   window.location.protocol === 'file:') {
+            errorMessage = 'CORS Error - เปิดไฟล์โดยตรงหรือ Browser บล็อกการเรียก API';
+            console.error('🚫 CORS Error: Browser block การเรียก API หรือเปิดไฟล์โดยตรง');
         } else if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
             errorMessage = 'Network Error - ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต';
             console.error('🌐 Network Error: ปัญหาการเชื่อมต่อเครือข่าย');
+        } else {
+            console.error('❓ Unknown error type:', error.name, error.message);
+        }
+        
+        console.log('📂 Fallback ไปใช้ข้อมูลจาก hdpe_pellet.js');
+        console.log('🔍 hdpe_pellet_data available:', !!hdpe_pellet_data);
+        console.log('🔍 hdpe_pellet_data.pellets length:', hdpe_pellet_data?.pellets?.length || 'undefined');
+        
+        // บันทึกข้อมูล fallback ลง Local Storage เหมือนกับ API
+        try {
+            savePelletDataToCache(hdpe_pellet_data);
+            console.log('💾 บันทึกข้อมูล fallback ใน Local Storage เรียบร้อย');
+        } catch (saveError) {
+            console.error('❌ Error saving fallback data to cache:', saveError);
         }
         
         // แสดงข้อความสถานะ fallback
-        updateDataSourceInfo('ไฟล์ท้องถิ่น', hdpe_pellet_data.pellets.length, false, errorMessage);
+        updateDataSourceInfo('ไฟล์ท้องถิ่น (hdpe_pellet.js)', hdpe_pellet_data.pellets.length, false, errorMessage);
         
+        console.log('✅ Returning fallback data');
         return hdpe_pellet_data; // fallback ไปใช้ข้อมูลท้องถิ่น
     }
 }
@@ -151,13 +216,13 @@ function updateDataSourceInfo(source, count, isOnline, errorMessage = null) {
     // แสดงข้อความใน status message
     if (statusMessageElement) {
         if (errorMessage) {
-            statusMessageElement.textContent = `⚠️ ใช้ข้อมูลจาก${source} (${count} รายการ) - เหตุผล: ${errorMessage}`;
+            statusMessageElement.textContent = `⚠️ API ไม่สามารถเชื่อมต่อได้ - ใช้ข้อมูลจาก${source} (${count} รายการ) - เหตุผล: ${errorMessage}`;
             statusMessageElement.className = 'mb-4 p-4 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-800';
         } else if (isOnline) {
             statusMessageElement.textContent = `✅ อัพเดทข้อมูลจาก ${source} เรียบร้อย (${count} รายการ)`;
             statusMessageElement.className = 'mb-4 p-4 rounded-lg bg-green-50 border border-green-200 text-green-800';
         } else {
-            statusMessageElement.textContent = `📂 ใช้ข้อมูลจาก ${source} (${count} รายการ)`;
+            statusMessageElement.textContent = `📂 ใช้ข้อมูลจาก ${source} (${count} รายการ) - ข้อมูลถูกเก็บใน Local Storage แล้ว`;
             statusMessageElement.className = 'mb-4 p-4 rounded-lg bg-blue-50 border border-blue-200 text-blue-800';
         }
         statusMessageElement.classList.remove('hidden');
@@ -172,13 +237,30 @@ function updateDataSourceInfo(source, count, isOnline, errorMessage = null) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🚀 DOM Content Loaded - Starting application...');
+    console.log('🌐 Current location protocol:', window.location.protocol);
+    console.log('🌐 Current location href:', window.location.href);
+    
     const tableBody = document.querySelector('#dataTable tbody');
     const searchInput = document.querySelector('#searchInput');
     const refreshDataBtn = document.getElementById('refreshDataBtn');
     
     // เรียกข้อมูลจาก GAS API หรือ fallback ไปใช้ข้อมูลท้องถิ่น
-    let dataSource = await fetchDataFromGAS();
-    let pellets = dataSource.pellets;
+    let dataSource;
+    let pellets;
+    
+    try {
+        console.log('🔄 Attempting to fetch data...');
+        dataSource = await fetchDataFromGAS();
+        pellets = dataSource.pellets;
+        console.log('✅ Data fetch completed successfully');
+    } catch (error) {
+        console.error('❌ Error in data fetching:', error);
+        // Fallback to local data if everything fails
+        console.log('🆘 Emergency fallback to hdpe_pellet_data...');
+        dataSource = hdpe_pellet_data;
+        pellets = dataSource.pellets;
+    }
 
     console.log('📊 Data source:', dataSource); // ตรวจสอบว่าข้อมูลถูกนำเข้ามา
     console.log('🔢 Total pellets:', pellets.length); // ตรวจสอบว่า pellets มีข้อมูล
@@ -202,22 +284,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     // เพิ่มคอลัมน์ใหม่ในฟังก์ชันสร้างแถว
     const createRow = (pellet) => {
         const row = document.createElement('tr');
-        // เพิ่ม CSS classes สำหรับ hover effect และ font size
         row.className = 'data-table-row';
         row.innerHTML = `
-        <td class="px-8 py-4 text-lg font-semibold text-gray-800">${pellet.Grade}</td>
-        <td class="px-8 py-4">
-            <input type="checkbox" class="tis-checkbox w-5 h-5 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 focus:ring-2" ${pellet.tis === 'Y' ? 'checked' : ''}>
+        <th scope="row" class="px-6 py-4 font-semibold text-base text-white whitespace-nowrap">${pellet.Grade}</th>
+        <td class="px-6 py-4 text-center">
+            <input type="checkbox" class="tis-checkbox w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded cursor-not-allowed" ${pellet.tis === 'Y' ? 'checked' : ''} disabled>
         </td>
     `;
-
-        // เพิ่ม event listener ให้ checkbox
-        const checkbox = row.querySelector('.tis-checkbox');
-        checkbox.addEventListener('change', (event) => {
-            pellet.tis = event.target.checked ? 'Y' : 'N';
-            document.getElementById('tis').value = pellet.tis; // อัปเดตค่า tis ในฟอร์ม
-            console.log(`Updated tis for ${pellet.Grade}:`, pellet.tis); // log ค่าเพื่อการตรวจสอบ
-        });
 
         return row;
     };
@@ -617,17 +690,50 @@ document.addEventListener('DOMContentLoaded', async () => {
     const lotInput = document.getElementById('lot');
     const lotError = document.getElementById('lot-error');
 
-    lotInput.addEventListener('input', () => {
-        const length = lotInput.value.length;
-        lotError.textContent = `คุณป้อน ${length} ตัว`; // แสดงจำนวนตัวอักษรที่ป้อน
+    // ดักจับ keyboard ก่อนที่ตัวอักษรจะเข้า input
+    lotInput.addEventListener('keydown', (e) => {
+        const key = e.key;
+        const currentValue = e.target.value;
+        
+        // อนุญาต: ตัวเลข 0-9, Backspace, Delete, Arrow keys, Tab, Enter
+        const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Enter', 'Home', 'End'];
+        
+        // ตรวจสอบว่าเป็น Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        if (e.ctrlKey || e.metaKey) {
+            return; // อนุญาตให้ใช้ keyboard shortcuts
+        }
+        
+        // ถ้าเป็นตัวเลข 0-9 และยังไม่เกิน 10 ตัว
+        if (/^[0-9]$/.test(key)) {
+            if (currentValue.length >= 10) {
+                e.preventDefault(); // ป้องกันไม่ให้ใส่เกิน 10 ตัว
+            }
+            return;
+        }
+        
+        // ถ้าเป็น key ที่อนุญาต
+        if (allowedKeys.includes(key)) {
+            return;
+        }
+        
+        // ถ้าไม่ใช่ตัวเลขหรือ key ที่อนุญาต ให้ block
+        e.preventDefault();
+    });
 
+    // อัพเดทการแสดงผลจำนวนตัวอักษร
+    lotInput.addEventListener('input', (e) => {
+        const length = e.target.value.length;
+        
         // หากครบ 10 ตัว ให้เปลี่ยนข้อความเป็นสีเขียว
         if (length === 10) {
             lotError.className = 'text-green-500 text-sm font-semibold';
             lotError.textContent = `✅ คุณป้อน ${length} ตัว (ครบถ้วน)`;
-        } else {
+        } else if (length > 0) {
             lotError.className = 'text-red-500 text-sm';
             lotError.textContent = `คุณป้อน ${length} ตัว`;
+        } else {
+            lotError.className = 'text-red-500 text-sm font-medium';
+            lotError.textContent = '';
         }
     });
 });

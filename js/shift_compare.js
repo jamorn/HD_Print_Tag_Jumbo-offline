@@ -1,26 +1,32 @@
-// เพิ่มการ export ฟังก์ชัน updateShift และ shift_table
-export function shift_table() {
+// Global functions สำหรับใช้ใน traditional script loading
+function shift_table() {
     const hour = new Date().getHours();
     if (hour >= 6 && hour < 14) return "M"; // กะเช้า
     if (hour >= 14 && hour < 22) return "E"; // กะบ่าย
     return "N"; // กะดึก
 }
 
-export function updateShift() {
+function updateShift() {
     const shift = shift_table(); // คำนวณกะปัจจุบัน
     const shiftSelect = document.getElementById('shift'); // ดึง element <select>
 
     // ตั้งค่า value ของ <select> ให้ตรงกับกะปัจจุบัน
-    shiftSelect.value = shift;
+    if (shiftSelect) {
+        shiftSelect.value = shift;
+    }
 
-    // อัพเดทข้อความสถานะ
+    // อัพเดทข้อความแสดงกะปัจจุบัน
     const statusMessage = {
         M: "กะเช้า",
         E: "กะบ่าย",
         N: "กะดึก"
     };
-    document.getElementById('statusMessage').textContent = 
-        `เวลาขณะนี้อยู่ในช่วง: ${statusMessage[shift]} (${shift})`;
+    
+    // แสดงใน label ของ Shift
+    const currentShiftDisplay = document.getElementById('currentShiftDisplay');
+    if (currentShiftDisplay) {
+        currentShiftDisplay.textContent = `(ตอนนี้: ${statusMessage[shift]})`;
+    }
 }
 
 // เรียกใช้เมื่อโหลดหน้า

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การ์ดและฟอร์มลงทะเบียน</title>
+    <!-- Tailwind CSS CDN for easy styling of the form -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for consistency */
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column; /* Arrange content vertically */
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5; /* Light background for the page */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- Styles for the initial four cards --- */
+        /* Grid container for the cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 columns for desktop */
+            gap: 20px; /* Space between cards */
+            max-width: 700px; /* Max width to keep cards from spreading too wide on large screens */
+            width: 100%; /* Ensure it takes full width up to max-width */
+        }
+
+        /* Base styling for each card */
+        .card {
+            width: 100%; /* Make cards fluid within their grid column */
+            height: 350px; /* Fixed height for original cards */
+            position: relative; /* For potential absolute positioning of elements inside */
+            border-radius: 20px; /* Rounded corners */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Pushes content and button to ends */
+            align-items: center;
+            overflow: hidden; /* Ensures content stays within rounded corners */
+            box-sizing: border-box;
+        }
+
+        /* Placeholder for the main content area within the card */
+        .card-content {
+            flex-grow: 1; /* Allows content area to expand */
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* You would style this to hold your images/icons */
+        }
+
+        /* Styling for the button area at the bottom of the card */
+        .card-button {
+            width: 100%;
+            height: 50px; /* Height of the button area */
+            border-bottom-left-radius: 20px; /* Match card border-radius for bottom corners */
+            border-bottom-right-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+            box-sizing: border-box;
+            padding: 0 10px; /* Add some horizontal padding for text */
+        }
+
+        /* Specific background colors for each card */
+        .card-green {
+            background-color: #d1f7d3; /* Light green */
+        }
+
+        .card-purple {
+            background-color: #e5d1f7; /* Light purple */
+        }
+
+        .card-pink {
+            background-color: #f7d1d1; /* Light pink */
+        }
+
+        .card-blue {
+            background-color: #d1e7f7; /* Light blue */
+        }
+
+        /* Button background colors */
+        .card-green .card-button {
+            background-color: #4CAF50; /* Green */
+        }
+
+        .card-purple .card-button {
+            background-color: #9C27B0; /* Purple */
+        }
+
+        .card-pink .card-button {
+            background-color: #F44336; /* Red/Pink */
+        }
+
+        .card-blue .card-button {
+            background-color: #2196F3; /* Blue */
+        }
+
+        /* --- Separator Line --- */
+        .dashed-separator {
+            width: 80%; /* Adjust width as needed */
+            max-width: 900px;
+            height: 2px;
+            border: none;
+            border-top: 2px dashed #ccc; /* Dashed line style */
+            margin: 40px 0; /* Space above and below the line */
+        }
+
+        /* --- Styles for the Register Form Cards --- */
+        .register-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 columns for desktop */
+            gap: 20px; /* Space between cards */
+            max-width: 700px; /* Max width to keep cards from spreading too wide on large screens */
+            width: 100%; /* Ensure it takes full width up to max-width */
+        }
+
+        .register-card-container {
+            width: 100%; /* Make cards fluid within their grid column */
+            height: 450px; /* Increased height to accommodate the form */
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
+            padding: 20px; /* Padding inside the card for form content */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Styling for the form title */
+        .form-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Styling for form input fields */
+        .form-input {
+            width: 100%;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 10px; /* Rounded corners for inputs */
+            font-size: 14px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Subtle inner shadow */
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4CAF50; /* Default green border on focus */
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2); /* Default green glow on focus */
+        }
+
+        /* Styling for the submit button */
+        .submit-button {
+            width: 100%;
+            padding: 12px 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px; /* Rounded corners for the button */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for the button */
+            margin-top: 10px; /* Space above the button */
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px); /* Slight lift effect on hover */
+        }
+
+        .submit-button:active {
+            transform: translateY(0); /* Reset on click */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Specific background colors for each register card */
+        .register-card-green { background-color: #d1f7d3; }
+        .register-card-purple { background-color: #e5d1f7; }
+        .register-card-pink { background-color: #f7d1d1; }
+        .register-card-blue { background-color: #d1e7f7; }
+
+        /* Button background colors for register cards */
+        .register-card-green .submit-button { background-color: #4CAF50; }
+        .register-card-green .submit-button:hover { background-color: #45a049; }
+        .register-card-green .form-input:focus { border-color: #4CAF50; box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2); }
+
+        .register-card-purple .submit-button { background-color: #9C27B0; }
+        .register-card-purple .submit-button:hover { background-color: #8E24AA; }
+        .register-card-purple .form-input:focus { border-color: #9C27B0; box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.2); }
+
+        .register-card-pink .submit-button { background-color: #F44336; }
+        .register-card-pink .submit-button:hover { background-color: #E53935; }
+        .register-card-pink .form-input:focus { border-color: #F44336; box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.2); }
+
+        .register-card-blue .submit-button { background-color: #2196F3; }
+        .register-card-blue .submit-button:hover { background-color: #1E88E5; }
+        .register-card-blue .form-input:focus { border-color: #2196F3; box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2); }
+
+        /* --- Table Styles --- */
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 900px;
+            width: 100%;
+            margin: 40px 0;
+        }
+
+        .table-container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .table-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .data-table th {
+            font-weight: bold;
+            color: white;
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .data-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Green Table */
+        .table-green .table-title {
+            background-color: #4CAF50;
+        }
+
+        .table-green .data-table th {
+            background-color: #4CAF50;
+        }
+
+        .table-green {
+            background-color: #d1f7d3;
+        }
+
+        /* Purple Table */
+        .table-purple .table-title {
+            background-color: #9C27B0;
+        }
+
+        .table-purple .data-table th {
+            background-color: #9C27B0;
+        }
+
+        .table-purple {
+            background-color: #e5d1f7;
+        }
+
+        /* Pink Table */
+        .table-pink .table-title {
+            background-color: #F44336;
+        }
+
+        .table-pink .data-table th {
+            background-color: #F44336;
+        }
+
+        .table-pink {
+            background-color: #f7d1d1;
+        }
+
+        /* Blue Table */
+        .table-blue .table-title {
+            background-color: #2196F3;
+        }
+
+        .table-blue .data-table th {
+            background-color: #2196F3;
+        }
+
+        .table-blue {
+            background-color: #d1e7f7;
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .card-grid, .register-cards-grid, .tables-grid {
+                grid-template-columns: 1fr; /* Stack cards vertically on smaller screens */
+                max-width: 350px; /* Limit width for single column on mobile */
+            }
+            
+            .data-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Original Four Cards Section -->
+    <div class="card-grid">
+        <div class="card card-green">
+            <!-- Content for card 1 goes here -->
+            <div class="card-content"></div>
+            <div class="card-button">ทางลัดไปช้อป</div>
+        </div>
+        <div class="card card-purple">
+            <!-- Content for card 2 goes here -->
+            <div class="card-content"></div>
+            <div class="card-button">ดูสินค้าในตะกร้า</div>
+        </div>
+        <div class="card card-pink">
+            <!-- Content for card 3 goes here -->
+            <div class="card-content"></div>
+            <div class="card-button">ช้อปก่อนใคร ของใหม่มาแรง!</div>
+        </div>
+        <div class="card card-blue">
+            <!-- Content for card 4 goes here -->
+            <div class="card-content"></div>
+            <div class="card-button">รวมร้านแจกคูปองลดค่าส่ง!</div>
+        </div>
+    </div>
+
+    <!-- Dashed Separator Line -->
+    <hr class="dashed-separator">
+
+    <!-- Register Form Cards Section -->
+    <div class="register-cards-grid">
+        <!-- Register Card 1 (Green Theme) -->
+        <div class="register-card-container register-card-green">
+            <h3 class="form-title">ลงทะเบียน</h3>
+            <form class="w-full">
+                <input type="text" placeholder="ชื่อผู้ใช้" class="form-input" required>
+                <input type="email" placeholder="อีเมล" class="form-input" required>
+                <input type="password" placeholder="รหัสผ่าน" class="form-input" required>
+                <input type="password" placeholder="ยืนยันรหัสผ่าน" class="form-input" required>
+                <button type="submit" class="submit-button">
+                    ลงทะเบียนตอนนี้
+                </button>
+            </form>
+        </div>
+
+        <!-- Register Card 2 (Purple Theme) -->
+        <div class="register-card-container register-card-purple">
+            <h3 class="form-title">ลงทะเบียน</h3>
+            <form class="w-full">
+                <input type="text" placeholder="ชื่อผู้ใช้" class="form-input" required>
+                <input type="email" placeholder="อีเมล" class="form-input" required>
+                <input type="password" placeholder="รหัสผ่าน" class="form-input" required>
+                <input type="password" placeholder="ยืนยันรหัสผ่าน" class="form-input" required>
+                <button type="submit" class="submit-button">
+                    ลงทะเบียนตอนนี้
+                </button>
+            </form>
+        </div>
+
+        <!-- Register Card 3 (Pink Theme) -->
+        <div class="register-card-container register-card-pink">
+            <h3 class="form-title">ลงทะเบียน</h3>
+            <form class="w-full">
+                <input type="text" placeholder="ชื่อผู้ใช้" class="form-input" required>
+                <input type="email" placeholder="อีเมล" class="form-input" required>
+                <input type="password" placeholder="รหัสผ่าน" class="form-input" required>
+                <input type="password" placeholder="ยืนยันรหัสผ่าน" class="form-input" required>
+                <button type="submit" class="submit-button">
+                    ลงทะเบียนตอนนี้
+                </button>
+            </form>
+        </div>
+
+        <!-- Register Card 4 (Blue Theme) -->
+        <div class="register-card-container register-card-blue">
+            <h3 class="form-title">ลงทะเบียน</h3>
+            <form class="w-full">
+                <input type="text" placeholder="ชื่อผู้ใช้" class="form-input" required>
+                <input type="email" placeholder="อีเมล" class="form-input" required>
+                <input type="password" placeholder="รหัสผ่าน" class="form-input" required>
+                <input type="password" placeholder="ยืนยันรหัสผ่าน" class="form-input" required>
+                <button type="submit" class="submit-button">
+                    ลงทะเบียนตอนนี้
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashed Separator Line -->
+    <hr class="dashed-separator">
+
+    <!-- Tables Section with 4 different colored tables -->
+    <div class="tables-grid">
+        <!-- Green Table -->
+        <div class="table-container table-green">
+            <h3 class="table-title">สินค้ายอดนิยม</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ลำดับ</th>
+                        <th>ชื่อสินค้า</th>
+                        <th>ราคา</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>เสื้อโปโลชาย</td>
+                        <td>299 บาท</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>กางเกงยีนส์</td>
+                        <td>599 บาท</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>รองเท้าผ้าใบ</td>
+                        <td>899 บาท</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>กระเป๋าสะพาย</td>
+                        <td>459 บาท</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Purple Table -->
+        <div class="table-container table-purple">
+            <h3 class="table-title">หมวดหมู่สินค้า</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>หมวดหมู่</th>
+                        <th>จำนวนสินค้า</th>
+                        <th>ยอดขาย</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>เสื้อผ้า</td>
+                        <td>245 ชิ้น</td>
+                        <td>85,620 บาท</td>
+                    </tr>
+                    <tr>
+                        <td>เครื่องใช้ไฟฟ้า</td>
+                        <td>132 ชิ้น</td>
+                        <td>120,450 บาท</td>
+                    </tr>
+                    <tr>
+                        <td>ของใช้ในบ้าน</td>
+                        <td>187 ชิ้น</td>
+                        <td>75,320 บาท</td>
+                    </tr>
+                    <tr>
+                        <td>เครื่องสำอาง</td>
+                        <td>210 ชิ้น</td>
+                        <td>92,150 บาท</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pink Table -->
+        <div class="table-container table-pink">
+            <h3 class="table-title">โปรโมชั่น</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ชื่อโปรโมชั่น</th>
+                        <th>ระยะเวลา</th>
+                        <th>ส่วนลด</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ลดราคาพิเศษ</td>
+                        <td>1-31 ม.ค.</td>
+                        <td>20%</td>
+                    </tr>
+                    <tr>
+                        <td>แจกคูปองฟรี</td>
+                        <td>15-25 ม.ค.</td>
+                        <td>100 บาท</td>
+                    </tr>
+                    <tr>
+                        <td>ส่งฟรีทุก订单</td>
+                        <td>ตลอดเดือน</td>
+                        <td>ฟรีค่าส่ง</td>
+                    </tr>
+                    <tr>
+                        <td>ของแถมพิเศษ</td>
+                        <td>10-20 ม.ค.</td>
+                        <td>1 ชิ้น</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Blue Table -->
+        <div class="table-container table-blue">
+            <h3 class="table-title">การจัดส่ง</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>วิธีการจัดส่ง</th>
+                        <th>ระยะเวลา</th>
+                        <th>ค่าใช้จ่าย</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ไปรษณีย์ด่วน</td>
+                        <td>2-3 วัน</td>
+                        <td>40 บาท</td>
+                    </tr>
+                    <tr>
+                        <td>Kerry Express</td>
+                        <td>1-2 วัน</td>
+                        <td>50 บาท</td>
+                    </tr>
+                    <tr>
+                        <td>J&T Express</td>
+                        <td>1-2 วัน</td>
+                        <td>45 บาท</td>
+                    </tr>
+                    <tr>
+                        <td>เก็บเงินปลายทาง</td>
+                        <td>2-3 วัน</td>
+                        <td>60 บาท</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

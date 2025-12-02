@@ -277,13 +277,66 @@
     .close-btn:hover {
       background: #c82333;
     }
+    
+    /* Tab styles */
+    .guide-tab:hover {
+      opacity: 0.9;
+    }
+    
+    .tab-content code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      color: #d63384;
+    }
 
     /* Print specific styles */
     @media print {
-
       .print-guide-btn,
       .print-guide-panel {
         display: none !important;
+      }
+      
+      /* ซ่อน background image ในโหมดพิมพ์และใช้พื้นหลังสีขาว */
+      .sheet {
+        background-image: none !important;
+        background: white !important;
+        background-color: white !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+      }
+      
+      /* ซ่อน background จากทุก elements ที่อาจมี background */
+      body {
+        background: white !important;
+        background-image: none !important;
+      }
+      
+      /* ป้องกัน section สร้าง page break เพิ่ม */
+      section {
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
+        page-break-inside: avoid !important;
+      }
+      
+      /* รับรองว่า elements แสดงผลใน print mode */
+      div[style*="position: absolute"] {
+        visibility: visible !important;
+      }
+      
+      /* ซ่อน FT/LT ใน print mode หาก display: none */
+      div[style*="display: none"] {
+        display: none !important;
+        visibility: hidden !important;
+      }
+      
+      /* รับรองการแสดงผลของ Sirim Detail */
+      div[style*="text-align: center"][style*="white-space: nowrap"] {
+        display: block !important;
+        visibility: visible !important;
+        position: absolute !important;
       }
     }
   </style>
@@ -296,54 +349,93 @@
   <!-- Guide Panel -->
   <div class="print-guide-panel" id="guidePanel">
     <div class="guide-header">📋 วิธีตั้งค่าการพิมพ์</div>
-
-    <div class="browser-section">
-      <div class="browser-title">🌐 Chrome / Microsoft Edge</div>
-      <div class="step">กด <strong>Ctrl + P</strong></div>
-      <div class="step">คลิก <strong>"More settings"</strong></div>
-      <div class="step"><strong>Margin:</strong> เลือก <strong>"None"</strong></div>
-      <div class="step"><strong>Options:</strong> → <strong>"Headers and footers"</strong> →
-        <strong>ยกเลิกเลือก</strong></div>
-      <div class="step"><strong>Background graphics</strong> → <strong>เลือก</strong> (เพื่อแสดงพื้นหลัง)</div>
+    
+    <!-- Tab Navigation -->
+    <div style="display: flex; border-bottom: 2px solid #e0e0e0; margin-bottom: 15px;">
+      <button class="guide-tab active" onclick="switchTab('print')" style="flex: 1; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 5px 0 0 0;">การพิมพ์</button>
+      <button class="guide-tab" onclick="switchTab('specs')" style="flex: 1; padding: 10px; background: #f0f0f0; color: #333; border: none; cursor: pointer; font-weight: bold; border-radius: 0 5px 0 0;">รายละเอียด</button>
     </div>
+    
+    <!-- Print Settings Tab -->
+    <div id="tab-print" class="tab-content">
+      <div class="browser-section">
+        <div class="browser-title">🌐 Chrome / Microsoft Edge</div>
+        <div class="step">กด <strong>Ctrl + P</strong></div>
+        <div class="step">คลิก <strong>"More settings"</strong></div>
+        <div class="step"><strong>Margin:</strong> เลือก <strong>"None"</strong></div>
+        <div class="step"><strong>Options:</strong> → <strong>"Headers and footers"</strong> →
+          <strong>ยกเลิกเลือก</strong></div>
+        <div class="step"><strong>Background graphics</strong> → <strong>เลือก</strong> (เพื่อแสดงพื้นหลัง)</div>
+      </div>
 
-    <div class="browser-section">
-      <div class="browser-title">🦊 Firefox</div>
-      <div class="step">กด <strong>Ctrl + P</strong></div>
-      <div class="step">คลิก <strong>"Page Setup"</strong></div>
-      <div class="step">แท็บ <strong>"Margins & Header/Footer"</strong></div>
-      <div class="step">ตั้งค่าทั้งหมดเป็น <strong>"--blank--"</strong></div>
-      <div class="step"><strong>Margins:</strong> ตั้งค่าทั้งหมดเป็น <strong>0</strong></div>
+      <div class="browser-section">
+        <div class="browser-title">🦊 Firefox</div>
+        <div class="step">กด <strong>Ctrl + P</strong></div>
+        <div class="step">คลิก <strong>"Page Setup"</strong></div>
+        <div class="step">แท็บ <strong>"Margins & Header/Footer"</strong></div>
+        <div class="step">ตั้งค่าทั้งหมดเป็น <strong>"--blank--"</strong></div>
+        <div class="step"><strong>Margins:</strong> ตั้งค่าทั้งหมดเป็น <strong>0</strong></div>
+      </div>
+
+      <div class="browser-section">
+        <div class="browser-title">⚠️ ข้อควรระวัง</div>
+        <div class="step">ตรวจสอบให้แน่ใจว่าไม่มี header/footer ก่อนพิมพ์</div>
+        <div class="step">เลือกขนาดกระดาษ <strong>A4 Landscape</strong></div>
+        <div class="step">ทดสอบพิมพ์ 1 แผ่นก่อนพิมพ์ทั้งหมด</div>
+      </div>
     </div>
-
-    <div class="browser-section">
-      <div class="browser-title">⚠️ ข้อควรระวัง</div>
-      <div class="step">ตรวจสอบให้แน่ใจว่าไม่มี header/footer ก่อนพิมพ์</div>
-      <div class="step">เลือกขนาดกระดาษ <strong>A4 Landscape</strong></div>
-      <div class="step">ทดสอบพิมพ์ 1 แผ่นก่อนพิมพ์ทั้งหมด</div>
+    
+    <!-- Specifications Tab -->
+    <div id="tab-specs" class="tab-content" style="display: none;">
+      <div class="browser-section" style="margin-bottom: 10px;">
+        <div class="browser-title">📝 Grade / Product Name</div>
+        <div class="step" id="spec-grade"></div>
+      </div>
+      
+      <div class="browser-section" style="margin-bottom: 10px;">
+        <div class="browser-title">⚖️ Net Weight</div>
+        <div class="step" id="spec-netweight"></div>
+      </div>
+      
+      <div class="browser-section" style="margin-bottom: 10px;">
+        <div class="browser-title">🔢 Running Number</div>
+        <div class="step" id="spec-running"></div>
+      </div>
+      
+      <div class="browser-section" style="margin-bottom: 10px;">
+        <div class="browser-title">📄 Product Description</div>
+        <div class="step" id="spec-description"></div>
+      </div>
+      
+      <div class="browser-section">
+        <div class="browser-title">🏅 Sirim Certification</div>
+        <div class="step" id="spec-sirim"></div>
+      </div>
     </div>
 
     <button class="close-btn" onclick="closeGuide()">ปิดคำแนะนำ</button>
   </div>
   <main></main>
   <script>
-    function generateBoxes(runningNumber, date, shift, leftOffset = 675, topOffset = -52) {
+    function generateBoxes(runningNumber, date, shift, leftOffset = 775, topOffset = 448) {
       const boxes = [];
+      
       // Running number boxes
       for (let i = 0; i < runningNumber.length; i++) {
-        boxes.push(`<div class="bno" style="border: 2px solid black; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; margin: 0 3px; position: relative; left: ${leftOffset}px; top: ${topOffset}px;">${runningNumber[i]}</div>`);
+        boxes.push(`<div style="border: 2px solid black; width: 35px; height: 35px; display: inline-block; text-align: center; line-height: 31px; margin: 0 3px; font-size: 30px; vertical-align: top; font-family: Arial, sans-serif;">${runningNumber[i]}</div>`);
       }
       // Separator
-      boxes.push(`<div class="bno-middle" style="display: flex; align-items: center; justify-content: center; width: 15px; height: 35px; margin: 0 3px; position: relative; left: ${leftOffset}px; top: ${topOffset}px;">-</div>`);
+      boxes.push(`<div style="display: inline-block; text-align: center; line-height: 31px; width: 15px; height: 35px; margin: 0 3px; font-size: 40px; vertical-align: top; font-family: Arial, sans-serif;">-</div>`);
       // Date boxes
       for (let i = 0; i < date.length; i++) {
-        boxes.push(`<div class="bno" style="border: 2px solid black; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; margin: 0 3px; position: relative; left: ${leftOffset}px; top: ${topOffset}px;">${date[i]}</div>`);
+        boxes.push(`<div style="border: 2px solid black; width: 35px; height: 35px; display: inline-block; text-align: center; line-height: 31px; margin: 0 3px; font-size: 30px; vertical-align: top; font-family: Arial, sans-serif;">${date[i]}</div>`);
       }
       // Separator
-      boxes.push(`<div class="bno-middle" style="display: flex; align-items: center; justify-content: center; width: 15px; height: 35px; margin: 0 3px; position: relative; left: ${leftOffset}px; top: ${topOffset}px;">-</div>`);
+      boxes.push(`<div style="display: inline-block; text-align: center; line-height: 31px; width: 15px; height: 35px; margin: 0 3px; font-size: 40px; vertical-align: top; font-family: Arial, sans-serif;">-</div>`);
       // Shift box
-      boxes.push(`<div class="bno" style="border: 2px solid black; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; margin: 0 3px; position: relative; left: ${leftOffset}px; top: ${topOffset}px;">${shift}</div>`);
-      return boxes.join('');
+      boxes.push(`<div style="border: 2px solid black; width: 35px; height: 35px; display: inline-block; text-align: center; line-height: 31px; margin: 0 3px; font-size: 30px; vertical-align: top; font-family: Arial, sans-serif;">${shift}</div>`);
+      
+      return `<div style="position: absolute; left: ${leftOffset}px; top: ${topOffset}px; white-space: nowrap; font-size: 0;">${boxes.join('')}</div>`;
     }
     function polimaxx_blank(pageNumber, data) {
       const runningNumber = String(pageNumber).padStart(3, "0");
@@ -356,6 +448,12 @@
       const ltDisplay = (control & 4) !== 0 && pageNumber === parseInt(data.toPage, 10) ? "block" : "none"; // Checkbox 2
       const mfgDisplay = (control & 2) !== 0 ? "block" : "none"; // Checkbox 3
       const silimDisplay = (control & 1) !== 0 ? "block" : "none"; // Checkbox 4
+      
+      // ดึงตำแหน่งที่เหมาะสมสำหรับทุก logos
+      const positions = getLogoPositions(data.controlprint);
+      
+      // Debug log
+      console.log(`Page ${pageNumber}: control=${control}, FT=${ftDisplay}, LT=${ltDisplay}, MFG=${positions.mfgLeft}, QR=${positions.qrLeft}, Sirim=${positions.sirimLeft}`);
 
       return `
         <div class="sheet">
@@ -363,18 +461,16 @@
             ${adjustGradePosition(data.grade, 30, -35)}          
           </div>
           ${adjustLotPosition(data.lot || "N/A", 780, 220)}
-          <div class="lot-info" style="position: absolute; top: 500px; left: 100px;">
-            ${generateBoxes(runningNumber, date, shift)}
-          </div>
-          ${adjustNetWeightPosition(data.netweight || "N/A", 900, 330)}
+          ${generateBoxes(runningNumber, date, shift, 775, 448)}
+          ${adjustNetWeightPosition(data.netweight || "N/A", 900, 330, data.grade)}
 
-          ${adjustTextPosition(data.title1, 175, 240, 60)}
-          ${adjustTextPosition(data.title2, 50, 320, 30, "block")} <!-- FT "none" and "block"-->
+          ${adjustTextPosition(data.title1, 172, 240, 60)}
+          ${adjustTextPosition(data.title2, 37, 320, 30, "block")} <!-- FT "none" and "block"-->
 
-          ${adjustMfgPosition(35, 430, 120, mfgDisplay)}
-          ${adjustQRCodePosition(180, 430, 110, mfgDisplay)}
-          ${adjustSilimPosition(320, 430, 150, silimDisplay)}
-          ${adjustSilimDetailPosition(data.sirim_title1, data.sirim_title2, data.sirim_title3, -13, 550, silimDisplay)}
+          ${adjustMfgPosition(positions.mfgLeft, 430, 120, mfgDisplay)}
+          ${adjustQRCodePosition(positions.qrLeft, 430, 110, mfgDisplay)}
+          ${adjustSilimPosition(positions.sirimLeft, 430, 150, silimDisplay)}
+          ${adjustSilimDetailPosition(data.sirim_title1, data.sirim_title2, data.sirim_title3, positions.sirimDetailLeft, 550, silimDisplay)}
           ${adjustFTPosition(820, 315, 50, ftDisplay)}
           ${adjustLTPosition(820, 495, 50, ltDisplay)}
         </div>
@@ -382,16 +478,65 @@
     }
 
     function adjustGradePosition(grade, rightOffset = 150, topOffset = 200) {
+      // ตรวจสอบกรณีพิเศษสำหรับ P901BK/SB/xxxx pattern
+      if (grade.startsWith("P901BK/SB/")) {
+        // แยก grade และ weight
+        const parts = grade.split("/");
+        const gradePart = parts[0] + "/" + parts[1]; // P901BK/SB
+        const weightPart = parts[2]; // 18000 หรือค่าอื่นๆ
+        
+        return `
+          <div style="
+            position: absolute; 
+            right: ${rightOffset}px; 
+            top: ${topOffset}px; 
+            font-size: 60px;
+            color: black; 
+            margin: 0; 
+            text-align: right; 
+            white-space: nowrap;
+            font-weight: bold;
+            z-index: 999;
+          ">${gradePart}</div>
+          <div style="
+            position: absolute; 
+            left: 820px; 
+            top: 180px; 
+            font-size: 50px;
+            color: black; 
+            margin: 0; 
+            text-align: left; 
+            white-space: nowrap;
+            font-weight: normal;
+          ">${weightPart}</div>
+        `;
+      }
+      
+      // สำหรับ grade อื่นๆ ใช้ logic เดิม
+      const gradeLength = grade.length;
+      let fontSize;
+      
+      if (gradeLength <= 10) {
+        fontSize = 60; // ขนาดเดิมสำหรับ string สั้น เช่น "P921BK/750"
+      } else if (gradeLength <= 12) {
+        fontSize = 50; // ลดขนาดสำหรับ string ปานกลาง
+      } else if (gradeLength <= 15) {
+        fontSize = 42; // ลดขนาดสำหรับ string ยาว
+      } else {
+        fontSize = 36; // ขนาดเล็กที่สุดสำหรับ string ยาวมาก เช่น "AM3245PC SUB/750"
+      }
+      
       return `
         <div style="
           position: absolute; 
           right: ${rightOffset}px; 
           top: ${topOffset}px; 
-          font-size: 60px;
+          font-size: ${fontSize}px;
           color: black; 
           margin: 0; 
           text-align: right; 
           white-space: nowrap;
+          font-weight: bold;
         ">${grade}</div>
       `;
     }
@@ -411,7 +556,12 @@
       `;
     }
 
-    function adjustNetWeightPosition(netWeight, leftOffset = 150, topOffset = 600) {
+    function adjustNetWeightPosition(netWeight, leftOffset = 150, topOffset = 600, grade = "") {
+      // สำหรับ P901BK/SB/xxxx pattern ไม่แสดง NET WEIGHT เพราะแสดงแล้วในส่วน grade
+      if (grade.startsWith("P901BK/SB/")) {
+        return ""; // ไม่แสดงอะไร
+      }
+      
       return `
         <div style="
           position: absolute; 
@@ -473,7 +623,7 @@
   `;
     }
 
-    function adjustSilimDetailPosition(sirimTitle1, sirimTitle2, sirimTitle3, leftOffset = 50, topOffset = 542, display = "block") {
+    function adjustSilimDetailPosition(sirimTitle1, sirimTitle2, sirimTitle3, leftOffset = 250, topOffset = 542, display = "block") {
       if (display === "none") {
         return ""; // ไม่แสดงอะไรถ้า display เป็น none
       }
@@ -481,16 +631,52 @@
     <div style="
       position: absolute; 
       top: ${topOffset}px; 
-      left: ${leftOffset}%; 
+      left: ${leftOffset}px; 
       text-align: center;
-      width: 100%;
+      white-space: nowrap;
       display: ${display};
+      font-family: Arial, sans-serif;
     ">
-      <p style="margin: 2px 0; font-size: 14px;">${sirimTitle1}</p>
-      <p style="margin: 2px 0; font-size: 14px;">${sirimTitle2}</p>
-      <p style="margin: 2px 0; font-size: 14px;">${sirimTitle3}</p>
+      <p style="margin: 2px 0; font-size: 14px; white-space: nowrap;">${sirimTitle1}</p>
+      <p style="margin: 2px 0; font-size: 14px; white-space: nowrap;">${sirimTitle2}</p>
+      <p style="margin: 2px 0; font-size: 14px; white-space: nowrap;">${sirimTitle3}</p>
     </div>
   `;
+    }
+
+    // ฟังก์ชันใหม่สำหรับปรับตำแหน่ง logos ให้อยู่กึ่งกลางเมื่อแสดงแค่บางอัน
+    function getLogoPositions(controlprint) {
+      const control = parseInt(controlprint, 10);
+      const mfgDisplay = (control & 2) !== 0; // มี MFG หรือไม่
+      const silimDisplay = (control & 1) !== 0; // มี Sirim หรือไม่
+      
+      // กรณีที่ 1: แสดงเฉพาะ Sirim (controlprint = 1)
+      if (control === 1) {
+        return {
+          mfgLeft: 35,     // ไม่แสดง
+          qrLeft: 180,     // ไม่แสดง  
+          sirimLeft: 180,  // ย้ายมาตรงกลาง (ตำแหน่ง QR เดิม)
+          sirimDetailLeft: 130 // ปรับ detail ให้อยู่ตรงกลาง
+        };
+      }
+      
+      // กรณีที่ 2: แสดงเฉพาะ MFG+QR (controlprint = 2)  
+      if (control === 2) {
+        return {
+          mfgLeft: 140,    // ย้าย MFG มาตรงกลาง
+          qrLeft: 270,     // ย้าย QR มาถัดจาก MFG
+          sirimLeft: 320,  // ไม่แสดง
+          sirimDetailLeft: 250 // ไม่แสดง
+        };
+      }
+      
+      // กรณีที่ 3: แสดงทั้งหมด (controlprint = 3) หรือกรณีอื่นๆ
+      return {
+        mfgLeft: 35,     // ตำแหน่งเดิม
+        qrLeft: 180,     // ตำแหน่งเดิม
+        sirimLeft: 320,  // ตำแหน่งเดิม
+        sirimDetailLeft: 250 // ตำแหน่งเดิม
+      };
     }
 
     function adjustFTPosition(rightOffset = 180, topOffset = 340, fontSize = 50, display = "none") {
@@ -505,7 +691,7 @@
         </div>
       `;
     }
-    function adjustLTPosition(rightOffset = 180, topOffset = 340, fontSize = 50, display = "none") {
+    function adjustLTPosition(rightOffset = 180, topOffset = 495, fontSize = 50, display = "none") {
       return `
         <div style="
           position: absolute; 
@@ -532,7 +718,7 @@
 
     // Example usage
     const reportData = {
-      grade: "P901BK-LS/750",
+      grade: "AM3245PC SUB/750", // ทดสอบ string ยาว
       netweight: "750",
       lot: "7207896112",
       fromPage: "1",
@@ -545,24 +731,26 @@
       sirim_title1: "Certified to MS1058 : PART 1 : 2005",
       sirim_title2: "Certified No. : PC004152",
       sirim_title3: "PE100",
-      controlprint: "3"
+      controlprint: "2" // ทดสอบ MFG+QR ตรงกลาง
     };
     // ฟังก์ชันสำหรับโหลดข้อมูลจาก sessionStorage
     function loadDataFromSessionStorage() {
       const savedData = sessionStorage.getItem('recent_hd_print');
       if (savedData) {
+        console.log('✅ Data loaded from sessionStorage.');
         return JSON.parse(savedData);
       }
-      
-      // ข้อมูล fallback หากไม่พบใน sessionStorage
+
+      console.warn('⚠️ No data in sessionStorage. Using fallback data.');
+      // Fallback data if sessionStorage is empty
       return {
-        "grade": "P901BK/750",
-        "netweight": "750",
-        "lot": "7204568752",
+        "grade": "P901BK/SB/18000",
+        "netweight": "18000",
+        "lot": "9250000456",
         "fromPage": "1",
         "toPage": "5",
-        "shift": "M",
-        "idate": "13",
+        "shift": "E",
+        "idate": "28",
         "tis": "Y",
         "controlprint": "3",
         "title1": "HDPE",
@@ -585,20 +773,127 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      // โหลดข้อมูลจาก sessionStorage
+      // Load data from sessionStorage
       const reportData = loadDataFromSessionStorage();
       const isFromSessionStorage = sessionStorage.getItem('recent_hd_print') !== null;
-      
-      // แสดงสถานะข้อมูล
-      displayDataStatus(reportData, isFromSessionStorage);
-      
-      // สร้างรายงาน
-      const fromPage = parseInt(reportData.fromPage, 10);
-      const toPage = parseInt(reportData.toPage, 10);
-      generateReport(fromPage, toPage, reportData);
+
+      // If data is not in sessionStorage, fetch from GAS and save it
+      if (!isFromSessionStorage) {
+        console.log('🔄 Fetching data from GAS...');
+        fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec')
+          .then(response => response.json())
+          .then(data => {
+            sessionStorage.setItem('recent_hd_print', JSON.stringify(data));
+            console.log('✅ Data fetched and saved to sessionStorage.');
+
+            // Generate report with fetched data
+            const fromPage = parseInt(data.fromPage, 10);
+            const toPage = parseInt(data.toPage, 10);
+            generateReport(fromPage, toPage, data);
+          })
+          .catch(error => {
+            console.error('❌ Error fetching data from GAS:', error);
+          });
+      } else {
+        // Display data status
+        displayDataStatus(reportData, isFromSessionStorage);
+
+        // Generate report with sessionStorage data
+        const fromPage = parseInt(reportData.fromPage, 10);
+        const toPage = parseInt(reportData.toPage, 10);
+        generateReport(fromPage, toPage, reportData);
+      }
     });
 
     let guideVisible = false;
+
+    function switchTab(tabName) {
+      // Update tab buttons
+      const tabs = document.querySelectorAll('.guide-tab');
+      tabs.forEach(tab => {
+        if (tab.textContent.includes('การพิมพ์') && tabName === 'print') {
+          tab.style.background = '#007bff';
+          tab.style.color = 'white';
+        } else if (tab.textContent.includes('รายละเอียด') && tabName === 'specs') {
+          tab.style.background = '#007bff';
+          tab.style.color = 'white';
+        } else {
+          tab.style.background = '#f0f0f0';
+          tab.style.color = '#333';
+        }
+      });
+      
+      // Show/hide content
+      document.getElementById('tab-print').style.display = tabName === 'print' ? 'block' : 'none';
+      document.getElementById('tab-specs').style.display = tabName === 'specs' ? 'block' : 'none';
+      
+      // Update specs content if switching to specs tab
+      if (tabName === 'specs') {
+        updateSpecsContent();
+      }
+    }
+
+    function updateSpecsContent() {
+      const data = loadDataFromSessionStorage();
+      
+      // Calculate actual font size for current grade
+      const gradeLength = (data.grade || '').length;
+      let gradeFontSize;
+      if (gradeLength <= 10) gradeFontSize = '60px (45pt)';
+      else if (gradeLength <= 12) gradeFontSize = '50px (38pt)';
+      else if (gradeLength <= 15) gradeFontSize = '42px (32pt)';
+      else gradeFontSize = '36px (27pt)';
+      
+      // Grade
+      document.getElementById('spec-grade').innerHTML = 
+        `<strong>Font:</strong> Arial, Helvetica<br>` +
+        `<strong>Size:</strong> ${gradeFontSize}<br>` +
+        `<strong>Weight:</strong> Bold<br>` +
+        `<strong>Value:</strong> <code style="font-size: 13px;">${data.grade || 'N/A'}</code><br>` +
+        `<em>ชื่อผลิตภัณฑ์หลัก แสดงที่ด้านบน</em>`;
+      
+      // Net Weight
+      document.getElementById('spec-netweight').innerHTML = 
+        `<strong>Font:</strong> Arial, Helvetica<br>` +
+        `<strong>Size:</strong> 50px (38pt)<br>` +
+        `<strong>Weight:</strong> Bold<br>` +
+        `<strong>Value:</strong> <code style="font-size: 13px;">${data.netweight || 'N/A'}</code><br>` +
+        `<em>น้ำหนักสุทธิ แสดงด้านล่าง Grade</em>`;
+      
+      // Running Number
+      const fromPage = data.fromPage || '1';
+      const toPage = data.toPage || '1';
+      const sampleRunning = String(fromPage).padStart(3, '0') + '-' + 
+                           String(data.idate || '01').padStart(2, '0') + '-' + 
+                           (data.shift || 'M');
+      document.getElementById('spec-running').innerHTML = 
+        `<strong>Font:</strong> Arial, sans-serif<br>` +
+        `<strong>Size:</strong> 30px (23pt)<br>` +
+        `<strong>Weight:</strong> Bold<br>` +
+        `<strong>Format:</strong> XXX-DD-S<br>` +
+        `<strong>From-To:</strong> <code style="font-size: 13px;">${fromPage}-${toPage}</code><br>` +
+        `<strong>Sample:</strong> <code style="font-size: 13px;">${sampleRunning}</code><br>` +
+        `<em>เลขหน้า-วันที่-กะ (ตัวอย่าง: 001-28-E)</em>`;
+      
+      // Product Description
+      document.getElementById('spec-description').innerHTML = 
+        `<strong>Font:</strong> Arial, Helvetica<br>` +
+        `<strong>Size:</strong> Title1: 60px (45pt), Title2: 30px (23pt)<br>` +
+        `<strong>Weight:</strong> Normal<br>` +
+        `<strong>Title1:</strong> <code style="font-size: 12px;">${data.title1 || 'HDPE'}</code><br>` +
+        `<strong>Title2:</strong> <code style="font-size: 12px;">${data.title2 || 'HIGHT DENSITY POLYETHYLENE'}</code><br>` +
+        `<em>คำอธิบายผลิตภัณฑ์ 2 บรรทัด</em>`;
+      
+      // Sirim Certification
+      document.getElementById('spec-sirim').innerHTML = 
+        `<strong>Font:</strong> Arial, Helvetica<br>` +
+        `<strong>Size:</strong> 10px (8pt)<br>` +
+        `<strong>Weight:</strong> Normal<br>` +
+        `<strong>Line 1:</strong> <code style="font-size: 11px;">${data.sirim_title1 || 'N/A'}</code><br>` +
+        `<strong>Line 2:</strong> <code style="font-size: 11px;">${data.sirim_title2 || 'N/A'}</code><br>` +
+        `<strong>Line 3:</strong> <code style="font-size: 12px;">${data.sirim_title3 || 'N/A'}</code><br>` +
+        `<em>ข้อมูลการรับรอง Sirim 3 บรรทัด</em>`;
+    }
 
     function toggleGuide() {
       const panel = document.getElementById('guidePanel');
@@ -606,6 +901,7 @@
 
       if (guideVisible) {
         panel.classList.add('show');
+        updateSpecsContent(); // Update specs when opening
       } else {
         panel.classList.remove('show');
       }

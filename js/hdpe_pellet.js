@@ -1,4 +1,5 @@
-export const hdpe_pellet_data = {
+// Global variable สำหรับใช้ใน traditional script loading
+const hdpe_pellet_data = {
   "total_original_records": 11,
   "total_expanded_records": 17,
   "pellets": [

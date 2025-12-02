@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jumbo HD - Template System V2</title>
+  <link rel="shortcut icon" href="#" />
+  <link rel="stylesheet" href="css/normalize.min.css" />
+  <link rel="stylesheet" href="css/paper.css" />
+  <link rel="stylesheet" href="css/hd_report_v2.css?v=3.0" />
+</head>
+
+<body class="A4 landscape">
+  <!-- Template Selector (Hidden on Print) -->
+  <div class="template-selector no-print">
+    <label for="templateSelect">🎨 Select Template:</label>
+    <select id="templateSelect" onchange="changeTemplate()">
+      <option value="template1">Template 1 - Product Description Only</option>
+      <option value="template2">Template 2 - Description + Logos</option>
+      <option value="template3">Template 3 - Full Certifications</option>
+    </select>
+  </div>
+
+  <!-- Print Guide Button - HIDDEN -->
+  <button class="print-guide-btn no-print" onclick="toggleGuide()" style="display: none;">📋 คำแนะนำการพิมพ์</button>
+
+  <!-- Help Panel - HIDDEN -->
+  <div class="print-guide-panel no-print" id="guidePanel" style="display: none !important;">
+    <div class="guide-header">📋 วิธีตั้งค่าการพิมพ์</div>
+    
+    <div style="display: flex; border-bottom: 2px solid #e0e0e0; margin-bottom: 15px;">
+      <button class="guide-tab active" onclick="switchTab('print')">การพิมพ์</button>
+      <button class="guide-tab" onclick="switchTab('specs')">รายละเอียด</button>
+      <button class="guide-tab" onclick="switchTab('template')">Template Info</button>
+    </div>
+    
+    <!-- Print Settings Tab -->
+    <div id="tab-print" class="tab-content">
+      <div class="browser-section">
+        <div class="browser-title">🌐 Chrome / Microsoft Edge</div>
+        <div class="step">กด <strong>Ctrl + P</strong></div>
+        <div class="step">คลิก <strong>"More settings"</strong></div>
+        <div class="step"><strong>Margin:</strong> เลือก <strong>"None"</strong></div>
+        <div class="step"><strong>Options:</strong> → <strong>"Headers and footers"</strong> → <strong>ยกเลิกเลือก</strong></div>
+        <div class="step"><strong>Background graphics</strong> → <strong>เลือก</strong></div>
+      </div>
+
+      <div class="browser-section">
+        <div class="browser-title">🦊 Firefox</div>
+        <div class="step">กด <strong>Ctrl + P</strong></div>
+        <div class="step">คลิก <strong>"Page Setup"</strong></div>
+        <div class="step"><strong>Margins:</strong> ตั้งค่าทั้งหมดเป็น <strong>0</strong></div>
+      </div>
+    </div>
+    
+    <!-- Specifications Tab -->
+    <div id="tab-specs" class="tab-content" style="display: none;">
+      <div class="browser-section">
+        <div class="browser-title">📝 Grade</div>
+        <div class="step" id="spec-grade"></div>
+      </div>
+      <div class="browser-section">
+        <div class="browser-title">⚖️ Net Weight</div>
+        <div class="step" id="spec-netweight"></div>
+      </div>
+      <div class="browser-section">
+        <div class="browser-title">🔢 Running Number</div>
+        <div class="step" id="spec-running"></div>
+      </div>
+    </div>
+
+    <!-- Template Info Tab -->
+    <div id="tab-template" class="tab-content" style="display: none;">
+      <div class="browser-section">
+        <div class="browser-title">📄 Current Template</div>
+        <div class="step" id="current-template-info"></div>
+      </div>
+      <div class="browser-section">
+        <div class="browser-title">🎯 Template Features</div>
+        <div class="step" id="template-features"></div>
+      </div>
+    </div>
+
+    <button class="close-btn" onclick="closeGuide()">ปิดคำแนะนำ</button>
+  </div>
+
+  <main id="printArea"></main>
+  
+  <script src="js/hd_report_v2.js?v=3.0"></script>
+</body>
+
+</html>
