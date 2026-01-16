@@ -1,0 +1,451 @@
+/**
+ * Print Styles - Modern Tag Printing System V2
+ * Optimized styles for high-quality printing
+ */
+
+@media print {
+  /* ========================================
+     Print Reset & Base
+     ======================================== */
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    font-size: 12pt !important;
+    line-height: 1.2 !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  /* ========================================
+     Hide Non-Print Elements
+     ======================================== */
+
+  .app-header,
+  .control-panel,
+  .preview-header,
+  .preview-controls,
+  .app-footer,
+  .action-buttons,
+  .status-display,
+  .btn,
+  .notification-container,
+  .loading-overlay,
+  nav,
+  aside,
+  .scissors-separator,
+  .sheet::after {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Hide dashed line separator */
+  .sheet:not(:last-child)::after {
+    display: none !important;
+  }
+
+  /* ========================================
+     Remove Background Images on Print
+     ======================================== */
+
+  .sheet,
+  .tag-page,
+  section {
+    background-image: none !important;
+    background: white !important;
+  }
+
+  /* ========================================
+     Page Break Control for Tag Pages
+     ======================================== */
+
+  .tag-page {
+    page-break-after: always !important;
+    page-break-before: auto !important;
+    page-break-inside: avoid !important;
+    width: 297mm !important;
+    height: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .tag-page:last-child,
+  .tag-page:only-child {
+    page-break-after: avoid !important;
+  }
+
+  /* ========================================
+     Print Layout
+     ======================================== */
+
+  .app-container {
+    display: block !important;
+    grid: none !important;
+  }
+
+  .app-main {
+    display: block !important;
+    grid: none !important;
+  }
+
+  .preview-area {
+    display: block !important;
+    background: white !important;
+  }
+
+  .preview-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+  
+  .print-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    background: white !important;
+  }
+
+  /* ========================================
+     Tag Print Optimization
+     ======================================== */
+
+  .tag-preview {
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: white !important;
+    page-break-inside: avoid !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  /* Paper Size Specific */
+  .tag-preview.size-a4 {
+    width: 210mm !important;
+    height: 297mm !important;
+    max-width: 210mm !important;
+  }
+
+  .tag-preview.size-letter {
+    width: 8.5in !important;
+    height: 11in !important;
+    max-width: 8.5in !important;
+  }
+
+  /* ========================================
+     Tag Grid Print Layout
+     ======================================== */
+
+  .tag-grid {
+    display: grid !important;
+    gap: 0 !important;
+    height: 100% !important;
+    padding: 0 !important;
+  }
+
+  .tag-cell {
+    border: 1px solid #000 !important;
+    border-collapse: collapse !important;
+    page-break-inside: avoid !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+    background: white !important;
+  }
+
+  /* Remove dashed borders for print */
+  .tag-cell {
+    border-style: solid !important;
+  }
+
+  /* ========================================
+     Content Sections Print Styles
+     ======================================== */
+
+  .tag-header {
+    padding: 4mm !important;
+    background: #f5f5f5 !important;
+    border-bottom: 1px solid #000 !important;
+    text-align: center !important;
+    page-break-inside: avoid !important;
+  }
+
+  .tag-body {
+    flex: 1 !important;
+    padding: 3mm !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    min-height: 0 !important;
+  }
+
+  .tag-footer {
+    padding: 2mm !important;
+    background: #f9f9f9 !important;
+    border-top: 1px solid #000 !important;
+    text-align: center !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* ========================================
+     Logo Print Optimization
+     ======================================== */
+
+  .logo-container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 2mm !important;
+  }
+
+  .company-logo {
+    max-width: 25mm !important;
+    max-height: 15mm !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: crisp-edges !important;
+  }
+
+  .logo-text {
+    font-weight: bold !important;
+    color: #000 !important;
+    text-align: center !important;
+    margin: 0 !important;
+    font-size: 10pt !important;
+  }
+
+  /* ========================================
+     Product Information Print Styles
+     ======================================== */
+
+  .product-info {
+    margin-bottom: 3mm !important;
+    page-break-inside: avoid !important;
+  }
+
+  .product-name {
+    font-size: 11pt !important;
+    font-weight: bold !important;
+    color: #000 !important;
+    margin-bottom: 2mm !important;
+    text-align: center !important;
+    page-break-inside: avoid !important;
+  }
+
+  .product-details {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1mm !important;
+    font-size: 8pt !important;
+    color: #000 !important;
+  }
+
+  .detail-item {
+    display: flex !important;
+    flex-direction: column !important;
+    page-break-inside: avoid !important;
+  }
+
+  .detail-label {
+    font-weight: bold !important;
+    color: #000 !important;
+    margin-bottom: 0.5mm !important;
+    font-size: 7pt !important;
+  }
+
+  .detail-value {
+    color: #333 !important;
+    font-size: 8pt !important;
+  }
+
+  /* ========================================
+     QR Code Print Optimization
+     ======================================== */
+
+  .qr-section {
+    text-align: center !important;
+    margin-top: auto !important;
+    page-break-inside: avoid !important;
+  }
+
+  .qr-code {
+    width: 15mm !important;
+    height: 15mm !important;
+    margin: 0 auto 1mm !important;
+    background: white !important;
+    border: 1px solid #000 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .qr-code img {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: crisp-edges !important;
+  }
+
+  .qr-label {
+    font-size: 6pt !important;
+    color: #666 !important;
+    font-weight: normal !important;
+  }
+
+  /* ========================================
+     Unit Specific Print Colors
+     ======================================== */
+
+  /* HDPE Unit */
+  .unit-hdpe .tag-header {
+    background: #e6f2ff !important;
+    color: #003d7a !important;
+  }
+
+  .unit-hdpe .product-name {
+    color: #003d7a !important;
+  }
+
+  /* PP Unit */
+  .unit-pp .tag-header {
+    background: #e6ffe6 !important;
+    color: #004d00 !important;
+  }
+
+  .unit-pp .product-name {
+    color: #004d00 !important;
+  }
+
+  /* PPC Unit */
+  .unit-ppc .tag-header {
+    background: #ffe6e6 !important;
+    color: #7a0000 !important;
+  }
+
+  .unit-ppc .product-name {
+    color: #7a0000 !important;
+  }
+
+  /* ========================================
+     Typography for Print
+     ======================================== */
+
+  h1, h2, h3, h4, h5, h6 {
+    page-break-inside: avoid !important;
+    page-break-after: avoid !important;
+    margin-bottom: 2mm !important;
+  }
+
+  p, li {
+    orphans: 3 !important;
+    widows: 3 !important;
+  }
+
+  /* ========================================
+     Print Utilities
+     ======================================== */
+
+  .print-only {
+    display: block !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .page-break-before {
+    page-break-before: always !important;
+  }
+
+  .page-break-after {
+    page-break-after: always !important;
+  }
+
+  .page-break-inside-avoid {
+    page-break-inside: avoid !important;
+  }
+
+  /* ========================================
+     Print Quality Optimizations
+     ======================================== */
+
+  /* Ensure crisp borders and text */
+  .tag-cell,
+  .tag-header,
+  .tag-footer,
+  .qr-code {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* High DPI print optimization */
+  @media print and (-webkit-min-device-pixel-ratio: 2) {
+    .company-logo,
+    .qr-code img {
+      image-rendering: -webkit-optimize-contrast !important;
+      image-rendering: optimize-contrast !important;
+      image-rendering: crisp-edges !important;
+    }
+  }
+
+  /* ========================================
+     Print Margins & Page Setup
+     ======================================== */
+
+  @page {
+    margin: 0 !important;
+    size: auto !important;
+  }
+
+  @page :first {
+    margin: 0 !important;
+  }
+
+  /* A4 specific page setup */
+  @page a4 {
+    size: A4 !important;
+    margin: 0 !important;
+  }
+
+  /* Letter specific page setup */
+  @page letter {
+    size: letter !important;
+    margin: 0 !important;
+  }
+
+  /* ========================================
+     Print Debug (only when needed)
+     ======================================== */
+
+  .print-debug .tag-cell {
+    border: 2px solid red !important;
+  }
+
+  .print-debug .tag-header {
+    background: yellow !important;
+  }
+
+  .print-debug .tag-body {
+    background: lightblue !important;
+  }
+
+  .print-debug .tag-footer {
+    background: lightgreen !important;
+  }
+
+}

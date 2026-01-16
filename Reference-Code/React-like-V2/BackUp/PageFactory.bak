@@ -1,0 +1,429 @@
+/**
+ * Page Factory - Modern Tag Printing System V2
+ * Factory pattern for creating print pages with different layouts and configurations
+ */
+
+import { BaseComponent } from './BaseComponent.js';
+import { TagCellRenderer } from './ComponentRenderers.js';
+import { TemplateConfig } from './TemplateConfig.js';
+import { StyleBuilder } from './StyleBuilder.js';
+
+export class PageFactory {
+  constructor() {
+    this.styleBuilder = new StyleBuilder();
+    this.templates = new Map();
+    this.layouts = new Map();
+    this.paperSizes = new Map();
+    
+    this.initializeDefaults();
+  }
+
+  /**
+   * Initialize default configurations
+   */
+  initializeDefaults() {
+    // Load templates
+    Object.values(TemplateConfig.TEMPLATES).forEach(template => {
+      this.templates.set(template.id, template);
+    });
+    
+    // Load layouts
+    Object.values(TemplateConfig.LAYOUTS).forEach(layout => {
+      this.layouts.set(layout.id, layout);
+    });
+    
+    // Load paper sizes
+    Object.values(TemplateConfig.PAPER_SIZES).forEach(size => {
+      this.paperSizes.set(size.id, size);
+    });
+  }
+
+  /**
+   * Create a print page with specified configuration
+   */
+  createPage(config) {
+    const {
+      paperSize = 'a4',
+      layout = 'single',
+      template = 'standard',
+      unitConfig = null,
+      productData = {},
+      quantity = 1
+    } = config;
+
+    const pageConfig = {
+      paperSize: this.paperSizes.get(paperSize),
+      layout: this.layouts.get(layout),
+      template: this.templates.get(template),
+      unitConfig,
+      productData,
+      quantity
+    };
+
+    // Validate configuration
+    this.validatePageConfig(pageConfig);
+
+    // Create page instance
+    return new PrintPage(pageConfig);
+  }
+
+  /**
+   * Create multiple pages for batch printing
+   */
+  createBatch(configs) {
+    return configs.map(config => this.createPage(config));
+  }
+
+  /**
+   * Validate page configuration
+   */
+  validatePageConfig(config) {
+    const { paperSize, layout, template, unitConfig } = config;
+
+    if (!paperSize) {
+      throw new Error('Paper size configuration not found');
+    }
+
+    if (!layout) {
+      throw new Error('Layout configuration not found');
+    }
+
+    if (!template) {
+      throw new Error('Template configuration not found');
+    }
+
+    // Validate template structure
+    const templateValidation = TemplateConfig.validateTemplate(template);
+    if (!templateValidation.valid) {
+      throw new Error(`Invalid template: ${templateValidation.errors.join(', ')}`);
+    }
+
+    return true;
+  }
+
+  /**
+   * Get available configurations
+   */
+  getAvailableConfigs() {
+    return {
+      paperSizes: Array.from(this.paperSizes.values()),
+      layouts: Array.from(this.layouts.values()),
+      templates: Array.from(this.templates.values())
+    };
+  }
+
+  /**
+   * Register custom template
+   */
+  registerTemplate(template) {
+    const validation = TemplateConfig.validateTemplate(template);
+    if (!validation.valid) {
+      throw new Error(`Invalid template: ${validation.errors.join(', ')}`);
+    }
+    
+    this.templates.set(template.id, template);
+  }
+
+  /**
+   * Calculate optimal layout for given requirements
+   */
+  calculateOptimalLayout(requirements) {
+    const {
+      maxTagsPerPage = 12,
+      minTagSize = { width: 50, height: 70 }, // mm
+      paperSize = 'a4'
+    } = requirements;
+
+    const paper = this.paperSizes.get(paperSize);
+    const availableLayouts = Array.from(this.layouts.values());
+
+    const suitableLayouts = availableLayouts.filter(layout => {
+      const tagDimensions = TemplateConfig.calculateTagDimensions(paper, layout);
+      const totalTags = layout.columns * layout.rows;
+      
+      return (
+        totalTags <= maxTagsPerPage &&
+        tagDimensions.width >= minTagSize.width &&
+        tagDimensions.height >= minTagSize.height
+      );
+    });
+
+    // Sort by efficiency (most tags that fit requirements)
+    suitableLayouts.sort((a, b) => {
+      const totalA = a.columns * a.rows;
+      const totalB = b.columns * b.rows;
+      return totalB - totalA;
+    });
+
+    return suitableLayouts[0] || this.layouts.get('single');
+  }
+}
+
+/**
+ * Print Page Component
+ */
+class PrintPage extends BaseComponent {
+  constructor(config) {
+    super({
+      id: `page-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+      ...config
+    });
+
+    this.tagCells = [];
+    this.setupStyles();
+  }
+
+  /**
+   * Setup page-specific styles
+   */
+  setupStyles() {
+    const { paperSize, layout, unitConfig } = this.props;
+    
+    // Create page styles
+    const pageStyles = this.styleBuilder.create(`page-${this.id}`, {
+      width: `${paperSize.width}mm`,
+      height: `${paperSize.height}mm`,
+      backgroundColor: 'white',
+      position: 'relative',
+      margin: '0 auto',
+      boxShadow: 'theme.shadows.md'
+    });
+
+    // Create layout styles
+    const layoutStyles = this.styleBuilder.create(`layout-${this.id}`, {
+      display: 'grid',
+      gridTemplateColumns: `repeat(${layout.columns}, 1fr)`,
+      gridTemplateRows: `repeat(${layout.rows}, 1fr)`,
+      gap: '0',
+      height: '100%',
+      width: '100%'
+    });
+
+    // Unit-specific styles if provided
+    if (unitConfig) {
+      const unitStyles = this.styleBuilder.generateUnitStyles(unitConfig);
+      this.styleBuilder.injectStyles(unitStyles, `unit-styles-${this.id}`);
+    }
+
+    // Inject all styles
+    this.styleBuilder.injectStyles(`${pageStyles}\n${layoutStyles}`, `page-styles-${this.id}`);
+  }
+
+  /**
+   * Render the print page
+   */
+  render() {
+    const { paperSize, layout, template, unitConfig, productData, quantity } = this.props;
+
+    // Create page container
+    const pageContainer = this.createElement('div', {
+      className: `tag-preview ${paperSize.cssClass} page-${this.id}`,
+      'data-paper-size': paperSize.id,
+      'data-layout': layout.id,
+      'data-template': template.id
+    });
+
+    // Create tag grid
+    const tagGrid = this.createElement('div', {
+      className: `tag-grid ${TemplateConfig.getLayoutClasses(layout).columns} ${TemplateConfig.getLayoutClasses(layout).rows} layout-${this.id}`
+    });
+
+    // Calculate number of tags to create
+    const totalCells = layout.columns * layout.rows;
+    const tagsToCreate = Math.min(quantity, totalCells);
+
+    // Create tag cells
+    for (let i = 0; i < tagsToCreate; i++) {
+      const cellRenderer = new TagCellRenderer({
+        template,
+        unitConfig,
+        productData: this.getProductDataForCell(productData, i),
+        cellIndex: i
+      });
+
+      cellRenderer.mount(tagGrid);
+      this.tagCells.push(cellRenderer);
+      this.addChild(cellRenderer, `cell-${i}`);
+    }
+
+    // Fill remaining cells with empty placeholders if needed
+    for (let i = tagsToCreate; i < totalCells; i++) {
+      const emptyCell = this.createElement('div', {
+        className: 'tag-cell tag-cell-empty',
+        'data-cell-index': i
+      });
+      tagGrid.appendChild(emptyCell);
+    }
+
+    pageContainer.appendChild(tagGrid);
+    return pageContainer;
+  }
+
+  /**
+   * Get product data for specific cell (for variations or sequences)
+   */
+  getProductDataForCell(baseData, cellIndex) {
+    // For now, return the same data for all cells
+    // This can be extended to support variations like sequential lot numbers
+    return { ...baseData };
+  }
+
+  /**
+   * Update all tag cells with new data
+   */
+  updateProductData(newData) {
+    this.setProps({ productData: newData }, false);
+    
+    this.tagCells.forEach((cell, index) => {
+      cell.updateProductData(this.getProductDataForCell(newData, index));
+    });
+  }
+
+  /**
+   * Update specific tag cell
+   */
+  updateTagCell(cellIndex, data) {
+    if (cellIndex < this.tagCells.length) {
+      this.tagCells[cellIndex].updateProductData(data);
+    }
+  }
+
+  /**
+   * Get page configuration for printing
+   */
+  getPrintConfig() {
+    const { paperSize, layout, template } = this.props;
+    
+    return TemplateConfig.generatePrintConfig(paperSize, layout, template);
+  }
+
+  /**
+   * Prepare page for printing
+   */
+  preparePrint() {
+    // Add print-specific classes
+    this.addClass('print-ready');
+    
+    // Ensure all images are loaded
+    const images = this.querySelectorAll('img');
+    const imagePromises = Array.from(images).map(img => {
+      return new Promise((resolve) => {
+        if (img.complete) {
+          resolve();
+        } else {
+          img.onload = resolve;
+          img.onerror = resolve;
+        }
+      });
+    });
+
+    return Promise.all(imagePromises);
+  }
+
+  /**
+   * Export page as image data URL
+   */
+  async exportAsImage(options = {}) {
+    const {
+      format = 'png',
+      quality = 0.95,
+      scale = 2
+    } = options;
+
+    // Use html2canvas or similar library if available
+    if (typeof html2canvas !== 'undefined') {
+      const canvas = await html2canvas(this.element, {
+        scale,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      });
+      
+      return canvas.toDataURL(`image/${format}`, quality);
+    }
+
+    throw new Error('html2canvas library not available for image export');
+  }
+
+  /**
+   * Clone page for duplication
+   */
+  clone() {
+    const clonedConfig = {
+      paperSize: this.props.paperSize,
+      layout: this.props.layout,
+      template: this.props.template,
+      unitConfig: this.props.unitConfig,
+      productData: { ...this.props.productData },
+      quantity: this.props.quantity
+    };
+
+    return new PrintPage(clonedConfig);
+  }
+
+  /**
+   * Validate page content before printing
+   */
+  validate() {
+    const errors = [];
+    const { productData, unitConfig } = this.props;
+
+    // Check if required data is present
+    if (!productData.lotNumber) {
+      errors.push('Lot number is required');
+    }
+
+    if (!productData.productCode) {
+      errors.push('Product code is required');
+    }
+
+    // Unit-specific validation
+    if (unitConfig) {
+      Object.entries(unitConfig.fields).forEach(([fieldName, config]) => {
+        if (config.required && !productData[fieldName]) {
+          errors.push(`${fieldName} is required for ${unitConfig.name}`);
+        }
+      });
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors
+    };
+  }
+
+  /**
+   * Get page statistics
+   */
+  getStats() {
+    const { layout, productData } = this.props;
+    
+    return {
+      pageId: this.id,
+      totalCells: layout.columns * layout.rows,
+      filledCells: this.tagCells.length,
+      emptyCells: (layout.columns * layout.rows) - this.tagCells.length,
+      productCode: productData.productCode,
+      lotNumber: productData.lotNumber,
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  /**
+   * Cleanup page resources
+   */
+  cleanup() {
+    // Remove injected styles
+    const pageStyleElement = document.getElementById(`page-styles-${this.id}`);
+    if (pageStyleElement) {
+      pageStyleElement.remove();
+    }
+
+    const unitStyleElement = document.getElementById(`unit-styles-${this.id}`);
+    if (unitStyleElement) {
+      unitStyleElement.remove();
+    }
+
+    // Call parent cleanup
+    this.destroy();
+  }
+}

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Display Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .test-section {
+            margin-bottom: 40px;
+        }
+        
+        .test-section h2 {
+            color: #555;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .test-item {
+            border: 2px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        
+        .test-item h3 {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .svg-container {
+            background: white;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            text-align: center;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .svg-container img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .path-info {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+            background: #f0f0f0;
+            padding: 8px;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+        
+        .status {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+        
+        .status.error {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+        
+        .method-label {
+            display: inline-block;
+            background: #9c27b0;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 SVG Display Test</h1>
+        
+        <div class="info">
+            <strong>📍 Current Location:</strong> <code id="currentUrl"></code><br>
+            <strong>🌐 Base URL:</strong> <code id="baseUrl"></code>
+        </div>
+
+        <!-- Test 1: Relative Path -->
+        <div class="test-section">
+            <h2>Test 1: Relative Path (./images/svg/)</h2>
+            <div class="test-grid">
+                <div class="test-item">
+                    <span class="method-label">&lt;img src=""&gt;</span>
+                    <h3>HDPE QR Code</h3>
+                    <div class="svg-container">
+                        <img src="./images/svg/hdpe-qr-code.svg" 
+                             alt="HDPE QR" 
+                             width="150"
+                             onload="showStatus(this, true)"
+                             onerror="showStatus(this, false)">
+                    </div>
+                    <div class="path-info">Path: ./images/svg/hdpe-qr-code.svg</div>
+                    <div class="status" id="status-1">⏳ Loading...</div>
+                </div>
+                
+                <div class="test-item">
+                    <span class="method-label">&lt;img src=""&gt;</span>
+                    <h3>PP QR Code</h3>
+                    <div class="svg-container">
+                        <img src="./images/svg/pp-qr-code.svg" 
+                             alt="PP QR" 
+                             width="150"
+                             onload="showStatus(this, true)"
+                             onerror="showStatus(this, false)">
+                    </div>
+                    <div class="path-info">Path: ./images/svg/pp-qr-code.svg</div>
+                    <div class="status" id="status-2">⏳ Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 2: Absolute Path -->
+        <div class="test-section">
+            <h2>Test 2: Absolute Path (/images/svg/)</h2>
+            <div class="test-grid">
+                <div class="test-item">
+                    <span class="method-label">&lt;img src=""&gt;</span>
+                    <h3>HDPE QR Code</h3>
+                    <div class="svg-container">
+                        <img src="/images/svg/hdpe-qr-code.svg" 
+                             alt="HDPE QR" 
+                             width="150"
+                             onload="showStatus(this, true)"
+                             onerror="showStatus(this, false)">
+                    </div>
+                    <div class="path-info">Path: /images/svg/hdpe-qr-code.svg</div>
+                    <div class="status" id="status-3">⏳ Loading...</div>
+                </div>
+                
+                <div class="test-item">
+                    <span class="method-label">&lt;img src=""&gt;</span>
+                    <h3>PP QR Code</h3>
+                    <div class="svg-container">
+                        <img src="/images/svg/pp-qr-code.svg" 
+                             alt="PP QR" 
+                             width="150"
+                             onload="showStatus(this, true)"
+                             onerror="showStatus(this, false)">
+                    </div>
+                    <div class="path-info">Path: /images/svg/pp-qr-code.svg</div>
+                    <div class="status" id="status-4">⏳ Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 3: images only (no ./) -->
+        <div class="test-section">
+            <h2>Test 3: Without ./ (images/svg/)</h2>
+            <div class="test-grid">
+                <div class="test-item">
+                    <span class="method-label">&lt;img src=""&gt;</span>
+                    <h3>HDPE QR Code</h3>
+                    <div class="svg-container">
+                        <img src="images/svg/hdpe-qr-code.svg" 
+                             alt="HDPE QR" 
+                             width="150"
+                             onload="showStatus(this, true)"
+                             onerror="showStatus(this, false)">
+                    </div>
+                    <div class="path-info">Path: images/svg/hdpe-qr-code.svg</div>
+                    <div class="status" id="status-5">⏳ Loading...</div>
+                </div>
+                
+                <div class="test-item">
+                    <span class="method-label">&lt;img src=""&gt;</span>
+                    <h3>PP QR Code</h3>
+                    <div class="svg-container">
+                        <img src="images/svg/pp-qr-code.svg" 
+                             alt="PP QR" 
+                             width="150"
+                             onload="showStatus(this, true)"
+                             onerror="showStatus(this, false)">
+                    </div>
+                    <div class="path-info">Path: images/svg/pp-qr-code.svg</div>
+                    <div class="status" id="status-6">⏳ Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 4: Simple SVG (for comparison) -->
+        <div class="test-section">
+            <h2>Test 4: Simple SVG Files (for comparison)</h2>
+            <div class="test-grid">
+                <div class="test-item">
+                    <span class="method-label">&lt;img src=""&gt;</span>
+                    <h3>HDPE Simple</h3>
+                    <div class="svg-container">
+                        <img src="./images/svg/hdpe-qr-code-simple.svg" 
+                             alt="HDPE Simple" 
+                             width="150"
+                             onload="showStatus(this, true)"
+                             onerror="showStatus(this, false)">
+                    </div>
+                    <div class="path-info">Path: ./images/svg/hdpe-qr-code-simple.svg</div>
+                    <div class="status" id="status-7">⏳ Loading...</div>
+                </div>
+                
+                <div class="test-item">
+                    <span class="method-label">&lt;img src=""&gt;</span>
+                    <h3>PP Simple</h3>
+                    <div class="svg-container">
+                        <img src="./images/svg/pp-qr-code-simple.svg" 
+                             alt="PP Simple" 
+                             width="150"
+                             onload="showStatus(this, true)"
+                             onerror="showStatus(this, false)">
+                    </div>
+                    <div class="path-info">Path: ./images/svg/pp-qr-code-simple.svg</div>
+                    <div class="status" id="status-8">⏳ Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 5: Inline SVG (Fetch + Embed) -->
+        <div class="test-section">
+            <h2>Test 5: Inline SVG Embedding (Fetch API)</h2>
+            <div class="test-grid">
+                <div class="test-item">
+                    <span class="method-label">fetch() + innerHTML</span>
+                    <h3>HDPE QR Code (Inline)</h3>
+                    <div class="svg-container" id="inline-hdpe">
+                        <div style="color: #999;">⏳ Loading...</div>
+                    </div>
+                    <div class="path-info">Path: ./images/svg/hdpe-qr-code.svg</div>
+                    <div class="status" id="status-9">⏳ Loading...</div>
+                </div>
+                
+                <div class="test-item">
+                    <span class="method-label">fetch() + innerHTML</span>
+                    <h3>PP QR Code (Inline)</h3>
+                    <div class="svg-container" id="inline-pp">
+                        <div style="color: #999;">⏳ Loading...</div>
+                    </div>
+                    <div class="path-info">Path: ./images/svg/pp-qr-code.svg</div>
+                    <div class="status" id="status-10">⏳ Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Display current URL info
+        document.getElementById('currentUrl').textContent = window.location.href;
+        document.getElementById('baseUrl').textContent = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+
+        let statusCounter = 1;
+
+        function showStatus(img, success) {
+            const status = document.getElementById('status-' + statusCounter);
+            if (status) {
+                if (success) {
+                    status.textContent = '✅ Loaded Successfully';
+                    status.className = 'status success';
+                    console.log('✅ Loaded:', img.src);
+                } else {
+                    status.textContent = '❌ Failed to Load';
+                    status.className = 'status error';
+                    console.error('❌ Failed:', img.src);
+                }
+            }
+            statusCounter++;
+        }
+
+        // Function to load SVG inline
+        async function loadInlineSVG(containerId, svgPath, statusId) {
+            const container = document.getElementById(containerId);
+            const status = document.getElementById(statusId);
+            
+            try {
+                console.log('🔄 Fetching SVG:', svgPath);
+                const response = await fetch(svgPath);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                let svgText = await response.text();
+                
+                // Fix nested SVG issue: Extract inner SVG if it's wrapped
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(svgText, 'image/svg+xml');
+                const outerSvg = doc.querySelector('svg');
+                const innerSvg = outerSvg ? outerSvg.querySelector('svg[viewBox="0 0 2000 2000"]') : null;
+                
+                if (innerSvg) {
+                    // Use the inner SVG (the actual QR code)
+                    container.innerHTML = '';
+                    container.appendChild(innerSvg.cloneNode(true));
+                    console.log('✅ Using inner SVG (extracted from wrapper)');
+                } else {
+                    // Use as-is
+                    container.innerHTML = svgText;
+                }
+                
+                // Style the SVG
+                const svgElement = container.querySelector('svg');
+                if (svgElement) {
+                    svgElement.style.width = '150px';
+                    svgElement.style.height = 'auto';
+                    svgElement.style.display = 'block';
+                    svgElement.style.margin = '0 auto';
+                }
+                
+                status.textContent = '✅ Loaded Successfully';
+                status.className = 'status success';
+                console.log('✅ Inline SVG loaded:', svgPath);
+                
+            } catch (error) {
+                container.innerHTML = `<div style="color: red; font-size: 12px; padding: 20px;">❌ Error: ${error.message}</div>`;
+                status.textContent = '❌ Failed to Load';
+                status.className = 'status error';
+                console.error('❌ Failed to load inline SVG:', svgPath, error);
+            }
+        }
+
+        // Reset counter and load inline SVGs after page load
+        window.addEventListener('load', () => {
+            statusCounter = 1;
+            console.log('🧪 SVG Test Page Loaded');
+            console.log('📍 Current URL:', window.location.href);
+            console.log('🌐 Base URL:', window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1));
+            
+            // Load inline SVGs
+            setTimeout(() => {
+                loadInlineSVG('inline-hdpe', './images/svg/hdpe-qr-code.svg', 'status-9');
+                loadInlineSVG('inline-pp', './images/svg/pp-qr-code.svg', 'status-10');
+            }, 100);
+        });
+    </script>
+</body>
+</html>

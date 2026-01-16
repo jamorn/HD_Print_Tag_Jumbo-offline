@@ -1,0 +1,510 @@
+/**
+ * Component Renderers - Modern Tag Printing System V2
+ * Specialized rendering classes for different component types
+ */
+
+import { BaseComponent } from './BaseComponent.js';
+
+/**
+ * Logo Renderer - Handles company logos and branding
+ */
+export class LogoRenderer extends BaseComponent {
+  constructor(options = {}) {
+    super({
+      logoPath: '',
+      altText: 'Company Logo',
+      fallbackText: 'LOGO',
+      maxWidth: '120px',
+      maxHeight: '60px',
+      ...options
+    });
+  }
+
+  render() {
+    const { logoPath, altText, fallbackText, maxWidth, maxHeight } = this.props;
+
+    const container = this.createElement('div', {
+      className: 'logo-container',
+      'data-component': 'logo-renderer'
+    });
+
+    if (logoPath) {
+      const img = this.createElement('img', {
+        className: 'company-logo',
+        src: logoPath,
+        alt: altText,
+        style: `max-width: ${maxWidth}; max-height: ${maxHeight}`,
+        onerror: (e) => this.handleImageError(e)
+      });
+      container.appendChild(img);
+    } else {
+      const textLogo = this.createElement('div', {
+        className: 'logo-text',
+        textContent: fallbackText
+      });
+      container.appendChild(textLogo);
+    }
+
+    return container;
+  }
+
+  handleImageError(event) {
+    const img = event.target;
+    const fallback = this.createElement('div', {
+      className: 'logo-text',
+      textContent: this.props.fallbackText
+    });
+    
+    img.parentNode.replaceChild(fallback, img);
+  }
+
+  setLogoPath(path) {
+    this.setProps({ logoPath: path });
+  }
+}
+
+/**
+ * Section Renderer - Base class for tag sections
+ */
+export class SectionRenderer extends BaseComponent {
+  constructor(options = {}) {
+    super({
+      sectionType: 'generic',
+      height: 'auto',
+      padding: '0.5rem',
+      backgroundColor: 'transparent',
+      borderStyle: 'none',
+      ...options
+    });
+  }
+
+  render() {
+    const { sectionType, height, padding, backgroundColor, borderStyle } = this.props;
+    
+    const section = this.createElement('div', {
+      className: `tag-section tag-${sectionType}`,
+      style: `
+        height: ${height};
+        padding: ${padding};
+        background-color: ${backgroundColor};
+        border: ${borderStyle};
+      `,
+      'data-section': sectionType
+    });
+
+    this.renderContent(section);
+    return section;
+  }
+
+  renderContent(container) {
+    // Override in subclasses
+  }
+}
+
+/**
+ * Header Section Renderer
+ */
+export class HeaderSectionRenderer extends SectionRenderer {
+  constructor(options = {}) {
+    super({
+      sectionType: 'header',
+      showLogo: true,
+      showUnitName: true,
+      showDateTime: false,
+      unitName: 'Production Unit',
+      backgroundColor: 'var(--bg-tertiary)',
+      ...options
+    });
+  }
+
+  renderContent(container) {
+    const { showLogo, showUnitName, showDateTime, unitName } = this.props;
+
+    if (showLogo) {
+      const logoRenderer = new LogoRenderer({
+        logoPath: this.props.logoPath,
+        altText: `${unitName} Logo`,
+        fallbackText: unitName.split(' ').map(w => w[0]).join(''),
+        maxWidth: '80px',
+        maxHeight: '40px'
+      });
+      logoRenderer.mount(container);
+      this.addChild(logoRenderer, 'logo');
+    }
+
+    if (showUnitName) {
+      const unitNameEl = this.createElement('h3', {
+        className: 'unit-name',
+        textContent: unitName
+      });
+      container.appendChild(unitNameEl);
+    }
+
+    if (showDateTime) {
+      const dateTimeEl = this.createElement('div', {
+        className: 'date-time',
+        textContent: new Date().toLocaleString()
+      });
+      container.appendChild(dateTimeEl);
+    }
+  }
+}
+
+/**
+ * Body Section Renderer
+ */
+export class BodySectionRenderer extends SectionRenderer {
+  constructor(options = {}) {
+    super({
+      sectionType: 'body',
+      showProductInfo: true,
+      showSpecifications: true,
+      showQualityData: false,
+      productData: {},
+      ...options
+    });
+  }
+
+  renderContent(container) {
+    const { showProductInfo, showSpecifications, showQualityData, productData } = this.props;
+
+    if (showProductInfo) {
+      const productInfo = this.renderProductInfo(productData);
+      container.appendChild(productInfo);
+    }
+
+    if (showSpecifications) {
+      const specifications = this.renderSpecifications(productData);
+      container.appendChild(specifications);
+    }
+
+    if (showQualityData) {
+      const qualityData = this.renderQualityData(productData);
+      container.appendChild(qualityData);
+    }
+  }
+
+  renderProductInfo(data) {
+    const container = this.createElement('div', {
+      className: 'product-info'
+    });
+
+    if (data.productName) {
+      const productName = this.createElement('h4', {
+        className: 'product-name',
+        textContent: data.productName
+      });
+      container.appendChild(productName);
+    }
+
+    const details = this.createElement('div', {
+      className: 'product-details'
+    });
+
+    const detailFields = [
+      { label: 'Code', value: data.productCode, key: 'code' },
+      { label: 'Lot', value: data.lotNumber, key: 'lot' },
+      { label: 'Weight', value: data.weight ? `${data.weight} kg` : '', key: 'weight' },
+      { label: 'Grade', value: data.grade, key: 'grade' }
+    ];
+
+    detailFields.forEach(field => {
+      if (field.value) {
+        const detailItem = this.createElement('div', {
+          className: 'detail-item',
+          'data-field': field.key
+        });
+
+        const label = this.createElement('span', {
+          className: 'detail-label',
+          textContent: field.label
+        });
+
+        const value = this.createElement('span', {
+          className: 'detail-value',
+          textContent: field.value
+        });
+
+        detailItem.appendChild(label);
+        detailItem.appendChild(value);
+        details.appendChild(detailItem);
+      }
+    });
+
+    container.appendChild(details);
+    return container;
+  }
+
+  renderSpecifications(data) {
+    const container = this.createElement('div', {
+      className: 'specifications'
+    });
+
+    const specs = [];
+    
+    // Unit-specific specifications
+    if (data.density) specs.push({ label: 'Density', value: `${data.density} g/cm³` });
+    if (data.meltIndex) specs.push({ label: 'Melt Index', value: `${data.meltIndex} g/10min` });
+    if (data.meltFlow) specs.push({ label: 'Melt Flow', value: `${data.meltFlow} g/10min` });
+    if (data.tensileStrength) specs.push({ label: 'Tensile Strength', value: `${data.tensileStrength} MPa` });
+    if (data.flexuralModulus) specs.push({ label: 'Flexural Modulus', value: `${data.flexuralModulus} MPa` });
+    if (data.impactStrength) specs.push({ label: 'Impact Strength', value: `${data.impactStrength} kJ/m²` });
+    if (data.heatDeflection) specs.push({ label: 'Heat Deflection', value: `${data.heatDeflection} °C` });
+
+    specs.forEach(spec => {
+      const specItem = this.createElement('div', {
+        className: 'spec-item'
+      });
+
+      const label = this.createElement('span', {
+        className: 'spec-label',
+        textContent: spec.label
+      });
+
+      const value = this.createElement('span', {
+        className: 'spec-value',
+        textContent: spec.value
+      });
+
+      specItem.appendChild(label);
+      specItem.appendChild(value);
+      container.appendChild(specItem);
+    });
+
+    return container;
+  }
+
+  renderQualityData(data) {
+    const container = this.createElement('div', {
+      className: 'quality-data'
+    });
+
+    const qualityItems = [
+      { label: 'QC Status', value: data.qcStatus || 'Passed', className: 'qc-status' },
+      { label: 'Batch No.', value: data.batchNumber, className: 'batch-number' },
+      { label: 'Inspector', value: data.inspector, className: 'inspector' }
+    ];
+
+    qualityItems.forEach(item => {
+      if (item.value) {
+        const qualityItem = this.createElement('div', {
+          className: `quality-item ${item.className}`
+        });
+
+        const label = this.createElement('span', {
+          className: 'quality-label',
+          textContent: item.label
+        });
+
+        const value = this.createElement('span', {
+          className: 'quality-value',
+          textContent: item.value
+        });
+
+        qualityItem.appendChild(label);
+        qualityItem.appendChild(value);
+        container.appendChild(qualityItem);
+      }
+    });
+
+    return container;
+  }
+}
+
+/**
+ * Footer Section Renderer
+ */
+export class FooterSectionRenderer extends SectionRenderer {
+  constructor(options = {}) {
+    super({
+      sectionType: 'footer',
+      showQRCode: true,
+      showLotInfo: true,
+      showBatchInfo: false,
+      qrCodeSize: '60px',
+      qrData: '',
+      backgroundColor: 'var(--bg-tertiary)',
+      ...options
+    });
+  }
+
+  renderContent(container) {
+    const { showQRCode, showLotInfo, showBatchInfo } = this.props;
+
+    if (showQRCode) {
+      const qrSection = this.renderQRSection();
+      container.appendChild(qrSection);
+    }
+
+    if (showLotInfo || showBatchInfo) {
+      const infoSection = this.renderInfoSection();
+      container.appendChild(infoSection);
+    }
+  }
+
+  renderQRSection() {
+    const { qrCodeSize, qrData } = this.props;
+    
+    const container = this.createElement('div', {
+      className: 'qr-section'
+    });
+
+    const qrContainer = this.createElement('div', {
+      className: 'qr-code',
+      style: `width: ${qrCodeSize}; height: ${qrCodeSize};`
+    });
+
+    // Generate QR code placeholder or actual QR code
+    if (qrData) {
+      const qrImg = this.createElement('img', {
+        src: this.generateQRCodeURL(qrData),
+        alt: 'Product QR Code',
+        style: 'width: 100%; height: 100%; object-fit: contain;'
+      });
+      qrContainer.appendChild(qrImg);
+    } else {
+      qrContainer.textContent = 'QR';
+    }
+
+    const qrLabel = this.createElement('div', {
+      className: 'qr-label',
+      textContent: 'Scan for details'
+    });
+
+    container.appendChild(qrContainer);
+    container.appendChild(qrLabel);
+    
+    return container;
+  }
+
+  renderInfoSection() {
+    const { showLotInfo, showBatchInfo } = this.props;
+    const productData = this.props.productData || {};
+    
+    const container = this.createElement('div', {
+      className: 'info-section'
+    });
+
+    if (showLotInfo && productData.lotNumber) {
+      const lotInfo = this.createElement('div', {
+        className: 'lot-info',
+        textContent: `Lot: ${productData.lotNumber}`
+      });
+      container.appendChild(lotInfo);
+    }
+
+    if (showBatchInfo && productData.batchNumber) {
+      const batchInfo = this.createElement('div', {
+        className: 'batch-info',
+        textContent: `Batch: ${productData.batchNumber}`
+      });
+      container.appendChild(batchInfo);
+    }
+
+    return container;
+  }
+
+  generateQRCodeURL(data) {
+    // Using a QR code API service (Google Charts API as fallback)
+    const encodedData = encodeURIComponent(data);
+    return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodedData}`;
+  }
+
+  updateQRCode(newData) {
+    this.setProps({ qrData: newData });
+    
+    const qrImg = this.querySelector('.qr-code img');
+    if (qrImg) {
+      qrImg.src = this.generateQRCodeURL(newData);
+    }
+  }
+}
+
+/**
+ * Tag Cell Renderer - Combines all sections
+ */
+export class TagCellRenderer extends BaseComponent {
+  constructor(options = {}) {
+    super({
+      template: null,
+      unitConfig: null,
+      productData: {},
+      cellIndex: 0,
+      ...options
+    });
+  }
+
+  render() {
+    const { template, unitConfig, productData, cellIndex } = this.props;
+    
+    const cell = this.createElement('div', {
+      className: `tag-cell ${unitConfig ? `unit-${unitConfig.id}` : ''}`,
+      'data-cell-index': cellIndex
+    });
+
+    // Render header section
+    if (template.sections.header.enabled) {
+      const headerRenderer = new HeaderSectionRenderer({
+        ...template.sections.header,
+        unitName: unitConfig?.displayName || 'Production Unit',
+        logoPath: unitConfig?.logoPath
+      });
+      headerRenderer.mount(cell);
+      this.addChild(headerRenderer, 'header');
+    }
+
+    // Render body section
+    if (template.sections.body.enabled) {
+      const bodyRenderer = new BodySectionRenderer({
+        ...template.sections.body,
+        productData
+      });
+      bodyRenderer.mount(cell);
+      this.addChild(bodyRenderer, 'body');
+    }
+
+    // Render footer section
+    if (template.sections.footer.enabled) {
+      const footerRenderer = new FooterSectionRenderer({
+        ...template.sections.footer,
+        productData,
+        qrData: this.generateQRData(unitConfig, productData)
+      });
+      footerRenderer.mount(cell);
+      this.addChild(footerRenderer, 'footer');
+    }
+
+    return cell;
+  }
+
+  generateQRData(unitConfig, productData) {
+    if (!unitConfig || !productData.lotNumber) return '';
+    
+    const qrData = {
+      unit: unitConfig.code,
+      lot: productData.lotNumber,
+      product: productData.productCode,
+      date: new Date().toISOString().split('T')[0]
+    };
+    
+    return JSON.stringify(qrData);
+  }
+
+  updateProductData(newData) {
+    this.setProps({ productData: { ...this.props.productData, ...newData } });
+    
+    // Update child renderers
+    const bodyRenderer = this.getChild('body');
+    if (bodyRenderer) {
+      bodyRenderer.setProps({ productData: this.props.productData });
+    }
+    
+    const footerRenderer = this.getChild('footer');
+    if (footerRenderer) {
+      footerRenderer.setProps({ 
+        productData: this.props.productData,
+        qrData: this.generateQRData(this.props.unitConfig, this.props.productData)
+      });
+    }
+  }
+}

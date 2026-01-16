@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แสดง QR Code จาก TISI URL</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* กำหนดฟอนต์ Inter สำหรับความสวยงาม */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* กำหนดขนาดที่ชัดเจนสำหรับคอนเทนเนอร์ QR Code เพื่อป้องกันการเปลี่ยนแปลงเลย์เอาต์ (CLS) */
+        .qr-placeholder {
+            min-width: 200px; 
+            min-height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    <!-- เรียกใช้ไลบรารี qrcode.js ที่คุณต้องการ -->
+    <script src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center p-8">
+
+    <div class="max-w-4xl w-full">
+        <h1 class="text-4xl font-extrabold text-center text-gray-800 mb-10">
+            ระบบแสดง QR Code
+        </h1>
+
+        <!-- คอนเทนเนอร์หลักสำหรับ QR Code ทั้งหมด -->
+        <div class="flex flex-wrap justify-center gap-8">
+            
+            <!-- QR Code 1 -->
+            <div class="bg-white p-6 rounded-xl shadow-2xl transition duration-300 hover:shadow-gray-300/50 transform hover:scale-[1.02] w-full sm:w-80">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center">
+                    POLIMAXX PP <!-- เปลี่ยนชื่อตรงนี้ -->
+                </h2>
+                <div id="qrcode1" class="qr-placeholder mx-auto p-2 border-2 border-indigo-500 rounded-lg">
+                    <!-- พื้นที่นี้จะถูกแทนที่ด้วย QR Code -->
+                </div>
+                <p class="text-sm text-gray-500 mt-4 break-words">
+                    URL: https://appdb.tisi.go.th/Q/i.php?d=1351525040
+                </p>
+            </div>
+
+            <!-- QR Code 2 -->
+            <div class="bg-white p-6 rounded-xl shadow-2xl transition duration-300 hover:shadow-teal-300/50 transform hover:scale-[1.02] w-full sm:w-80">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center">
+                    POLIMAXX PE Compound <!-- เปลี่ยนชื่อตรงนี้ -->
+                </h2>
+                <div id="qrcode2" class="qr-placeholder mx-auto p-2 border-2 border-teal-500 rounded-lg">
+                    <!-- พื้นที่นี้จะถูกแทนที่ด้วย QR Code -->
+                </div>
+                <p class="text-sm text-gray-500 mt-4 break-words">
+                    URL: https://appdb.tisi.go.th/Q/i.php?d=3828891212
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // กำหนด URL ที่ต้องการแปลง
+        const url1 = 'https://appdb.tisi.go.th/Q/i.php?d=1351525040';
+        const url2 = 'https://appdb.tisi.go.th/Q/i.php?d=3828891212';
+
+        // ฟังก์ชันสำหรับสร้าง QR Code
+        function generateQRCode(id, url, color) {
+            new QRCode(document.getElementById(id), {
+                text: url, 
+                width: 200, 
+                height: 200,
+                colorDark : color, // สีเข้ม (QR Code)
+                colorLight : "#ffffff", // สีอ่อน (พื้นหลัง)
+                correctLevel : QRCode.CorrectLevel.H 
+            });
+        }
+
+        // สร้าง QR Code ทั้งสองตัว
+        generateQRCode("qrcode1", url1, "#4f46e5"); // สีม่วง Indigo
+        generateQRCode("qrcode2", url2, "#14b8a6"); // สีเขียว Teal
+
+    </script>
+</body>
+</html>

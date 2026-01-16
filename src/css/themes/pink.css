@@ -1,0 +1,170 @@
+/**
+ * Pink Vibrant Theme
+ * Bold and energetic pink theme
+ */
+
+:root {
+    --primary-color: #F44336;
+    --secondary-color: #EF5350;
+    --bg-primary: #f7d1d1;
+    --bg-secondary: #ef9a9a;
+    --bg-card: #ffebee;
+    --bg-card-header: #F44336;
+    --bg-input: #ffebee;
+    --border-color: #e57373;
+    --border-input: #e57373;
+    --text-primary: #b71c1c;
+    --text-secondary: #c62828;
+    --text-label: #c62828;
+    --hover-row: rgba(244, 67, 54, 0.2);
+    --selected-row: rgba(244, 67, 54, 0.3);
+}
+
+body {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, #ffebee 100%);
+    color: var(--text-primary);
+}
+
+/* Card backgrounds */
+.card-bg {
+    background-color: #ffffff;
+    border: 2px solid var(--border-color);
+}
+
+.card-header-bg {
+    background: #F44336;
+    color: #ffffff;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #D32F2F;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: #ffffff;
+}
+
+.btn-secondary:hover {
+    background-color: #e57373;
+}
+
+/* Form inputs */
+input, select, textarea {
+    background-color: #ffebee;
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary-color);
+}
+
+/* Checkboxes */
+input[type="checkbox"]:checked {
+    accent-color: var(--primary-color);
+}
+
+/* Table styles */
+.dark-table thead th {
+    background: #F44336;
+    color: #ffffff;
+    border: 1px solid var(--border-color);
+}
+
+.dark-table tbody th,
+.dark-table tbody td {
+    border: 1px solid #ffcdd2;
+    color: var(--text-primary);
+}
+
+.dark-table tbody tr:nth-child(even) {
+    background-color: #ffebee;
+}
+
+.dark-table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.dark-table tbody tr:hover {
+    background-color: rgba(244, 67, 54, 0.2) !important;
+}
+
+.dark-table tbody tr.selected {
+    background-color: rgba(244, 67, 54, 0.3) !important;
+}
+
+/* Table row hover for theme-aware tables */
+.data-table-row:hover {
+    background-color: var(--hover-row) !important;
+}
+
+.data-table-row.selected-row {
+    background-color: var(--selected-row) !important;
+}
+
+/* Text colors */
+h1, h2, h3, .text-white {
+    color: var(--text-primary) !important;
+}
+
+.text-gray-400, .text-gray-300, .text-gray-200 {
+    color: var(--text-secondary) !important;
+}
+
+/* Select dropdown arrow */
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M7 10l5 5 5-5H7z' fill='%23c62828'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1.5em;
+    padding-right: 2.5rem;
+}
+
+/* Number input spinner buttons */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1;
+    height: 100%;
+    cursor: pointer;
+}
+
+/* Firefox number input buttons */
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* Keep spinner functionality but style them properly */
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Theme text classes */
+.theme-text-primary {
+    color: var(--text-primary);
+}
+
+.theme-header-text {
+    color: #ffffff !important;
+}
+
+/* Card header specific styles */
+.theme-card-header .theme-text-primary {
+    color: #ffffff !important;
+}

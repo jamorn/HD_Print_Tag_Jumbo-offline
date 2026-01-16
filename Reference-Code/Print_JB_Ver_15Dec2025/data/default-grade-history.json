@@ -1,0 +1,90 @@
+{
+  "_metadata": {
+    "version": "1.0.0",
+    "description": "Default grade history data for HD Print Tag Jumbo",
+    "created": "2025-12-11T00:00:00.000Z"
+  },
+  
+  "grade_history_HDPE": {
+    "P901BK/750": {
+      "grade": "P901BK/750",
+      "lot": "7257899641",
+      "netweight": "750",
+      "fromPage": "1",
+      "toPage": "10",
+      "shift": "M",
+      "idate": "11",
+      "template": "template2",
+      "controlprint": { "ft": false, "lt": false },
+      "timestamp": "2025-12-11T10:00:00.000Z"
+    },
+    "P901BK/SB/16500": {
+      "grade": "P901BK/SB/16500",
+      "lot": "9257899642",
+      "netweight": "16500",
+      "fromPage": "1",
+      "toPage": "5",
+      "shift": "E",
+      "idate": "10",
+      "template": "template3",
+      "controlprint": { "ft": false, "lt": false },
+      "timestamp": "2025-12-10T15:30:00.000Z"
+    },
+    "AM3245PC/750": {
+      "grade": "AM3245PC/750",
+      "lot": "7257899643",
+      "netweight": "750",
+      "fromPage": "1",
+      "toPage": "8",
+      "shift": "M",
+      "idate": "9",
+      "template": "template2",
+      "controlprint": { "ft": false, "lt": false },
+      "timestamp": "2025-12-09T08:15:00.000Z"
+    }
+  },
+  
+  "grade_history_PP": {
+    "P900BK/750": {
+      "grade": "P900BK/750",
+      "lot": "7257899650",
+      "netweight": "750",
+      "fromPage": "1",
+      "toPage": "12",
+      "shift": "M",
+      "idate": "11",
+      "template": "template2",
+      "controlprint": { "ft": false, "lt": false },
+      "timestamp": "2025-12-11T09:30:00.000Z"
+    },
+    "P900NT/750": {
+      "grade": "P900NT/750",
+      "lot": "7257899651",
+      "netweight": "750",
+      "fromPage": "1",
+      "toPage": "7",
+      "shift": "E",
+      "idate": "10",
+      "template": "template2",
+      "controlprint": { "ft": false, "lt": false },
+      "timestamp": "2025-12-10T14:20:00.000Z"
+    }
+  },
+  
+  "grade_history_PPC": {
+    "I055BK/750": {
+      "grade": "I055BK/750",
+      "lot": "72578996",
+      "netweight": "750",
+      "fromPage": "1",
+      "toPage": "15",
+      "shift": "M",
+      "idate": "11",
+      "template": "template2",
+      "controlprint": { "ft": false, "lt": false },
+      "timestamp": "2025-12-11T11:00:00.000Z"
+    }
+  },
+  
+  "selectedTheme": "purple"
+}

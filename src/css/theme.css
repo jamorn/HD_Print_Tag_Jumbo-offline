@@ -1,0 +1,130 @@
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    transition: background-color 0.3s ease;
+}
+
+/* Component Transitions */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Theme Switcher Button */
+.theme-btn {
+    transition: all 0.3s ease;
+}
+
+/* Floating Animated Border */
+#theme-selector-border {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+}
+
+#theme-selector-border.active {
+    opacity: 1;
+}
+
+@keyframes borderDash {
+    0% {
+        stroke-dashoffset: 400;
+    }
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+#theme-selector-border rect {
+    fill: none;
+    stroke-width: 3;
+    stroke-dasharray: 100;
+    animation: borderDash 1.5s linear infinite;
+}
+
+/* Theme Preview Gradients */
+.theme-preview-dark {
+    background: linear-gradient(135deg, #030815 0%, #101828 100%);
+}
+
+.theme-preview-green {
+    background: linear-gradient(135deg, #d1f7d3 0%, #4CAF50 100%);
+}
+
+.theme-preview-purple {
+    background: linear-gradient(135deg, #e5d1f7 0%, #9C27B0 100%);
+}
+
+.theme-preview-pink {
+    background: linear-gradient(135deg, #f7d1d1 0%, #F44336 100%);
+}
+
+.theme-preview-blue {
+    background: linear-gradient(135deg, #d1e7f7 0%, #2196F3 100%);
+}
+
+/* Sub grade styling */
+.sub-grade {
+    color: #ef4444 !important;
+}
+
+/* Theme-aware Component Styles */
+.theme-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+.theme-card-header {
+    background: var(--bg-card-header);
+}
+
+.theme-input {
+    background-color: var(--bg-input) !important;
+    border-color: var(--border-input) !important;
+    color: var(--text-primary) !important;
+}
+
+.theme-input:focus {
+    border-color: var(--primary-color) !important;
+    ring-color: var(--primary-color) !important;
+}
+
+.theme-label {
+    color: var(--text-label) !important;
+}
+
+.theme-text-primary {
+    color: var(--text-primary) !important;
+}
+
+.theme-text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+.theme-border {
+    border-color: var(--border-color) !important;
+}
+
+.theme-btn-primary {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+.theme-btn-primary:hover {
+    opacity: 0.9;
+}
+
+.theme-btn-secondary {
+    background-color: var(--secondary-color) !important;
+    color: white !important;
+}
+
+.theme-btn-secondary:hover {
+    opacity: 0.9;
+}

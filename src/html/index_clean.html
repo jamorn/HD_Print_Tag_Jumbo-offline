@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HDPE Print Tag Jumbo - Multi-Unit System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="#"><!-- fix favicon.ico -->
+    <!-- Custom Theme CSS -->
+    <link href="../css/theme.css" rel="stylesheet">
+    <!-- Dynamic Theme CSS -->
+    <link id="theme-stylesheet" rel="stylesheet" href="../css/themes/purple.css">
+    <style>
+        /* Force navbar to be visible */
+        * {
+            box-sizing: border-box;
+        }
+        
+        /* Ensure content doesn't hide under fixed navbar */
+        body {
+            padding-top: 80px;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Modern Navbar Styling */
+        .modern-navbar {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* Unit Button Styling */
+        .unit-btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        .unit-btn:hover:not(.active) {
+            background: var(--bg-hover);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .unit-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+        }
+        
+        /* Icon Buttons */
+        .icon-btn {
+            background: var(--bg-secondary);
+            border-radius: 50%;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            transform: translateY(-1px);
+        }
+        
+        .icon-btn svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        /* Modal Styling */
+        .modal-card {
+            background-color: var(--bg-card);
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-icon {
+            background: var(--primary-color);
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .tab-border {
+            border-color: var(--border-color);
+        }
+
+        .help-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .help-tab:not(.active) {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .usage-box {
+            background: var(--bg-secondary);
+        }
+
+        .step-number {
+            background: var(--primary-color);
+        }
+
+        .spec-card-bg {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .spec-title {
+            color: var(--primary-color);
+        }
+
+        .spec-size-badge {
+            background: #fef3c7;
+        }
+
+        .spec-value {
+            color: #059669;
+        }
+
+        .spec-marker {
+            color: #dc2626;
+            background: #fee2e2;
+        }
+
+        .theme-gradient-purple {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+        }
+
+        .theme-gradient-blue {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .theme-gradient-green {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .theme-gradient-pink {
+            background: linear-gradient(135deg, #ec4899, #db2777);
+        }
+
+        .theme-gradient-dark {
+            background: linear-gradient(135deg, #374151, #1f2937);
+        }
+    </style>
+</head>
+<body>
+    <!-- Modern Unit Selector Nav Bar -->
+    <nav class="modern-navbar fixed top-0 left-0 right-0 z-50">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex items-center justify-between">
+                <!-- Unit Selector Buttons -->
+                <div class="flex gap-2">
+                    <button type="button" data-unit="HDPE" class="unit-btn active">HDPE</button>
+                    <button type="button" data-unit="PP" class="unit-btn">PP</button>
+                    <button type="button" data-unit="PPC" class="unit-btn">PPC</button>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex gap-2">
+                    <button type="button" id="specs-btn" class="icon-btn" title="คู่มือและรายละเอียด">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </button>
+                    <button type="button" id="theme-switcher-btn" class="icon-btn" title="เปลี่ยนธีม">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Help Modal - Print Settings Guide with Tabs -->
+    <div id="help-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="theme-card rounded-2xl shadow-2xl max-w-4xl w-full p-6 modal-card">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="modal-icon">
+                        📘
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold theme-text-primary">คู่มือการใช้งาน</h2>
+                        <p class="text-sm theme-text-secondary">Tag Printing System Guide</p>
+                    </div>
+                </div>
+                <button type="button" id="close-help-modal" class="text-gray-500 hover:text-gray-700" title="ปิดคู่มือ">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Tab Navigation -->
+            <div class="flex gap-2 mb-4 border-b pb-2 tab-border">
+                <button type="button" class="help-tab active px-4 py-2 rounded-lg font-semibold text-sm transition-all" 
+                        data-tab="usage">
+                    การใช้งาน
+                </button>
+                <button type="button" class="help-tab px-4 py-2 rounded-lg font-semibold text-sm transition-all" 
+                        data-tab="templates">
+                    Templates
+                </button>
+                <button type="button" class="help-tab px-4 py-2 rounded-lg font-semibold text-sm transition-all" 
+                        data-tab="specs">
+                    รายละเอียด
+                </button>
+            </div>
+
+            <!-- Tab Content: Usage -->
+            <div id="tab-usage" class="tab-content">
+                <div class="rounded-xl p-5 mb-4 usage-box">
+                    <h3 class="text-lg font-semibold mb-4 theme-text-primary">🎯 ขั้นตอนการใช้งาน</h3>
+                    <ol class="space-y-3">
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm step-number">1</span>
+                            <span class="theme-text-primary"><strong>เลือก Unit</strong> - คลิก HDPE, PP, หรือ PPC ที่ navbar ด้านบน</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm step-number">2</span>
+                            <span class="theme-text-primary"><strong>เลือก Grade</strong> - คลิกที่ตารางเพื่อเลือก Grade</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm step-number">3</span>
+                            <span class="theme-text-primary"><strong>กรอกข้อมูล</strong> - Lot, หน้า, กะ, วันที่</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm step-number">4</span>
+                            <span class="theme-text-primary"><strong>Generate</strong> - คลิกปุ่ม "ยืนยันและแสดงตัวอย่างหน้าพิมพ์"</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm step-number">5</span>
+                            <span class="theme-text-primary"><strong>Print</strong> - กด Ctrl+P และตั้งค่า: Margins = None, Scale = 100%, Background graphics = เปิด</span>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Tab Content: Templates -->
+            <div id="tab-templates" class="tab-content hidden">
+                <div class="space-y-3">
+                    <div class="rounded-xl p-4 usage-box">
+                        <h4 class="font-semibold mb-2 spec-title">📄 Template 1: ไม่มี QR Code + มาตร.</h4>
+                        <p class="text-sm theme-text-secondary">แสดงเฉพาะข้อมูลพื้นฐาน (สำหรับ SUB grades)</p>
+                    </div>
+                    <div class="rounded-xl p-4 usage-box">
+                        <h4 class="font-semibold mb-2 spec-title">📄 Template 2: มี QR Code + Logo</h4>
+                        <p class="text-sm theme-text-secondary">พร้อมโลโก้ MFG + QR Code (PP/PPC)</p>
+                    </div>
+                    <div class="rounded-xl p-4 usage-box">
+                        <h4 class="font-semibold mb-2 spec-title">📄 Template 3: มี QR Code + มาตร. + SIRIM</h4>
+                        <p class="text-sm theme-text-secondary">ครบทุกรายละเอียด รวม Sirim Certification (HDPE)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Specs -->
+            <div id="tab-specs" class="tab-content hidden">
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Grade -->
+                    <div class="rounded-xl p-4 spec-card-bg">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2 spec-title">
+                            📄 Grade
+                        </h4>
+                        <div class="text-sm space-y-1 theme-text-primary">
+                            <div><strong>Font:</strong> Arial (MS: Arial)</div>
+                            <div><strong>Size:</strong> <span class="px-2 py-1 rounded font-bold spec-size-badge">60px / 45pt</span></div>
+                            <div><strong>Current Value:</strong> <span id="current-grade" class="font-bold spec-value">-</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Net Weight -->
+                    <div class="rounded-xl p-4 spec-card-bg">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2 spec-title">
+                            ⚖️ Net Weight
+                        </h4>
+                        <div class="text-sm space-y-1 theme-text-primary">
+                            <div><strong>Font:</strong> Arial (MS: Arial)</div>
+                            <div><strong>Size:</strong> <span class="px-2 py-1 rounded font-bold spec-size-badge">50px / 38pt</span></div>
+                            <div><strong>Current Value:</strong> <span id="current-netweight" class="font-bold spec-value">-</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Lot Number -->
+                    <div class="rounded-xl p-4 spec-card-bg">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2 spec-title">
+                            🔖 Lot Number
+                        </h4>
+                        <div class="text-sm space-y-1 theme-text-primary">
+                            <div><strong>Font:</strong> Arial (MS: Arial)</div>
+                            <div><strong>Size:</strong> <span class="px-2 py-1 rounded font-bold spec-size-badge">50px / 38pt</span></div>
+                            <div><strong>Current Value:</strong> <span id="current-lot" class="font-bold spec-value">-</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Running Number -->
+                    <div class="rounded-xl p-4 spec-card-bg">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2 spec-title">
+                            🔢 Running Number
+                        </h4>
+                        <div class="text-sm space-y-1 theme-text-primary">
+                            <div><strong>Font:</strong> Arial (MS: Arial)</div>
+                            <div><strong>Size:</strong> <span class="px-2 py-1 rounded font-bold spec-size-badge">30px / 23pt</span></div>
+                            <div><strong>Current:</strong> <span id="current-running" class="font-bold spec-value">001-10-M</span> (Page-Date-Shift)</div>
+                        </div>
+                    </div>
+
+                    <!-- Print Controls -->
+                    <div class="rounded-xl p-4 spec-card-bg">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2 spec-title">
+                            🏷️ Print Controls
+                        </h4>
+                        <div class="text-sm space-y-1 theme-text-primary">
+                            <div><strong>Font:</strong> Arial (MS: Arial)</div>
+                            <div><strong>Size:</strong> <span class="px-2 py-1 rounded font-bold spec-size-badge">50px / 38pt</span></div>
+                            <div><strong>F/T:</strong> <span class="px-2 py-1 rounded font-bold spec-marker">(F/T)</span> หน้าแรก</div>
+                            <div><strong>L/T:</strong> <span class="px-2 py-1 rounded font-bold spec-marker">(L/T)</span> หน้าสุดท้าย</div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="rounded-xl p-4 spec-card-bg">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2 spec-title">
+                            📋 Description
+                        </h4>
+                        <div class="text-sm space-y-1 theme-text-primary">
+                            <div><strong>Title1:</strong> <span class="px-2 py-1 rounded font-bold spec-size-badge">60px / 45pt</span></div>
+                            <div><strong>Title2:</strong> <span class="px-2 py-1 rounded font-bold spec-size-badge">30px / 23pt</span></div>
+                            <div><strong>Current Unit:</strong> <span id="current-unit" class="font-bold spec-value">HDPE</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Modal -->
+    <div id="theme-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="theme-card rounded-2xl shadow-2xl max-w-2xl w-full p-6 modal-card">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold theme-text-primary">🎨 เลือกธีม</h2>
+                <button type="button" id="close-theme-modal" class="text-gray-500 hover:text-gray-700" title="ปิดหน้าต่างเลือกธีม">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <!-- Theme options grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <button type="button" data-theme="purple" class="theme-option-btn p-4 rounded-lg border-2 border-transparent hover:border-purple-500 transition-all">
+                    <div class="w-full h-20 rounded-md mb-3 theme-gradient-purple"></div>
+                    <p class="font-semibold text-center">Purple</p>
+                </button>
+                <button type="button" data-theme="blue" class="theme-option-btn p-4 rounded-lg border-2 border-transparent hover:border-blue-500 transition-all">
+                    <div class="w-full h-20 rounded-md mb-3 theme-gradient-blue"></div>
+                    <p class="font-semibold text-center">Blue</p>
+                </button>
+                <button type="button" data-theme="green" class="theme-option-btn p-4 rounded-lg border-2 border-transparent hover:border-green-500 transition-all">
+                    <div class="w-full h-20 rounded-md mb-3 theme-gradient-green"></div>
+                    <p class="font-semibold text-center">Green</p>
+                </button>
+                <button type="button" data-theme="pink" class="theme-option-btn p-4 rounded-lg border-2 border-transparent hover:border-pink-500 transition-all">
+                    <div class="w-full h-20 rounded-md mb-3 theme-gradient-pink"></div>
+                    <p class="font-semibold text-center">Pink</p>
+                </button>
+                <button type="button" data-theme="dark" class="theme-option-btn p-4 rounded-lg border-2 border-transparent hover:border-gray-500 transition-all">
+                    <div class="w-full h-20 rounded-md mb-3 theme-gradient-dark"></div>
+                    <p class="font-semibold text-center">Dark</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app" class="container mx-auto px-4 py-6 max-w-7xl">
+        <!-- Content will be injected by SPA -->
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/hdpe_pellet.js"></script>
+    <script src="../js/shift_compare.js"></script>
+    <script src="../js/sweetalert2.all.min.js"></script>
+    
+    <!-- SPA Core Scripts -->
+    <script type="module" src="../js/modules/themeManager.js"></script>
+    <script type="module" src="../js/modules/app.js"></script>
+    
+    <!-- Custom Theme JS -->
+    <script src="../js/theme.js"></script>
+    
+    <!-- Debug Script -->
+    <script>
+        console.log('🔍 Page loaded, checking navbar...');
+        window.addEventListener('DOMContentLoaded', () => {
+            const navbar = document.querySelector('.modern-navbar');
+            console.log('📍 Navbar element:', navbar);
+            if (navbar) {
+                console.log('📍 Navbar display:', window.getComputedStyle(navbar).display);
+                console.log('📍 Navbar visibility:', window.getComputedStyle(navbar).visibility);
+                console.log('📍 Navbar z-index:', window.getComputedStyle(navbar).zIndex);
+                console.log('📍 Navbar position:', window.getComputedStyle(navbar).position);
+            }
+            
+            // Setup theme modal manually
+            const themeSwitcherBtn = document.getElementById('theme-switcher-btn');
+            const themeModal = document.getElementById('theme-modal');
+            const closeThemeModal = document.getElementById('close-theme-modal');
+            const themeOptions = document.querySelectorAll('[data-theme]');
+            
+            if (themeSwitcherBtn && themeModal) {
+                // Open modal
+                themeSwitcherBtn.addEventListener('click', () => {
+                    themeModal.classList.remove('hidden');
+                    console.log('🎨 Theme modal opened');
+                });
+                
+                // Close modal
+                if (closeThemeModal) {
+                    closeThemeModal.addEventListener('click', () => {
+                        themeModal.classList.add('hidden');
+                        console.log('✖️ Theme modal closed');
+                    });
+                }
+                
+                // Close on backdrop click
+                themeModal.addEventListener('click', (e) => {
+                    if (e.target === themeModal) {
+                        themeModal.classList.add('hidden');
+                    }
+                });
+                
+                // Theme selection
+                themeOptions.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const theme = btn.dataset.theme;
+                        const themeStylesheet = document.getElementById('theme-stylesheet');
+                        if (themeStylesheet) {
+                            themeStylesheet.href = `../css/themes/${theme}.css`;
+                            localStorage.setItem('selectedTheme', theme);
+                            console.log(`✅ Theme changed to: ${theme}`);
+                            themeModal.classList.add('hidden');
+                        }
+                    });
+                });
+                
+                // Load saved theme
+                const savedTheme = localStorage.getItem('selectedTheme') || 'purple';
+                const themeStylesheet = document.getElementById('theme-stylesheet');
+                if (themeStylesheet) {
+                    themeStylesheet.href = `../css/themes/${savedTheme}.css`;
+                    console.log(`📂 Loaded saved theme: ${savedTheme}`);
+                }
+            }
+            
+            // Setup help modal
+            const specsBtn = document.getElementById('specs-btn');
+            const helpModal = document.getElementById('help-modal');
+            const closeHelpModal = document.getElementById('close-help-modal');
+            
+            if (specsBtn && helpModal) {
+                // Open help modal - default to Usage tab
+                specsBtn.addEventListener('click', () => {
+                    helpModal.classList.remove('hidden');
+                    // Switch to Usage tab by default
+                    switchHelpTab('usage');
+                    updateSpecsValues();
+                });
+                
+                if (closeHelpModal) {
+                    closeHelpModal.addEventListener('click', () => {
+                        helpModal.classList.add('hidden');
+                    });
+                }
+                
+                helpModal.addEventListener('click', (e) => {
+                    if (e.target === helpModal) {
+                        helpModal.classList.add('hidden');
+                    }
+                });
+                
+                // Tab switching
+                const helpTabs = document.querySelectorAll('.help-tab');
+                helpTabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        switchHelpTab(tab.dataset.tab);
+                    });
+                });
+            }
+            
+            // Function to switch help modal tabs
+            function switchHelpTab(tabName) {
+                const helpTabs = document.querySelectorAll('.help-tab');
+                
+                // Update tab buttons
+                helpTabs.forEach(t => {
+                    if (t.dataset.tab === tabName) {
+                        t.style.background = 'var(--primary-color)';
+                        t.style.color = 'white';
+                        t.classList.add('active');
+                    } else {
+                        t.style.background = 'var(--bg-secondary)';
+                        t.style.color = 'var(--text-primary)';
+                        t.classList.remove('active');
+                    }
+                });
+                
+                // Update tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+                
+                // Update dynamic values when switching to specs tab
+                if (tabName === 'specs') {
+                    updateSpecsValues();
+                }
+            }
+            
+            // Function to update specs with current form values
+            function updateSpecsValues() {
+                try {
+                    // Get form values
+                    const gradeInput = document.getElementById('grade');
+                    const netweightInput = document.getElementById('netweight');
+                    const lotInput = document.getElementById('lot');
+                    const fromPageInput = document.getElementById('frompage');
+                    const idateInput = document.getElementById('idate');
+                    const shiftInput = document.getElementById('shift');
+                    
+                    // Update Grade
+                    if (gradeInput && gradeInput.value) {
+                        document.getElementById('current-grade').textContent = gradeInput.value;
+                    } else {
+                        document.getElementById('current-grade').textContent = '-';
+                    }
+                    
+                    // Update Net Weight
+                    if (netweightInput && netweightInput.value) {
+                        const formatted = parseInt(netweightInput.value).toLocaleString('en-US');
+                        document.getElementById('current-netweight').textContent = formatted + ' KG';
+                    } else {
+                        document.getElementById('current-netweight').textContent = '-';
+                    }
+                    
+                    // Update Lot
+                    if (lotInput && lotInput.value) {
+                        document.getElementById('current-lot').textContent = lotInput.value;
+                    } else {
+                        document.getElementById('current-lot').textContent = '-';
+                    }
+                    
+                    // Update Running Number
+                    if (fromPageInput && idateInput && shiftInput) {
+                        const page = String(fromPageInput.value || '1').padStart(3, '0');
+                        const date = String(idateInput.value || '10').padStart(2, '0');
+                        const shift = shiftInput.value || 'กลาง';
+                        const shiftMap = { 'กลางวัน': 'M', 'กลางคืน': 'N', 'ดึก': 'M', 'กลาง': 'M' };
+                        const shiftCode = shiftMap[shift] || shift.charAt(0).toUpperCase();
+                        document.getElementById('current-running').textContent = `${page}-${date}-${shiftCode}`;
+                    }
+                    
+                    // Update Current Unit
+                    const unitBtns = document.querySelectorAll('.unit-btn');
+                    unitBtns.forEach(btn => {
+                        if (btn.classList.contains('active')) {
+                            const unit = btn.dataset.unit || btn.textContent.trim();
+                            document.getElementById('current-unit').textContent = unit;
+                        }
+                    });
+                    
+                    console.log('✅ Specs values updated');
+                } catch (error) {
+                    console.log('⚠️ Unable to update specs values:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

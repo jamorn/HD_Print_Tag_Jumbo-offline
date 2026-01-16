@@ -1,0 +1,170 @@
+/**
+ * Green Fresh Theme
+ * Clean green theme inspired by nature
+ */
+
+:root {
+    --primary-color: #4CAF50;
+    --secondary-color: #81C784;
+    --bg-primary: #d1f7d3;
+    --bg-secondary: #a5d6a7;
+    --bg-card: #e8f5e9;
+    --bg-card-header: #4CAF50;
+    --bg-input: #f1f8e9;
+    --border-color: #66bb6a;
+    --border-input: #66bb6a;
+    --text-primary: #1b5e20;
+    --text-secondary: #2e7d32;
+    --text-label: #2e7d32;
+    --hover-row: rgba(76, 175, 80, 0.2);
+    --selected-row: rgba(76, 175, 80, 0.3);
+}
+
+body {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, #e8f5e9 100%);
+    color: var(--text-primary);
+}
+
+/* Card backgrounds */
+.card-bg {
+    background-color: #ffffff;
+    border: 2px solid var(--border-color);
+}
+
+.card-header-bg {
+    background: #4CAF50;
+    color: #ffffff;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #388E3C;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: #ffffff;
+}
+
+.btn-secondary:hover {
+    background-color: #66bb6a;
+}
+
+/* Form inputs */
+input, select, textarea {
+    background-color: #f1f8e9;
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary-color);
+}
+
+/* Checkboxes */
+input[type="checkbox"]:checked {
+    accent-color: var(--primary-color);
+}
+
+/* Table styles */
+.dark-table thead th {
+    background: #4CAF50;
+    color: #ffffff;
+    border: 1px solid var(--border-color);
+}
+
+.dark-table tbody th,
+.dark-table tbody td {
+    border: 1px solid #c8e6c9;
+    color: var(--text-primary);
+}
+
+.dark-table tbody tr:nth-child(even) {
+    background-color: #f1f8e9;
+}
+
+.dark-table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.dark-table tbody tr:hover {
+    background-color: rgba(76, 175, 80, 0.2) !important;
+}
+
+.dark-table tbody tr.selected {
+    background-color: rgba(76, 175, 80, 0.3) !important;
+}
+
+/* Table row hover for theme-aware tables */
+.data-table-row:hover {
+    background-color: var(--hover-row) !important;
+}
+
+.data-table-row.selected-row {
+    background-color: var(--selected-row) !important;
+}
+
+/* Text colors */
+h1, h2, h3, .text-white {
+    color: var(--text-primary) !important;
+}
+
+.text-gray-400, .text-gray-300, .text-gray-200 {
+    color: var(--text-secondary) !important;
+}
+
+/* Select dropdown arrow */
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M7 10l5 5 5-5H7z' fill='%232e7d32'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1.5em;
+    padding-right: 2.5rem;
+}
+
+/* Number input spinner buttons */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1;
+    height: 100%;
+    cursor: pointer;
+}
+
+/* Firefox number input buttons */
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* Keep spinner functionality but style them properly */
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Theme text classes */
+.theme-text-primary {
+    color: var(--text-primary);
+}
+
+.theme-header-text {
+    color: #ffffff !important;
+}
+
+/* Card header specific styles */
+.theme-card-header .theme-text-primary {
+    color: #ffffff !important;
+}

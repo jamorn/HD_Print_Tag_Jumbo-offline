@@ -1,0 +1,194 @@
+/**
+ * Logo Component - Handles rendering of certification logos and details
+ */
+
+class LogoComponent {
+  constructor(config) {
+    this.config = config;
+  }
+
+  /**
+   * Get logo positions based on which logos are enabled
+   */
+  getLogoPositions(template) {
+    // Template 1: No logos
+    if (template === 'template1') {
+      return { mfg: null, qr: null, sirim: null };
+    }
+    
+    // Template 2: MFG + QR only (centered in left section)
+    // Total logo width: 120 + 15 + 110 = 245px
+    // Left section: 550px, center at 275px
+    // Start: 275 - (245/2) = 152.5px
+    // MFG: 152px, QR: 152 + 120 + 15 = 287px
+    if (template === 'template2') {
+      return {
+        mfg: { left: 152, top: 430, width: 120 },
+        qr: { left: 287, top: 430, width: 110 },
+        sirim: null,
+        sirimDetail: null
+      };
+    }
+    
+    // Template 3: All logos (centered in left section)
+    // Total width: 120 + 15 + 110 + 15 + 150 = 410px
+    // Center: (550-410)/2 = ~70px
+    return {
+      mfg: { left: 75, top: 430, width: 120 },
+      qr: { left: 210, top: 430, width: 110 },
+      sirim: { left: 335, top: 430, width: 150 },
+      sirimDetail: { left: 280, top: 550 }
+    };
+  }
+
+  /**
+   * Render MFG logo (image only)
+   */
+  renderMfgLogo(position) {
+    if (!position) return '';
+    
+    return `
+      <div style="position: absolute; top: ${position.top}px; left: ${position.left}px;"> <!-- DEBUG: border: 2px dashed red; -->
+        <img src="images/mfg.png" 
+             style="width: ${position.width}px !important;" 
+             alt="MFG Logo" />
+      </div>
+    `;
+  }
+
+  /**
+   * Render MFG/TIS text (below logo)
+   * Different text for each unit
+   */
+  renderMfgText(position, unit) {
+    if (!position) return '';
+    
+    // Determine TIS standard text based on unit
+    let tisText = '';
+    if (unit === 'HDPE') {
+      tisText = 'TIS. 2599-2544 (2011)';
+    } else if (unit === 'PP' || unit === 'PPC') {
+      tisText = 'TIS. 1360-2566';
+    }
+    
+    // Position text below the logo (logo height ~80px, add 5px gap)
+    const textTop = position.top + 120;
+    
+    return `
+      <div style="position: absolute; top: ${textTop}px; left: ${position.left - 20}px; width: ${position.width + 40}px; text-align: center; font-size: 12px; font-weight: bold; font-family: Arial, Helvetica, sans-serif;">
+        ${tisText}
+      </div>
+    `;
+  }
+
+  /**
+   * Render QR Code/IRPC logo (Dynamic QR generation from URL)
+   */
+  renderQRLogo(position, unitConfig = {}) {
+    if (!position) return '';
+    
+    // Get QR code URL from unit config defaults
+    const qrUrl = unitConfig.defaults?.qrCodeUrl || unitConfig.qrCodeUrl || 'https://appdb.tisi.go.th/Q/i.php?d=1351525040';
+    
+    console.log('🔍 QR Logo - Unit Config:', unitConfig);
+    console.log('🔍 QR Logo - QR URL:', qrUrl);
+    
+    // Create unique ID for this QR container
+    const containerId = `qr-logo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Generate QR code after DOM is ready
+    setTimeout(() => {
+      const container = document.getElementById(containerId);
+      if (container && typeof QRCode !== 'undefined') {
+        try {
+          // Clear container
+          container.innerHTML = '';
+          
+          // Generate QR code
+          new QRCode(container, {
+            text: qrUrl,
+            width: position.width,
+            height: position.width,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+          });
+          
+          console.log('✅ QR Code generated from URL:', qrUrl);
+        } catch (error) {
+          console.error('❌ Failed to generate QR code:', error);
+          container.innerHTML = `<div style="width: ${position.width}px; height: ${position.width}px; border: 2px dashed red; display: flex; align-items: center; justify-content: center; font-size: 10px; color: red;">QR Error</div>`;
+        }
+      } else {
+        console.error('❌ QRCode library not loaded or container not found');
+      }
+    }, 100);
+    
+    return `
+      <div id="${containerId}" style="position: absolute; top: ${position.top}px; left: ${position.left}px;"> <!-- DEBUG: border: 2px dashed red; -->
+        <!-- QR Code will be generated here -->
+      </div>
+    `;
+  }
+
+  /**
+   * Render SIRIM logo
+   */
+  renderSirimLogo(position) {
+    if (!position) return '';
+    
+    return `
+      <div style="position: absolute; top: ${position.top}px; left: ${position.left}px;"> <!-- DEBUG: border: 2px dashed red; -->
+        <img src="images/sirim_logo.png" 
+             style="width: ${position.width}px !important;" 
+             alt="SIRIM Logo" />
+      </div>
+    `;
+  }
+
+  /**
+   * Render SIRIM certification details
+   */
+  renderSirimDetails(data, position) {
+    if (!position) return '';
+    
+    const { sirim_title1, sirim_title2, sirim_title3 } = data;
+    
+    return `
+      <div style="position: absolute; top: ${position.top}px; left: ${position.left + 25}px; width: 210px; text-align: center; font-size: 10px; line-height: 1.3; font-family: Arial, Helvetica, sans-serif;">
+        ${sirim_title1 || ''}<br>
+        ${sirim_title2 || ''}<br>
+        ${sirim_title3 || ''}
+      </div>
+    `;
+  }
+
+  /**
+   * Render all logos based on template
+   */
+  render(template, data) {
+    const positions = this.getLogoPositions(template);
+    
+    // Get unit config to check for SIRIM logo support
+    const unitConfig = data.unitConfig || {};
+    const hasSirimLogo = unitConfig.hasSirimLogo !== false; // Default true for HDPE
+    const unit = data.unit || 'HDPE'; // Get current unit
+    
+    return `
+      <div class="logo-section">
+        <!-- DEBUG: Vertical center line (uncomment to show) -->
+        <!-- <div style="position: absolute; left: 275px; top: 0; width: 2px; height: 100%; background: red; opacity: 0.5;"></div> -->
+        ${this.renderMfgLogo(positions.mfg)}
+        ${this.renderMfgText(positions.mfg, unit)}
+        ${this.renderQRLogo(positions.qr, unitConfig)}
+        ${hasSirimLogo ? this.renderSirimLogo(positions.sirim) : ''}
+        ${hasSirimLogo && positions.sirimDetail ? this.renderSirimDetails(data, positions.sirimDetail) : ''}
+      </div>
+    `;
+  }
+}
+
+// Export
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = LogoComponent;
+}

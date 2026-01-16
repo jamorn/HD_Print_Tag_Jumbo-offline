@@ -1,0 +1,57 @@
+<!-- Grade History Modal -->
+<div id="history-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div class="theme-card rounded-2xl shadow-2xl max-w-5xl w-full p-6 modal-card">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <div class="modal-icon">📋</div>
+                <div>
+                    <h2 class="text-2xl font-bold theme-text-primary">ประวัติ Grade - <span id="history-unit-title">HDPE</span></h2>
+                    <p class="text-sm theme-text-secondary">เลือกประวัติเพื่อโหลดข้อมูลลงฟอร์ม</p>
+                </div>
+            </div>
+            <button type="button" id="close-history-modal" class="text-gray-500 hover:text-gray-700" title="ปิด">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="mb-4">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <input type="text" 
+                       id="history-search" 
+                       class="w-full pl-10 pr-4 py-2 border rounded-lg shadow-sm theme-input"
+                       placeholder="ค้นหา Grade...">
+            </div>
+        </div>
+
+        <!-- History Table -->
+        <div class="overflow-x-auto max-h-96 overflow-y-auto border rounded-lg">
+            <table class="w-full text-sm">
+                <thead class="sticky top-0 theme-bg-secondary border-b theme-border">
+                    <tr>
+                        <th class="px-4 py-3 text-center">#</th>
+                        <th class="px-4 py-3 text-left">GRADE</th>
+                        <th class="px-4 py-3 text-center">LOT</th>
+                        <th class="px-4 py-3 text-center">น้ำหนัก</th>
+                        <th class="px-4 py-3 text-center">วันที่บันทึก</th>
+                        <th class="px-4 py-3 text-center">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table-body" class="theme-text-primary">
+                    <!-- Will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4 text-center theme-text-secondary text-sm">
+            💡 คลิกที่แถรหรือปุ่ม "โหลด" เพื่อนำข้อมูลไปใส่ในฟอร์ม
+        </div>
+    </div>
+</div>

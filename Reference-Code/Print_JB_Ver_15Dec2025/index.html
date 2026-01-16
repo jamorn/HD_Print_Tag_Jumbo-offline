@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Tag Jumbo - Multi-Unit System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="#">
+    <link href="./css/theme.css" rel="stylesheet">
+    <link id="theme-stylesheet" rel="stylesheet" href="./css/themes/purple.css">
+    <link href="./css/index.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="modern-navbar fixed top-0 left-0 right-0 z-50">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex gap-2">
+                    <button type="button" data-unit="HDPE" class="unit-btn active">HDPE</button>
+                    <button type="button" data-unit="PP" class="unit-btn">PP</button>
+                    <button type="button" data-unit="PPC" class="unit-btn">PPC</button>
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" id="specs-btn" class="icon-btn" title="คู่มือและรายละเอียด">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </button>
+                    <button type="button" id="theme-switcher-btn" class="icon-btn" title="เปลี่ยนธีม">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="theme-card rounded-2xl shadow-2xl max-w-4xl w-full p-6 modal-card">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="modal-icon">📘</div>
+                    <div>
+                        <h2 class="text-2xl font-bold theme-text-primary">คู่มือการใช้งาน</h2>
+                        <p class="text-sm theme-text-secondary">Tag Printing System Guide</p>
+                    </div>
+                </div>
+                <button type="button" id="close-help-modal" class="text-gray-500 hover:text-gray-700" title="ปิดคู่มือ">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex gap-2 mb-4 border-b pb-2 tab-border">
+                <button type="button" class="help-tab active px-4 py-2 rounded-lg font-semibold text-sm transition-all" data-tab="usage">การใช้งาน</button>
+                <button type="button" class="help-tab px-4 py-2 rounded-lg font-semibold text-sm transition-all" data-tab="templates">Templates</button>
+                <button type="button" class="help-tab px-4 py-2 rounded-lg font-semibold text-sm transition-all" data-tab="specs">รายละเอียด</button>
+                <button type="button" class="help-tab px-4 py-2 rounded-lg font-semibold text-sm transition-all" data-tab="data">จัดการข้อมูล</button>
+            </div>
+            <div id="tab-usage" class="tab-content">
+                <div class="rounded-xl p-5 mb-4 usage-box">
+                    <h3 class="text-lg font-semibold mb-4 theme-text-primary">🎯 ขั้นตอนการใช้งาน</h3>
+                    <ol class="space-y-3">
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm step-number">1</span>
+                            <span class="theme-text-primary"><strong>เลือก Unit</strong> - คลิก HDPE, PP, หรือ PPC ที่ navbar ด้านบน</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm step-number">2</span>
+                            <span class="theme-text-primary"><strong>เลือก Grade</strong> - คลิกที่ตารางเพื่อเลือก Grade</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm step-number">3</span>
+                            <span class="theme-text-primary"><strong>กรอกข้อมูล</strong> - Lot, หน้า, กะ, วันที่</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm step-number">4</span>
+                            <span class="theme-text-primary"><strong>Generate</strong> - คลิกปุ่ม "ยืนยันและแสดงตัวอย่างหน้าพิมพ์"</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm step-number">5</span>
+                            <span class="theme-text-primary"><strong>Print</strong> - กด Ctrl+P และตั้งค่า: Margins = None, Scale = 100%, Background graphics = เปิด</span>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div id="tab-templates" class="tab-content hidden">
+                <div class="space-y-3">
+                    <div class="rounded-xl p-4 usage-box">
+                        <h4 class="font-semibold mb-2 spec-title">📄 Template 1: ไม่มี QR Code + มาตร.</h4>
+                        <p class="text-sm theme-text-secondary">แสดงเฉพาะข้อมูลพื้นฐาน (สำหรับ SUB grades)</p>
+                    </div>
+                    <div class="rounded-xl p-4 usage-box">
+                        <h4 class="font-semibold mb-2 spec-title">📄 Template 2: มี QR Code + Logo</h4>
+                        <p class="text-sm theme-text-secondary">พร้อมโลโก้ MFG + QR Code (PP/PPC)</p>
+                    </div>
+                    <div class="rounded-xl p-4 usage-box">
+                        <h4 class="font-semibold mb-2 spec-title">📄 Template 3: มี QR Code + มาตร. + SIRIM</h4>
+                        <p class="text-sm theme-text-secondary">ครบทุกรายละเอียด รวม Sirim Certification (HDPE)</p>
+                    </div>
+                </div>
+            </div>
+            <div id="tab-specs" class="tab-content hidden">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="rounded-xl p-4 spec-card-bg">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2 spec-title">📄 Grade</h4>
+                        <div class="text-sm space-y-1 theme-text-primary">
+                            <div><strong>Font:</strong> Arial (MS: Arial)</div>
+                            <div><strong>Size:</strong> <span class="px-2 py-1 rounded font-bold spec-size-badge">60px / 45pt</span></div>
+                            <div><strong>Current Value:</strong> <span id="current-grade" class="font-bold spec-value">-</span></div>
+                        </div>
+                    </div>
+                    <div class="rounded-xl p-4 spec-card-bg">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2 spec-title">⚖️ Net Weight</h4>
+                        <div class="text-sm space-y-1 theme-text-primary">
+                            <div><strong>Font:</strong> Arial (MS: Arial)</div>
+                            <div><strong>Size:</strong> <span class="px-2 py-1 rounded font-bold spec-size-badge">50px / 38pt</span></div>
+                            <div><strong>Current Value:</strong> <span id="current-netweight" class="font-bold spec-value">-</span></div>
+                        </div>
+                    </div>
+                    <div class="rounded-xl p-4 spec-card-bg">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2 spec-title">🔖 Lot Number</h4>
+                        <div class="text-sm space-y-1 theme-text-primary">
+                            <div><strong>Font:</strong> Arial (MS: Arial)</div>
+                            <div><strong>Size:</strong> <span class="px-2 py-1 rounded font-bold spec-size-badge">50px / 38pt</span></div>
+                            <div><strong>Current Value:</strong> <span id="current-lot" class="font-bold spec-value">-</span></div>
+                        </div>
+                    </div>
+                    <div class="rounded-xl p-4 spec-card-bg">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2 spec-title">🔢 Running Number</h4>
+                        <div class="text-sm space-y-1 theme-text-primary">
+                            <div><strong>Font:</strong> Arial (MS: Arial)</div>
+                            <div><strong>Size:</strong> <span class="px-2 py-1 rounded font-bold spec-size-badge">30px / 23pt</span></div>
+                            <div><strong>Current:</strong> <span id="current-running" class="font-bold spec-value">001-10-M</span> (Page-Date-Shift)</div>
+                        </div>
+                    </div>
+                    <div class="rounded-xl p-4 spec-card-bg">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2 spec-title">🏷️ Print Controls</h4>
+                        <div class="text-sm space-y-1 theme-text-primary">
+                            <div><strong>Font:</strong> Arial (MS: Arial)</div>
+                            <div><strong>Size:</strong> <span class="px-2 py-1 rounded font-bold spec-size-badge">50px / 38pt</span></div>
+                            <div><strong>F/T:</strong> <span class="px-2 py-1 rounded font-bold spec-marker">(F/T)</span> หน้าแรก</div>
+                            <div><strong>L/T:</strong> <span class="px-2 py-1 rounded font-bold spec-marker">(L/T)</span> หน้าสุดท้าย</div>
+                        </div>
+                    </div>
+                    <div class="rounded-xl p-4 spec-card-bg">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2 spec-title">📋 Description</h4>
+                        <div class="text-sm space-y-1 theme-text-primary">
+                            <div><strong>Title1:</strong> <span class="px-2 py-1 rounded font-bold spec-size-badge">60px / 45pt</span></div>
+                            <div><strong>Title2:</strong> <span class="px-2 py-1 rounded font-bold spec-size-badge">30px / 23pt</span></div>
+                            <div><strong>Current Unit:</strong> <span id="current-unit" class="font-bold spec-value">HDPE</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="tab-data" class="tab-content hidden">
+                <div class="space-y-4">
+                    <!-- Status Section -->
+                    <div class="rounded-xl p-4 usage-box">
+                        <h3 class="text-lg font-semibold mb-4 theme-text-primary">📊 สถานะข้อมูล Grade History</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="text-center p-3 rounded-lg border border-opacity-20 border-gray-500">
+                                <div class="text-2xl font-bold theme-text-primary" id="hdpe-count">0</div>
+                                <div class="text-sm text-gray-600">HDPE Records</div>
+                            </div>
+                            <div class="text-center p-3 rounded-lg border border-opacity-20 border-gray-500">
+                                <div class="text-2xl font-bold theme-text-primary" id="pp-count">0</div>
+                                <div class="text-sm text-gray-600">PP Records</div>
+                            </div>
+                            <div class="text-center p-3 rounded-lg border border-opacity-20 border-gray-500">
+                                <div class="text-2xl font-bold theme-text-primary" id="ppc-count">0</div>
+                                <div class="text-sm text-gray-600">PPC Records</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="rounded-xl p-4 usage-box">
+                        <h3 class="text-lg font-semibold mb-4 theme-text-primary">⚙️ การจัดการข้อมูล</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button id="import-data-btn" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                นำเข้าข้อมูล
+                            </button>
+                            <button id="export-data-btn" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+                                </svg>
+                                ส่งออกข้อมูลปัจจุบัน
+                            </button>
+                            <button id="reset-data-btn" class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                                รีเซ็ตเป็นค่าเริ่มต้น
+                            </button>
+                        </div>
+                        
+                        <!-- Hidden file input for import -->
+                        <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                        
+                        <div class="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+                            <p class="text-sm text-yellow-800">
+                                <strong>คำเตือน:</strong> การรีเซ็ตข้อมูลจะลบข้อมูล Grade History ทั้งหมด
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Information Section -->
+                    <div class="rounded-xl p-4 usage-box">
+                        <h3 class="text-lg font-semibold mb-4 theme-text-primary">ℹ️ ข้อมูลเพิ่มเติม</h3>
+                        <div class="text-sm theme-text-secondary space-y-2">
+                            <p><strong>การเก็บข้อมูล:</strong> ข้อมูลถูกเก็บใน LocalStorage ของ Browser</p>
+                            <p><strong>การสำรองข้อมูล:</strong> สามารถส่งออกข้อมูลเป็นไฟล์ JSON เพื่อสำรองข้อมูล</p>
+                            <p><strong>ความปลอดภัย:</strong> ข้อมูลจะถูกเก็บไว้ในเครื่องของคุณเท่านั้น</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grade History Modal -->
+    <div id="history-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="theme-card rounded-2xl shadow-2xl max-w-5xl w-full p-6 modal-card">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="modal-icon">📋</div>
+                    <div>
+                        <h2 class="text-2xl font-bold theme-text-primary">ประวัติ Grade - <span id="history-unit-title">HDPE</span></h2>
+                        <p class="text-sm theme-text-secondary">เลือกประวัติเพื่อโหลดข้อมูลลงฟอร์ม</p>
+                    </div>
+                </div>
+                <button type="button" id="close-history-modal" class="text-gray-500 hover:text-gray-700" title="ปิด">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Search -->
+            <div class="mb-4">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <input type="text" 
+                           id="history-search" 
+                           class="w-full pl-10 pr-4 py-2 border rounded-lg shadow-sm theme-input"
+                           placeholder="ค้นหา Grade...">
+                </div>
+            </div>
+
+            <!-- History Table -->
+            <div class="overflow-x-auto" style="max-height: 400px; overflow-y: auto;">
+                <table class="w-full text-sm">
+                    <thead class="sticky top-0 border-b theme-border" style="background-color: var(--bg-secondary);">
+                        <tr>
+                            <th class="px-4 py-3 text-center theme-text-primary">#</th>
+                            <th class="px-4 py-3 text-left theme-text-primary">GRADE</th>
+                            <th class="px-4 py-3 text-center theme-text-primary">LOT</th>
+                            <th class="px-4 py-3 text-center theme-text-primary">น้ำหนัก</th>
+                            <th class="px-4 py-3 text-center theme-text-primary">วันที่บันทึก</th>
+                            <th class="px-4 py-3 text-center theme-text-primary">ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body" class="theme-text-primary">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 p-3 rounded" style="background-color: var(--bg-secondary);">
+                <p class="text-center theme-text-secondary text-sm">
+                    💡 คลิกที่แถวหรือปุ่ม "โหลด" เพื่อนำข้อมูลไปใส่ในฟอร์ม
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Modal -->
+    <div id="theme-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="theme-card rounded-2xl shadow-2xl max-w-2xl w-full p-6 modal-card">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold theme-text-primary">🎨 เลือกธีม</h2>
+                <button type="button" id="close-theme-modal" class="text-gray-500 hover:text-gray-700" title="ปิดหน้าต่างเลือกธีม">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <button type="button" data-theme="purple" class="theme-option-btn p-4 rounded-lg border-2 border-transparent hover:border-purple-500 transition-all">
+                    <div class="w-full h-20 rounded-md mb-3 theme-gradient-purple"></div>
+                    <p class="font-semibold text-center">Purple</p>
+                </button>
+                <button type="button" data-theme="blue" class="theme-option-btn p-4 rounded-lg border-2 border-transparent hover:border-blue-500 transition-all">
+                    <div class="w-full h-20 rounded-md mb-3 theme-gradient-blue"></div>
+                    <p class="font-semibold text-center">Blue</p>
+                </button>
+                <button type="button" data-theme="green" class="theme-option-btn p-4 rounded-lg border-2 border-transparent hover:border-green-500 transition-all">
+                    <div class="w-full h-20 rounded-md mb-3 theme-gradient-green"></div>
+                    <p class="font-semibold text-center">Green</p>
+                </button>
+                <button type="button" data-theme="pink" class="theme-option-btn p-4 rounded-lg border-2 border-transparent hover:border-pink-500 transition-all">
+                    <div class="w-full h-20 rounded-md mb-3 theme-gradient-pink"></div>
+                    <p class="font-semibold text-center">Pink</p>
+                </button>
+                <button type="button" data-theme="dark" class="theme-option-btn p-4 rounded-lg border-2 border-transparent hover:border-gray-500 transition-all">
+                    <div class="w-full h-20 rounded-md mb-3 theme-gradient-dark"></div>
+                    <p class="font-semibold text-center">Dark</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app" class="container mx-auto px-4 py-6 max-w-7xl mt-20">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold theme-text-primary mb-3 header-title">HDPE Print Tag Jumbo</h1>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-2">
+                <p id="currentDateTime" class="text-sm font-bold bg-white bg-opacity-90 px-4 py-2 rounded-lg inline-block shadow-sm" style="color: #1e40af;"></p>
+                <span id="shiftStatus" class="text-sm font-bold bg-white bg-opacity-90 px-4 py-2 rounded-lg inline-block shadow-sm" style="color: #0e7490;"></span>
+            </div>
+        </div>
+        
+        <!-- Content Container -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Left Column: Table Component -->
+            <div id="tableContainer" class="theme-card rounded-xl border theme-border shadow-lg p-6">
+                <div class="text-center theme-text-primary">
+                    <div class="inline-block w-10 h-10 border-4 border-t-transparent rounded-full animate-spin mb-3" style="border-color: var(--primary-color); border-top-color: transparent;"></div>
+                    <p class="font-semibold">กำลังโหลดตาราง Grade...</p>
+                </div>
+            </div>
+
+            <!-- Right Column: Form Component -->
+            <div id="formContainer" class="theme-card rounded-xl border theme-border shadow-lg p-6">
+                <div class="text-center theme-text-primary">
+                    <div class="inline-block w-10 h-10 border-4 border-t-transparent rounded-full animate-spin mb-3" style="border-color: var(--primary-color); border-top-color: transparent;"></div>
+                    <p class="font-semibold">กำลังโหลดฟอร์ม...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load scripts in order -->
+    <script src="./js/unitConfig.js"></script>
+    <script src="./js/dataInitializer.js"></script>
+    <script src="./js/gradeHistoryManager.js"></script>
+    <script src="./js/tableComponent.js"></script>
+    <script src="./js/formComponent.js"></script>
+    <script src="./js/hdpe_pellet.js"></script>
+    <script src="./js/shift_compare.js"></script>
+    <script src="./js/sweetalert2.all.min.js"></script>
+    <script src="./js/theme.js"></script>
+    <script src="./js/main.js"></script>
+</body>
+</html>

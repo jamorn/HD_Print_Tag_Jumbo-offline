@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Print Tag Jumbo - Multi Unit</title>
+  <link rel="shortcut icon" href="#" />
+  
+  <!-- Paper CSS for printing -->
+  <link rel="stylesheet" href="src/css/paper.css" />
+  
+  <!-- QRCode Library -->
+  <script src="src/js/modules/utils/qrcode.min.js"></script>
+
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Hide background image when printing */
+    @media print {
+      .sheet {
+        background-image: none !important;
+      }
+      .no-print,
+      .scissors-separator,
+      .sheet:not(:last-child)::after {
+        display: none !important;
+      }
+    }
+
+    /* Show background image on screen */
+    @media screen {
+      .sheet {
+        background-image: url(src/images/polimaxx.jpg);
+        background-size: cover;
+      }
+    }
+
+    .bno {
+      border: 2px solid black;
+      height: 40px;
+      width: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      margin: 0 5px;
+      vertical-align: middle;
+    }
+
+    .bno-middle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      margin: 0 5px;
+      vertical-align: middle;
+    }
+
+    .sheet {
+      padding: 10mm;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      page-break-after: always;
+      margin-bottom: 40px;
+      overflow: visible;
+    }
+
+    .sheet:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Dashed line separator between pages */
+    .sheet:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      height: 3px;
+      background-image: repeating-linear-gradient(
+        to right,
+        rgba(231, 76, 60, 0.8) 0px,
+        rgba(231, 76, 60, 0.8) 10px,
+        transparent 10px,
+        transparent 20px
+      );
+      z-index: 1;
+    }
+
+    /* Scissors separator */
+    .scissors-separator {
+      position: absolute;
+      bottom: -37px;
+      right: 5%;
+      transform: rotate(90deg);
+      font-size: 32px;
+      color: #e74c3c;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      z-index: 2;
+      animation: scissorsPacman 8s linear infinite;
+      pointer-events: none;
+    }
+
+    .sheet:last-child .scissors-separator {
+      display: none;
+    }
+
+    @keyframes scissorsPacman {
+      0% {
+        right: 5%;
+        transform: rotate(90deg);
+      }
+      48% {
+        right: 95%;
+        transform: rotate(90deg);
+      }
+      50% {
+        right: 95%;
+        transform: rotate(270deg);
+      }
+      98% {
+        right: 5%;
+        transform: rotate(270deg);
+      }
+      100% {
+        right: 5%;
+        transform: rotate(90deg);
+      }
+    }
+
+    .header {
+      position: absolute;
+      top: 150px;
+      left: 50px;
+      text-align: center;
+      width: 90%;
+    }
+    
+    /* Control Panel - Hide on print */
+    .control-panel {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #388E3C;
+    }
+
+    /* Help Button */
+    .help-btn {
+      position: fixed;
+      top: 30px;
+      right: 340px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+      transition: all 0.3s;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .help-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal.hidden {
+      display: none;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 32px;
+      border-radius: 24px;
+      max-width: 900px;
+      margin: 0 16px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .modal-close {
+      color: #9ca3af;
+      font-size: 24px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .modal-close:hover {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .tab-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 8px;
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .tab-btn.active {
+      background: #7c3aed;
+      color: white;
+    }
+
+    .tab-btn:not(.active) {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .spec-card {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .spec-card h4 {
+      font-weight: 600;
+      color: #7c3aed;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    @media print {
+      .help-btn, .modal {
+        display: none !important;
+      }
+    }
+
+    /* Modal Header Styles */
+    .modal-header-icon-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-header-icon {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #7c3aed;
+      margin: 0;
+    }
+
+    .modal-subtitle {
+      font-size: 14px;
+      color: #6b7280;
+      margin: 4px 0 0 0;
+    }
+
+    /* Tab Content Styles */
+    .usage-container {
+      background: #f9fafb;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .usage-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #7c3aed;
+      margin-bottom: 16px;
+    }
+
+    .usage-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .usage-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .usage-number {
+      width: 24px;
+      height: 24px;
+      background: #7c3aed;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .usage-text strong {
+      color: #7c3aed;
+    }
+
+    .shortcuts-box {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      border-radius: 12px;
+      padding: 16px;
+      color: white;
+    }
+
+    .template-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .template-description {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .spec-info {
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .spec-size-badge {
+      background: #fef3c7;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .spec-value {
+      color: #059669;
+      font-weight: bold;
+    }
+
+    .spec-marker {
+      color: #dc2626;
+      background: #fee2e2;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body class="A4 landscape">
+  <!-- Control Panel (Hidden on print) -->
+  <!-- Help Button -->
+  <button class="help-btn no-print" id="helpBtn" title="คู่มือการใช้งาน">📘</button>
+
+  <!-- Help Modal -->
+  <div id="helpModal" class="modal hidden no-print">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-icon-wrapper">
+          <div class="modal-header-icon">
+            📘
+          </div>
+          <div>
+            <h2 class="modal-title">คู่มือการใช้งาน</h2>
+            <p class="modal-subtitle">Tag Printing System Guide</p>
+          </div>
+        </div>
+        <button class="modal-close" id="closeModal">✕</button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="usage">การใช้งาน</button>
+        <button class="tab-btn" data-tab="templates">Templates</button>
+        <button class="tab-btn" data-tab="specs">รายละเอียด</button>
+      </div>
+
+      <!-- Tab: Usage -->
+      <div id="tab-usage" class="tab-content active">
+        <div class="usage-container">
+          <h3 class="usage-title">🎯 ขั้นตอนการพิมพ์</h3>
+          <ol class="usage-list">
+            <li class="usage-item">
+              <span class="usage-number">1</span>
+              <span class="usage-text"><strong>ตรวจสอบข้อมูล</strong> - ตรวจสอบ Grade, Lot, Net Weight</span>
+            </li>
+            <li class="usage-item">
+              <span class="usage-number">2</span>
+              <span class="usage-text"><strong>ตั้งค่าเครื่องพิมพ์</strong> - Margins = None, Scale = 100%</span>
+            </li>
+            <li class="usage-item">
+              <span class="usage-number">3</span>
+              <span class="usage-text"><strong>เปิด Background Graphics</strong> - สำคัญมาก!</span>
+            </li>
+            <li class="usage-item">
+              <span class="usage-number">4</span>
+              <span class="usage-text"><strong>Print</strong> - กด 🖨️ หรือ Ctrl+P</span>
+            </li>
+          </ol>
+        </div>
+        <div class="shortcuts-box">
+          <strong>⚡ Shortcuts:</strong> Ctrl+P = พิมพ์ | Esc = ปิดคู่มือ
+        </div>
+      </div>
+
+      <!-- Tab: Templates -->
+      <div id="tab-templates" class="tab-content">
+        <div class="template-grid">
+          <div class="spec-card">
+            <h4>📄 Template 1: ไม่มี QR Code + มาตร.</h4>
+            <p class="template-description">แสดงเฉพาะข้อมูลพื้นฐาน (สำหรับ SUB grades)</p>
+          </div>
+          <div class="spec-card">
+            <h4>📄 Template 2: มี QR Code + Logo</h4>
+            <p class="template-description">พร้อมโลโก้ MFG + QR Code (PP/PPC)</p>
+          </div>
+          <div class="spec-card">
+            <h4>📄 Template 3: มี QR Code + มาตร. + SIRIM</h4>
+            <p class="template-description">ครบทุกรายละเอียด รวม Sirim Certification (HDPE)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Specs -->
+      <div id="tab-specs" class="tab-content">
+        <div class="specs-grid">
+          <div class="spec-card">
+            <h4>📄 Grade</h4>
+            <div class="spec-info">
+              <strong>Font:</strong> Arial (MS: Arial)<br>
+              <strong>Size:</strong> <span class="spec-size-badge">60px / 45pt</span><br>
+              <strong>Current Value:</strong> <span id="current-grade" class="spec-value">-</span>
+            </div>
+          </div>
+          <div class="spec-card">
+            <h4>⚖️ Net Weight</h4>
+            <div class="spec-info">
+              <strong>Font:</strong> Arial (MS: Arial)<br>
+              <strong>Size:</strong> <span class="spec-size-badge">50px / 38pt</span><br>
+              <strong>Current Value:</strong> <span id="current-netweight" class="spec-value">-</span>
+            </div>
+          </div>
+          <div class="spec-card">
+            <h4>🔖 Lot Number</h4>
+            <div class="spec-info">
+              <strong>Font:</strong> Arial (MS: Arial)<br>
+              <strong>Size:</strong> <span class="spec-size-badge">50px / 38pt</span><br>
+              <strong>Current Value:</strong> <span id="current-lot" class="spec-value">-</span>
+            </div>
+          </div>
+          <div class="spec-card">
+            <h4>🔢 Running Number</h4>
+            <div class="spec-info">
+              <strong>Font:</strong> Arial (MS: Arial)<br>
+              <strong>Size:</strong> <span class="spec-size-badge">30px / 23pt</span><br>
+              <strong>Current:</strong> <span id="current-running" class="spec-value">001-10-M</span> (Page-Date-Shift)
+            </div>
+          </div>
+          <div class="spec-card">
+            <h4>🏷️ Print Controls</h4>
+            <div class="spec-info">
+              <strong>Font:</strong> Arial (MS: Arial)<br>
+              <strong>Size:</strong> <span class="spec-size-badge">50px / 38pt</span><br>
+              <strong>F/T:</strong> <span class="spec-marker">(F/T)</span> หน้าแรก<br>
+              <strong>L/T:</strong> <span class="spec-marker">(L/T)</span> หน้าสุดท้าย
+            </div>
+          </div>
+          <div class="spec-card">
+            <h4>📋 Description</h4>
+            <div class="spec-info">
+              <strong>Title1:</strong> <span class="spec-size-badge">60px / 45pt</span><br>
+              <strong>Title2:</strong> <span class="spec-size-badge">30px / 23pt</span><br>
+              <strong>Current Unit:</strong> <span id="current-unit" class="spec-value">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="control-panel no-print">
+    <button class="btn btn-primary" onclick="window.print()">🖨️ Print (Ctrl+P)</button>
+    <button class="btn" onclick="window.close()">❌ Close</button>
+  </div>
+
+  <!-- Report Container -->
+  <main id="report-main">
+    <!-- Pages will be generated here -->
+  </main>
+
+  <script>
+    /**
+     * Get logo positions based on template
+     */
+    function getLogoPositions(showTIS, showQR, showSIRIM) {
+      // Template 1: No logos
+      if (!showTIS && !showQR && !showSIRIM) {
+        return { tisLeft: 0, qrLeft: 0, sirimLeft: 0 };
+      }
+      
+      // Template 2: TIS + QR
+      if (showTIS && showQR && !showSIRIM) {
+        return { tisLeft: 152, qrLeft: 287, sirimLeft: 0 };
+      }
+      
+      // Template 3: TIS + QR + SIRIM (HDPE only)
+      if (showTIS && showQR && showSIRIM) {
+        return { tisLeft: 75, qrLeft: 210, sirimLeft: 335 };
+      }
+      
+      return { tisLeft: 140, qrLeft: 270, sirimLeft: 0 };
+    }
+    
+    /**
+     * Generate Tag HTML for each page
+     */
+    function generateTagPage(pageNumber, data) {
+      const runningNumber = String(pageNumber).padStart(3, "0");
+      const date = String(data.idate || new Date().getDate()).padStart(2, "0");
+      const shift = data.shift || 'M';
+      
+      // Template-based logo rendering
+      const template = data.template || 'template1';
+      const controlprint = data.controlprint || { ft: false, lt: false };
+      
+      // Determine logo visibility
+      let showTIS = false;
+      let showQR = false;
+      let showSIRIM = false;
+      
+      if (template === 'template2') {
+        showTIS = true;
+        showQR = true;
+      } else if (template === 'template3') {
+        showTIS = true;
+        showQR = true;
+        showSIRIM = (data.unit === 'HDPE');
+      }
+      
+      console.log('🎯 Template:', template, 'Unit:', data.unit, 'ShowTIS:', showTIS, 'ShowQR:', showQR, 'ShowSIRIM:', showSIRIM);
+      
+      // FT/LT visibility
+      const ftDisplay = controlprint.ft && pageNumber === parseInt(data.fromPage, 10) ? "block" : "none";
+      const ltDisplay = controlprint.lt && pageNumber === parseInt(data.toPage, 10) ? "block" : "none";
+      
+      // Logo positions
+      const positions = getLogoPositions(showTIS, showQR, showSIRIM);
+      
+      return `
+        <section class="sheet">
+          <div class="header">
+            ${generateGradeHTML(data.grade)}
+          </div>
+          ${generateLotHTML(data.lot || "N/A", 780, 220)}
+          ${generateBoxes(runningNumber, date, shift, 775, 438)}
+          ${generateNetWeightHTML(data.netweight || "N/A", 895, 323, data.grade)}
+          
+          ${generateTextHTML(data.title1 || "HDPE", 172, 240, 60)}
+          ${generateTextHTML(data.title2 || "HIGH DENSITY POLYETHYLENE", 37, 320, 30)}
+          
+          ${showTIS ? generateTISLogo(positions.tisLeft, 430, 120, data.unit) : ''}
+          ${showQR ? generateQRCode(positions.qrLeft, 430, 110, data.qrCodeUrl) : ''}
+          ${showSIRIM ? generateSIRIMLogo(positions.sirimLeft, 430, 140, data.sirim_title1, data.sirim_title2, data.sirim_title3) : ''}
+          
+          ${generateFTHTML(820, 315, 50, ftDisplay)}
+          ${generateLTHTML(820, 495, 50, ltDisplay)}
+          <div class="scissors-separator">✂️</div>
+        </section>
+      `;
+    }
+    
+    // Helper function for grade centering calculations
+    function computeMaxFontByWidth(text, fontFamily, fontWeight, maxWidth, minSize, maxSize) {
+        let best = minSize;
+        let lo = minSize;
+        let hi = maxSize;
+        
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext && canvas.getContext('2d');
+        if (!ctx) return maxSize; // fallback
+        
+        while (lo <= hi) {
+            const mid = Math.floor((lo + hi) / 2);
+            ctx.font = `${fontWeight} ${mid}px ${fontFamily}`;
+            const width = ctx.measureText(text).width;
+            if (width <= maxWidth) {
+                best = mid;
+                lo = mid + 1; // try larger
+            } else {
+                hi = mid - 1; // too big
+            }
+        }
+        return best;
+    }
+
+    function generateGradeHTML(grade) {
+        let displayGrade = grade;
+
+        if (grade.includes("/SB/")) {
+            const parts = grade.split("/");
+            displayGrade = parts[0] + "/" + parts[1];
+        }
+
+        // Page geometry (A4 landscape @96dpi)
+        const pageWidth = 1122.5;
+        const centerX = pageWidth * 0.80; // grade center target (80% of page)
+        const margin = 12;
+        const spaceLeft = centerX - margin;
+        const spaceRight = pageWidth - centerX - margin;
+        const allowedWidth = Math.max(80, Math.min(spaceLeft, spaceRight) * 2);
+
+        // Use the measurement helper to compute largest fitting font-size
+        const fontSize = computeMaxFontByWidth(displayGrade, 'Arial', 'bold', allowedWidth, 28, 60);
+
+        // measure final text width to compute precise positioning
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext && canvas.getContext('2d');
+        let textWidth = displayGrade.length * fontSize * 0.6;
+        if (ctx) {
+            ctx.font = `bold ${fontSize}px Arial`;
+            textWidth = ctx.measureText(displayGrade).width;
+        }
+
+        const gradeLeft = centerX - (textWidth / 2);
+        const rightOffset = pageWidth - gradeLeft - textWidth;
+        const topOffset = -35; // unchanged vertical offset
+
+        return `<div style="position: absolute; right: ${rightOffset}px; top: ${topOffset}px; font-size: ${fontSize}px; color: black; margin: 0; text-align: right; white-space: nowrap; font-weight: bold;">${displayGrade}</div>`;
+    }
+    
+    function generateLotHTML(lot, leftOffset, topOffset) {
+      return `<div style="position: absolute; left: ${leftOffset}px; top: ${topOffset}px; font-size: 50px; color: black; margin: 0; text-align: left; white-space: nowrap;">${lot}</div>`;
+    }
+    
+    function generateNetWeightHTML(netWeight, leftOffset, topOffset, grade, verticalAdjust = 0, horizontalAdjust = 0) {
+        const formattedWeight = Number(netWeight).toLocaleString('en-US');
+        const weightStr = String(formattedWeight);
+        const digitCount = weightStr.replace(/,/g, '').length;
+
+        let adjustedLeft = leftOffset;
+        if (parseInt(netWeight) >= 1000) {
+            adjustedLeft = leftOffset - 30;  // สำหรับ xx,xxx
+        }
+
+        // ปรับเพิ่มสำหรับแต่ละกรณี
+        if (parseInt(netWeight) >= 1000) {
+            adjustedLeft += -5;  // xx,xxx เลื่อนซ้ายเพิ่ม
+        } else {
+            adjustedLeft += 5;   // xxx เลื่อนขวาเพิ่ม
+        }
+
+        adjustedLeft += horizontalAdjust;
+        const adjustedTop = topOffset + verticalAdjust;
+
+        return `<div style="position: absolute; left: ${adjustedLeft}px; top: ${adjustedTop + 8}px; font-size: 50px; color: black; margin: 0; text-align: left; white-space: nowrap;">${formattedWeight}</div>`;
+    }
+    
+    function generateTextHTML(text, leftOffset, topOffset, fontSize, display = "block") {
+      return `<div style="position: absolute; left: ${leftOffset}px; top: ${topOffset}px; font-size: ${fontSize}px; display: ${display}; text-align: left; white-space: nowrap;">${text}</div>`;
+    }
+    
+    function generateBoxes(runningNumber, date, shift, leftOffset, topOffset) {
+      const boxes = [];
+      
+      // Running number boxes (3 digits)
+      for (let i = 0; i < 3; i++) {
+        boxes.push(`<div class="bno">${runningNumber[i]}</div>`);
+      }
+      
+      boxes.push(`<div class="bno-middle">-</div>`);
+      
+      // Date boxes (2 digits)
+      for (let i = 0; i < 2; i++) {
+        boxes.push(`<div class="bno">${date[i]}</div>`);
+      }
+      
+      boxes.push(`<div class="bno-middle">-</div>`);
+      
+      // Shift box
+      boxes.push(`<div class="bno">${shift}</div>`);
+      
+      return `<div style="position: absolute; left: ${leftOffset}px; top: ${topOffset}px; display: inline-block; white-space: nowrap; line-height: 0;">${boxes.join('')}</div>`;
+    }
+    
+    function generateTISLogo(leftOffset, topOffset, width, unit) {
+      if (!leftOffset) return '';
+      
+      let tisText = '';
+      if (unit === 'HDPE') {
+        tisText = 'TIS. 2599-2544 (2011)';
+      } else if (unit === 'PP' || unit === 'PPC') {
+        tisText = 'TIS. 1306-2566';
+      }
+      
+      return `
+        <div style="position: absolute; left: ${leftOffset}px; top: ${topOffset}px; width: ${width}px; display: block;">
+          <img src="src/images/mfg.png" alt="TIS Logo" style="width: 100%; height: auto;">
+          <p style="font-size: 10px; text-align: center; margin-top: 3px; font-weight: bold; white-space: nowrap;">${tisText}</p>
+        </div>
+      `;
+    }
+    
+    function generateQRCode(leftOffset, topOffset, size, qrUrl) {
+      if (!leftOffset) return '';
+      
+      const qrId = `qr-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      setTimeout(() => {
+        const qrElement = document.getElementById(qrId);
+        if (qrElement && typeof QRCode !== 'undefined') {
+          new QRCode(qrElement, {
+            text: qrUrl || 'https://appdb.tisi.go.th/Q/i.php?d=1351525040',
+            width: size,
+            height: size
+          });
+        }
+      }, 100);
+      
+      return `<div id="${qrId}" style="position: absolute; left: ${leftOffset}px; top: ${topOffset}px; width: ${size}px; height: ${size}px;"></div>`;
+    }
+    
+    function generateSIRIMLogo(leftOffset, topOffset, width, title1, title2, title3) {
+      if (!leftOffset) return '';
+      
+      return `
+        <div style="position: absolute; left: ${leftOffset}px; top: ${topOffset}px; width: ${width}px; display: block; text-align: center;">
+          <img src="src/images/sirim_logo.png" alt="SIRIM Logo" style="width: 100%; height: auto;">
+          <div style="font-size: 9px; margin-top: 3px; line-height: 1.3; white-space: nowrap;">
+            <p style="margin: 1px 0;">${title1 || 'Certified to MS1058 : PART 1 : 2005'}</p>
+            <p style="margin: 1px 0;">${title2 || 'Certified No. : PC004152'}</p>
+            <p style="margin: 1px 0;">${title3 || 'Designation : PE100'}</p>
+          </div>
+        </div>
+      `;
+    }
+    
+    function generateFTHTML(rightOffset, topOffset, fontSize, display) {
+      return `<div style="position: absolute; top: ${topOffset}px; right: ${rightOffset}px; display: ${display};"><p style="font-size: ${fontSize}px">(F/T)</p></div>`;
+    }
+    
+    function generateLTHTML(rightOffset, topOffset, fontSize, display) {
+      return `<div style="position: absolute; top: ${topOffset}px; right: ${rightOffset}px; display: ${display};"><p style="font-size: ${fontSize}px">(L/T)</p></div>`;
+    }
+    
+    /**
+     * Load data and generate report
+     */
+    function loadDataAndRender() {
+      // Try sessionStorage first
+      const sessionData = sessionStorage.getItem('recent_hd_print');
+      let reportData;
+      
+      if (sessionData) {
+        reportData = JSON.parse(sessionData);
+        console.log('✅ Data loaded from sessionStorage:', reportData);
+        console.log('🔍 Template:', reportData.template, 'Unit:', reportData.unit);
+      } else {
+        // Fallback data
+        reportData = {
+          grade: "P901BK/750",
+          netweight: "750",
+          lot: "7257896524",
+          fromPage: "1",
+          toPage: "2",
+          shift: "E",
+          idate: "8",
+          unit: "HDPE",
+          template: "template3",
+          controlprint: { ft: false, lt: false },
+          title1: "HDPE",
+          title2: "HIGH DENSITY POLYETHYLENE",
+          sirim_title1: "Certified to MS1058 : PART 1 : 2005",
+          sirim_title2: "Certified No. : PC004152",
+          sirim_title3: "Designation : PE100",
+          qrCodeUrl: "https://appdb.tisi.go.th/Q/i.php?d=1351525040"
+        };
+        console.log('⚠️ Using fallback data');
+      }
+      
+      // Generate pages
+      const fromPage = parseInt(reportData.fromPage, 10);
+      const toPage = parseInt(reportData.toPage, 10);
+      const main = document.getElementById('report-main');
+      main.innerHTML = '';
+      
+      for (let page = fromPage; page <= toPage; page++) {
+        const pageHTML = generateTagPage(page, reportData);
+        main.innerHTML += pageHTML;
+      }
+    }
+    
+    // Load on page ready
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDataAndRender();
+      setupHelpModal();
+    });
+
+    /**
+     * Setup Help Modal
+     */
+    function setupHelpModal() {
+      const helpBtn = document.getElementById('helpBtn');
+      const modal = document.getElementById('helpModal');
+      const closeBtn = document.getElementById('closeModal');
+      const tabBtns = document.querySelectorAll('.tab-btn');
+
+      // Open modal
+      helpBtn.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+        updateSpecsValues();
+      });
+
+      // Close modal
+      closeBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+      });
+
+      // Close on backdrop click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.add('hidden');
+        }
+      });
+
+      // Close on Esc key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+          modal.classList.add('hidden');
+        }
+      });
+
+      // Tab switching
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tabName = btn.dataset.tab;
+          
+          // Update buttons
+          tabBtns.forEach(b => {
+            b.classList.remove('active');
+          });
+          btn.classList.add('active');
+          
+          // Update content
+          document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+          });
+          document.getElementById(`tab-${tabName}`).classList.add('active');
+          
+          // Update specs when switching to specs tab
+          if (tabName === 'specs') {
+            updateSpecsValues();
+          }
+        });
+      });
+    }
+
+    /**
+     * Update Specs with Current Values
+     */
+    function updateSpecsValues() {
+      try {
+        const sessionData = sessionStorage.getItem('recent_hd_print');
+        if (!sessionData) {
+          console.log('No data in sessionStorage');
+          return;
+        }
+
+        const data = JSON.parse(sessionData);
+        
+        // Update Grade
+        const gradeEl = document.getElementById('current-grade');
+        if (gradeEl) {
+          gradeEl.textContent = data.grade || '-';
+        }
+        
+        // Update Net Weight
+        const netweightEl = document.getElementById('current-netweight');
+        if (netweightEl) {
+          const formatted = data.netweight ? parseInt(data.netweight).toLocaleString('en-US') + ' KG' : '-';
+          netweightEl.textContent = formatted;
+        }
+        
+        // Update Lot
+        const lotEl = document.getElementById('current-lot');
+        if (lotEl) {
+          lotEl.textContent = data.lot || '-';
+        }
+        
+        // Update Running Number
+        const runningEl = document.getElementById('current-running');
+        if (runningEl && data.fromPage && data.idate && data.shift) {
+          const page = String(data.fromPage).padStart(3, '0');
+          const date = String(data.idate).padStart(2, '0');
+          const shift = data.shift || 'M';
+          runningEl.textContent = `${page}-${date}-${shift}`;
+        }
+        
+        // Update Unit
+        const unitEl = document.getElementById('current-unit');
+        if (unitEl) {
+          unitEl.textContent = data.unit || '-';
+        }
+        
+        console.log('✅ Specs values updated from sessionStorage');
+      } catch (error) {
+        console.error('⚠️ Error updating specs:', error);
+      }
+    }
+  </script>
+</body>
+</html>

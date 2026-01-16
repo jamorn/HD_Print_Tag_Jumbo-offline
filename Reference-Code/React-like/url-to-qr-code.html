@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตัวแปลง URL เป็น QR Code</title>
+    <!-- โหลด Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- โหลด qrcode.js สำหรับสร้าง QR Code -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+        /* กำหนดรูปแบบหลัก */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        /* ซ่อนส่วนที่ qrcode.js สร้างขึ้นมาเองก่อนจะแทนที่ */
+        #qrcode img { display: none; }
+        /* สไตล์สำหรับปุ่ม */
+        .btn-primary {
+            background-color: #10B981; /* Emerald 500 */
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #059669; /* Emerald 600 */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="w-full max-w-lg bg-white p-8 rounded-xl shadow-2xl space-y-6">
+        <h1 class="text-3xl font-extrabold text-gray-800 text-center">
+            QR Code Generator
+        </h1>
+        <p class="text-center text-gray-500 mb-6">
+            ใส่ URL ที่คุณต้องการแปลงเป็น QR Code
+        </p>
+
+        <!-- ส่วนของ Input URL -->
+        <div class="space-y-4">
+            <label for="urlInput" class="block text-sm font-medium text-gray-700">
+                URL ที่ต้องการแปลง:
+            </label>
+            <input type="url" id="urlInput"
+                   value="https://appdb.tisi.go.th/Q/i.php?d=3828891212"
+                   placeholder="เช่น https://www.google.com"
+                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
+                   required>
+        </div>
+
+        <!-- ปุ่มสร้าง QR Code -->
+        <button id="generateBtn"
+                class="btn-primary w-full text-white font-semibold py-3 rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-emerald-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
+            สร้าง QR Code
+        </button>
+
+        <!-- ส่วนแสดง QR Code -->
+        <div class="flex flex-col items-center pt-6 border-t border-gray-100">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">
+                ผลลัพธ์ QR Code:
+            </h2>
+            <!-- Container สำหรับ QR Code -->
+            <div id="qrcode" class="p-4 bg-white border border-gray-200 rounded-lg shadow-inner">
+                <!-- QR Code จะถูกสร้างไว้ที่นี่ -->
+            </div>
+            <p id="statusMsg" class="mt-4 text-sm text-gray-600">
+                <!-- ข้อความสถานะ -->
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // กำหนดตัวแปรสำหรับองค์ประกอบต่างๆ
+        const urlInput = document.getElementById('urlInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const qrcodeContainer = document.getElementById('qrcode');
+        const statusMsg = document.getElementById('statusMsg');
+
+        let qr = null; // ตัวแปรสำหรับเก็บอินสแตนซ์ของ QRCode
+
+        /**
+         * ฟังก์ชันสำหรับสร้าง QR Code
+         * @param {string} url - URL ที่จะแปลง
+         */
+        function generateQRCode(url) {
+            // ล้าง QR Code เก่าออกก่อน
+            qrcodeContainer.innerHTML = '';
+            statusMsg.textContent = '';
+
+            if (!url || !url.trim()) {
+                statusMsg.textContent = 'โปรดใส่ URL ที่ถูกต้อง';
+                return;
+            }
+
+            try {
+                // สร้างอินสแตนซ์ใหม่ของ QRCode
+                qr = new QRCode(qrcodeContainer, {
+                    text: url,
+                    width: 256,
+                    height: 256,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+
+                statusMsg.textContent = `สร้าง QR Code สำเร็จสำหรับ: ${url.substring(0, 50)}...`;
+
+            } catch (error) {
+                console.error("เกิดข้อผิดพลาดในการสร้าง QR Code:", error);
+                statusMsg.textContent = 'เกิดข้อผิดพลาดในการสร้าง QR Code โปรดลองอีกครั้ง';
+            }
+        }
+
+        // 1. เรียกใช้งานเมื่อกดปุ่ม
+        generateBtn.addEventListener('click', () => {
+            const url = urlInput.value.trim();
+            generateQRCode(url);
+        });
+
+        // 2. เรียกใช้งานเมื่อโหลดหน้าเว็บครั้งแรกด้วย URL ที่กำหนด
+        window.onload = function() {
+            const initialUrl = urlInput.value.trim();
+            generateQRCode(initialUrl);
+        };
+
+    </script>
+</body>
+</html>

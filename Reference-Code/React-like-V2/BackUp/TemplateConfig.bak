@@ -1,0 +1,454 @@
+/**
+ * Template Configuration - Modern Tag Printing System V2
+ * Configuration for tag templates, layouts, and printing options
+ */
+
+export class TemplateConfig {
+  static PAPER_SIZES = {
+    A4: {
+      id: 'a4',
+      name: 'A4',
+      width: 210, // mm
+      height: 297, // mm
+      cssClass: 'size-a4',
+      printMargin: { top: 0, right: 0, bottom: 0, left: 0 }
+    },
+    LETTER: {
+      id: 'letter',
+      name: 'Letter',
+      width: 215.9, // mm (8.5 inches)
+      height: 279.4, // mm (11 inches)
+      cssClass: 'size-letter',
+      printMargin: { top: 0, right: 0, bottom: 0, left: 0 }
+    }
+  };
+
+  static LAYOUTS = {
+    SINGLE: {
+      id: 'single',
+      name: 'Single Tag',
+      columns: 1,
+      rows: 1,
+      description: 'One tag per page - ideal for large format printing'
+    },
+    DOUBLE: {
+      id: 'double',
+      name: 'Double Tags',
+      columns: 2,
+      rows: 1,
+      description: 'Two tags side by side'
+    },
+    QUAD: {
+      id: 'quad',
+      name: 'Quad Tags',
+      columns: 2,
+      rows: 2,
+      description: 'Four tags per page in 2x2 grid'
+    },
+    GRID_2X3: {
+      id: 'grid-2x3',
+      name: '2×3 Grid',
+      columns: 2,
+      rows: 3,
+      description: 'Six tags in 2×3 grid'
+    },
+    GRID_3X2: {
+      id: 'grid-3x2',
+      name: '3×2 Grid',
+      columns: 3,
+      rows: 2,
+      description: 'Six tags in 3×2 grid'
+    },
+    GRID_3X4: {
+      id: 'grid-3x4',
+      name: '3×4 Grid',
+      columns: 3,
+      rows: 4,
+      description: 'Twelve tags in 3×4 grid'
+    }
+  };
+
+  static TEMPLATES = {
+    STANDARD: {
+      id: 'standard',
+      name: 'Standard Template',
+      description: 'Clean, professional layout with essential information',
+      sections: {
+        header: {
+          enabled: true,
+          height: '20%',
+          components: ['logo', 'unit-name']
+        },
+        body: {
+          enabled: true,
+          height: '60%',
+          components: ['product-info', 'specifications']
+        },
+        footer: {
+          enabled: true,
+          height: '20%',
+          components: ['qr-code', 'lot-info']
+        }
+      },
+      styling: {
+        fontSize: {
+          title: '1rem',
+          subtitle: '0.875rem',
+          body: '0.75rem',
+          small: '0.625rem'
+        },
+        spacing: {
+          section: '0.5rem',
+          item: '0.25rem'
+        }
+      }
+    },
+
+    ENHANCED: {
+      id: 'enhanced',
+      name: 'Enhanced Template',
+      description: 'Detailed layout with comprehensive product information',
+      sections: {
+        header: {
+          enabled: true,
+          height: '18%',
+          components: ['logo', 'unit-name', 'date-time']
+        },
+        body: {
+          enabled: true,
+          height: '64%',
+          components: ['product-info', 'specifications', 'quality-data']
+        },
+        footer: {
+          enabled: true,
+          height: '18%',
+          components: ['qr-code', 'lot-info', 'batch-info']
+        }
+      },
+      styling: {
+        fontSize: {
+          title: '0.95rem',
+          subtitle: '0.8rem',
+          body: '0.7rem',
+          small: '0.6rem'
+        },
+        spacing: {
+          section: '0.4rem',
+          item: '0.2rem'
+        }
+      }
+    },
+
+    MINIMAL: {
+      id: 'minimal',
+      name: 'Minimal Template',
+      description: 'Compact layout with only essential information',
+      sections: {
+        header: {
+          enabled: true,
+          height: '25%',
+          components: ['logo']
+        },
+        body: {
+          enabled: true,
+          height: '50%',
+          components: ['product-info']
+        },
+        footer: {
+          enabled: true,
+          height: '25%',
+          components: ['qr-code']
+        }
+      },
+      styling: {
+        fontSize: {
+          title: '1.1rem',
+          subtitle: '0.9rem',
+          body: '0.8rem',
+          small: '0.7rem'
+        },
+        spacing: {
+          section: '0.6rem',
+          item: '0.3rem'
+        }
+      }
+    }
+  };
+
+  static COMPONENTS = {
+    'logo': {
+      id: 'logo',
+      name: 'Company Logo',
+      description: 'Unit-specific logo image',
+      configurable: false,
+      required: true
+    },
+    'unit-name': {
+      id: 'unit-name',
+      name: 'Unit Name',
+      description: 'Production unit identification',
+      configurable: true,
+      required: true
+    },
+    'date-time': {
+      id: 'date-time',
+      name: 'Date & Time',
+      description: 'Production timestamp',
+      configurable: true,
+      required: false
+    },
+    'product-info': {
+      id: 'product-info',
+      name: 'Product Information',
+      description: 'Product name, code, and basic details',
+      configurable: true,
+      required: true
+    },
+    'specifications': {
+      id: 'specifications',
+      name: 'Technical Specifications',
+      description: 'Unit-specific technical data',
+      configurable: true,
+      required: true
+    },
+    'quality-data': {
+      id: 'quality-data',
+      name: 'Quality Control Data',
+      description: 'Quality testing results and certifications',
+      configurable: true,
+      required: false
+    },
+    'qr-code': {
+      id: 'qr-code',
+      name: 'QR Code',
+      description: 'Scannable product information',
+      configurable: true,
+      required: true
+    },
+    'lot-info': {
+      id: 'lot-info',
+      name: 'Lot Information',
+      description: 'Lot number and production details',
+      configurable: true,
+      required: true
+    },
+    'batch-info': {
+      id: 'batch-info',
+      name: 'Batch Information',
+      description: 'Batch tracking and traceability',
+      configurable: true,
+      required: false
+    }
+  };
+
+  /**
+   * Get paper size configuration
+   */
+  static getPaperSize(sizeId) {
+    const size = this.PAPER_SIZES[sizeId.toUpperCase()];
+    if (!size) {
+      throw new Error(`Unknown paper size: ${sizeId}`);
+    }
+    return { ...size };
+  }
+
+  /**
+   * Get all available paper sizes
+   */
+  static getAllPaperSizes() {
+    return Object.values(this.PAPER_SIZES).map(size => ({ ...size }));
+  }
+
+  /**
+   * Get layout configuration
+   */
+  static getLayout(layoutId) {
+    const layout = this.LAYOUTS[layoutId.toUpperCase().replace('-', '_')];
+    if (!layout) {
+      throw new Error(`Unknown layout: ${layoutId}`);
+    }
+    return { ...layout };
+  }
+
+  /**
+   * Get all available layouts
+   */
+  static getAllLayouts() {
+    return Object.values(this.LAYOUTS).map(layout => ({ ...layout }));
+  }
+
+  /**
+   * Get template configuration
+   */
+  static getTemplate(templateId) {
+    const template = this.TEMPLATES[templateId.toUpperCase()];
+    if (!template) {
+      throw new Error(`Unknown template: ${templateId}`);
+    }
+    return JSON.parse(JSON.stringify(template)); // Deep copy
+  }
+
+  /**
+   * Get all available templates
+   */
+  static getAllTemplates() {
+    return Object.values(this.TEMPLATES).map(template => 
+      JSON.parse(JSON.stringify(template))
+    );
+  }
+
+  /**
+   * Get component configuration
+   */
+  static getComponent(componentId) {
+    const component = this.COMPONENTS[componentId];
+    if (!component) {
+      throw new Error(`Unknown component: ${componentId}`);
+    }
+    return { ...component };
+  }
+
+  /**
+   * Get layout CSS classes
+   */
+  static getLayoutClasses(layout) {
+    return {
+      columns: `cols-${layout.columns}`,
+      rows: `rows-${layout.rows}`,
+      grid: `grid-${layout.columns}x${layout.rows}`
+    };
+  }
+
+  /**
+   * Calculate tag dimensions based on paper size and layout
+   */
+  static calculateTagDimensions(paperSize, layout) {
+    const tagWidth = paperSize.width / layout.columns;
+    const tagHeight = paperSize.height / layout.rows;
+    
+    return {
+      width: tagWidth,
+      height: tagHeight,
+      aspectRatio: tagWidth / tagHeight
+    };
+  }
+
+  /**
+   * Get recommended layouts for paper size
+   */
+  static getRecommendedLayouts(paperSizeId) {
+    const recommendations = {
+      A4: ['single', 'double', 'quad', 'grid-2x3'],
+      LETTER: ['single', 'double', 'quad', 'grid-3x2']
+    };
+    
+    return recommendations[paperSizeId.toUpperCase()] || ['single', 'double'];
+  }
+
+  /**
+   * Validate template configuration
+   */
+  static validateTemplate(templateConfig) {
+    const errors = [];
+    
+    // Check required sections
+    if (!templateConfig.sections) {
+      errors.push('Template must have sections defined');
+      return { valid: false, errors };
+    }
+    
+    // Validate section heights
+    const totalHeight = Object.values(templateConfig.sections)
+      .filter(section => section.enabled)
+      .reduce((sum, section) => {
+        const height = parseInt(section.height);
+        return sum + (isNaN(height) ? 0 : height);
+      }, 0);
+      
+    if (totalHeight !== 100) {
+      errors.push(`Section heights must total 100%, got ${totalHeight}%`);
+    }
+    
+    // Validate components exist
+    Object.values(templateConfig.sections).forEach(section => {
+      section.components.forEach(componentId => {
+        if (!this.COMPONENTS[componentId]) {
+          errors.push(`Unknown component: ${componentId}`);
+        }
+      });
+    });
+    
+    return {
+      valid: errors.length === 0,
+      errors
+    };
+  }
+
+  /**
+   * Generate print configuration
+   */
+  static generatePrintConfig(paperSize, layout, template) {
+    const tagDimensions = this.calculateTagDimensions(paperSize, layout);
+    
+    return {
+      paperSize: paperSize.id,
+      layout: layout.id,
+      template: template.id,
+      tagDimensions,
+      cssClasses: {
+        paper: paperSize.cssClass,
+        ...this.getLayoutClasses(layout)
+      },
+      printSettings: {
+        margins: paperSize.printMargin,
+        orientation: paperSize.width > paperSize.height ? 'landscape' : 'portrait',
+        colorMode: 'color',
+        quality: 'high'
+      }
+    };
+  }
+
+  /**
+   * Get default configuration
+   */
+  static getDefaultConfig() {
+    return {
+      paperSize: this.PAPER_SIZES.A4,
+      layout: this.LAYOUTS.SINGLE,
+      template: this.TEMPLATES.STANDARD
+    };
+  }
+
+  /**
+   * Create custom template
+   */
+  static createCustomTemplate(name, description, sections, styling = {}) {
+    const customTemplate = {
+      id: `custom-${Date.now()}`,
+      name,
+      description,
+      sections,
+      styling: {
+        fontSize: {
+          title: '1rem',
+          subtitle: '0.875rem',
+          body: '0.75rem',
+          small: '0.625rem',
+          ...styling.fontSize
+        },
+        spacing: {
+          section: '0.5rem',
+          item: '0.25rem',
+          ...styling.spacing
+        }
+      }
+    };
+    
+    const validation = this.validateTemplate(customTemplate);
+    if (!validation.valid) {
+      throw new Error(`Invalid template: ${validation.errors.join(', ')}`);
+    }
+    
+    return customTemplate;
+  }
+}

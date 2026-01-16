@@ -1,0 +1,216 @@
+/* Print-specific styles for tags */
+.print-container {
+  background: white;
+  min-height: 100vh;
+}
+
+.tag-page {
+  page-break-after: always;
+  page-break-before: auto;
+  page-break-inside: avoid;
+  background: white;
+  position: relative;
+  width: 297mm;
+  height: 210mm;
+  overflow: hidden;
+}
+
+.tag-page:last-child,
+.tag-page:only-child {
+  page-break-after: avoid !important;
+}
+
+/* Left Section Styles */
+.left-section {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  padding: 20px;
+}
+
+/* Right Section Styles */
+.right-section {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  padding: 20px;
+}
+
+/* Grade Display */
+.grade-display {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  color: #000;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.grade-large {
+  font-size: 60px;
+}
+
+.grade-medium {
+  font-size: 50px;
+}
+
+.grade-small {
+  font-size: 42px;
+}
+
+.grade-xsmall {
+  font-size: 36px;
+}
+
+/* Lot Display */
+.lot-display {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 50px;
+  color: #000;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Net Weight Display */
+.netweight-display {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 50px;
+  color: #000;
+  text-align: left;
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+/* Running Number Boxes */
+.running-number-container {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  font-size: 0;
+}
+
+.number-box {
+  border: 2px solid #000;
+  width: 35px;
+  height: 35px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 3px;
+  font-size: 30px;
+  font-family: Arial, sans-serif;
+  vertical-align: top;
+}
+
+.number-separator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 35px;
+  margin: 0 3px;
+  font-size: 40px;
+  font-family: Arial, sans-serif;
+  vertical-align: top;
+}
+
+/* Description Text */
+.description-text {
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.description-large {
+  font-size: 60px;
+}
+
+.description-medium {
+  font-size: 30px;
+}
+
+/* Logo Containers */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-item img {
+  height: auto;
+  max-height: 120px;
+}
+
+/* Certification Details */
+.cert-details {
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.cert-details p {
+  margin: 2px 0;
+  font-size: 14px;
+}
+
+/* FT/LT Markers */
+.ft-marker,
+.lt-marker {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 50px;
+  color: #000;
+}
+
+/* Absolute Positioning Utilities */
+.abs {
+  position: absolute;
+}
+
+.abs-top-left {
+  top: 0;
+  left: 0;
+}
+
+.abs-top-right {
+  top: 0;
+  right: 0;
+}
+
+.abs-bottom-left {
+  bottom: 0;
+  left: 0;
+}
+
+.abs-bottom-right {
+  bottom: 0;
+  right: 0;
+}
+
+.abs-center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Print Media Queries */
+@media print {
+  .tag-page {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .left-section,
+  .right-section {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

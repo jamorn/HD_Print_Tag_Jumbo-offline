@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏷️ Tag Printing System V2 - Modern Architecture</title>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="#"><!-- fix favicon.ico -->
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="css/main.css" as="style">
+    <link rel="preload" href="css/components.css" as="style">
+    <link rel="preload" href="css/print.css" as="style" media="print">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/print.css" media="print">
+    
+    <!-- External Dependencies -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script> -->
+    <script src="js/utils/qrcode.min.js"></script>
+    
+    <!-- Template Engine and Components (Load before App.js) -->
+    <script src="js/components/HeaderComponent.js"></script>
+    <script src="js/components/LogoComponent.js"></script>
+    <script src="js/templates/TemplateEngine.js"></script>
+</head>
+<body>
+    <!-- Fixed Top Navigation Bar -->
+    <nav class="top-navbar no-print">
+        <div class="navbar-content">
+            <div class="navbar-brand">
+                <span class="navbar-logo">🏷️</span>
+                <span class="navbar-title">Tag Printing System</span>
+            </div>
+            <div class="navbar-actions">
+                <button id="navFormBtn1" class="nav-btn nav-btn-primary" title="Form 1 - Full Features">
+                    <span class="nav-btn-icon">📄</span>
+                    <span class="nav-btn-text">Form 1</span>
+                </button>
+                <button id="navFormBtn2" class="nav-btn nav-btn-success" title="Form 2 - Simplified">
+                    <span class="nav-btn-icon">⚡</span>
+                    <span class="nav-btn-text">Form 2</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Application Container -->
+    <div id="app" class="app-container">
+        <!-- Application content will be dynamically rendered here -->
+    </div>
+
+    <!-- Help Panel Modal -->
+    <div class="help-panel no-print hidden" 
+         id="helpPanel" 
+         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 99999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);"
+         onclick="if(event.target === this) this.classList.add('hidden')">
+      <div style="background: linear-gradient(135deg, #ffffff, #f3f4f6); padding: 32px; border-radius: 24px; max-width: 672px; margin: 0 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 2px solid #e5e7eb; max-height: 90vh; overflow-y: auto;" onclick="event.stopPropagation()">
+        <!-- Header -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #e5e7eb;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
+              📘
+            </div>
+            <div>
+              <h2 style="font-size: 24px; font-weight: bold; color: #7c3aed; margin: 0;">
+                คู่มือการใช้งาน
+              </h2>
+              <p style="font-size: 14px; color: #6b7280; margin: 4px 0 0 0;">Tag Printing System V2 Guide</p>
+            </div>
+          </div>
+          <button onclick="document.getElementById('helpPanel').classList.add('hidden')" 
+                  style="color: #9ca3af; font-size: 24px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: none; border: none; cursor: pointer; transition: all 0.2s;">
+            ✕
+          </button>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <div style="display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">
+          <button class="guide-tab active" onclick="switchTab('usage')" style="padding: 8px 16px; background: #7c3aed; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">การใช้งาน</button>
+          <button class="guide-tab" onclick="switchTab('templates')" style="padding: 8px 16px; background: #e5e7eb; color: #374151; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">Templates</button>
+          <button class="guide-tab" onclick="switchTab('specs')" style="padding: 8px 16px; background: #e5e7eb; color: #374151; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">รายละเอียด</button>
+        </div>
+
+        <!-- Tab Content: Usage -->
+        <div id="tab-usage" class="tab-content" style="display: block;">
+          <div style="background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; border: 2px solid #e5e7eb;">
+            <h3 style="font-size: 18px; font-weight: 600; color: #7c3aed; margin-bottom: 16px;">
+              🎯 ขั้นตอนการใช้งาน
+            </h3>
+            <ol style="list-style: none; padding: 0; margin: 0;">
+              <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
+                <span style="width: 24px; height: 24px; background: #7c3aed; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">1</span>
+                <span><strong style="color: #7c3aed;">เลือกหน่วยงาน</strong> - HDPE, PP, หรือ PPC</span>
+              </li>
+              <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
+                <span style="width: 24px; height: 24px; background: #7c3aed; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">2</span>
+                <span><strong style="color: #7c3aed;">เลือก Template</strong> - เลือกรูปแบบ (1-3)</span>
+              </li>
+              <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
+                <span style="width: 24px; height: 24px; background: #7c3aed; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">3</span>
+                <span><strong style="color: #7c3aed;">กรอกข้อมูล</strong> - Grade, Lot, หน้า, กะ, วันที่</span>
+              </li>
+              <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
+                <span style="width: 24px; height: 24px; background: #7c3aed; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">4</span>
+                <span><strong style="color: #7c3aed;">Generate</strong> - สร้างตัวอย่าง</span>
+              </li>
+              <li style="display: flex; align-items: flex-start; gap: 12px;">
+                <span style="width: 24px; height: 24px; background: #7c3aed; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">5</span>
+                <span><strong style="color: #7c3aed;">Print</strong> - กด 🖨️ หรือ Ctrl+P</span>
+              </li>
+            </ol>
+          </div>
+          <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); border-radius: 12px; padding: 16px; color: white;">
+            <strong>⚡ Shortcuts:</strong> F1 = เปิด/ปิดคู่มือ | Ctrl+P = พิมพ์
+          </div>
+        </div>
+
+        <!-- Tab Content: Templates -->
+        <div id="tab-templates" class="tab-content" style="display: none;">
+          <div style="background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+            <h4 style="color: #7c3aed; margin-bottom: 12px;">📄 Template 1: Description Only</h4>
+            <p style="font-size: 14px; color: #6b7280;">แสดงเฉพาะข้อมูลพื้นฐาน</p>
+          </div>
+          <div style="background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+            <h4 style="color: #7c3aed; margin-bottom: 12px;">📄 Template 2: Description + Logos</h4>
+            <p style="font-size: 14px; color: #6b7280;">พร้อมโลโก้ MFG + QR Code</p>
+          </div>
+          <div style="background: white; border-radius: 12px; padding: 16px;">
+            <h4 style="color: #7c3aed; margin-bottom: 12px;">📄 Template 3: Full Certifications</h4>
+            <p style="font-size: 14px; color: #6b7280;">ครบทุกรายละเอียด รวม Sirim Certification</p>
+          </div>
+        </div>
+
+        <!-- Tab Content: Specs -->
+        <div id="tab-specs" class="tab-content" style="display: none;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <!-- Grade Specifications -->
+            <div style="background: white; border-radius: 12px; padding: 16px; border: 1px solid #e5e7eb;">
+              <h4 style="font-weight: 600; color: #7c3aed; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                📄 Grade
+              </h4>
+              <div id="spec-grade" style="font-size: 14px; line-height: 1.8;">
+                <strong>Font:</strong> Arial (MS: Arial)<br>
+                <strong>Size:</strong> <span style="background: #fef3c7; padding: 2px 6px; border-radius: 4px; font-weight: bold;">60px / 45pt</span><br>
+                <strong>Current Value:</strong> <span id="current-grade" style="color: #059669; font-weight: bold;">-</span>
+              </div>
+            </div>
+
+            <!-- Net Weight Specifications -->
+            <div style="background: white; border-radius: 12px; padding: 16px; border: 1px solid #e5e7eb;">
+              <h4 style="font-weight: 600; color: #7c3aed; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                ⚖️ Net Weight
+              </h4>
+              <div id="spec-netweight" style="font-size: 14px; line-height: 1.8;">
+                <strong>Font:</strong> Arial (MS: Arial)<br>
+                <strong>Size:</strong> <span style="background: #fef3c7; padding: 2px 6px; border-radius: 4px; font-weight: bold;">50px / 38pt</span><br>
+                <strong>Current Value:</strong> <span id="current-netweight" style="color: #059669; font-weight: bold;">-</span>
+              </div>
+            </div>
+
+            <!-- Lot Number Specifications -->
+            <div style="background: white; border-radius: 12px; padding: 16px; border: 1px solid #e5e7eb;">
+              <h4 style="font-weight: 600; color: #7c3aed; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                🔖 Lot Number
+              </h4>
+              <div id="spec-lot" style="font-size: 14px; line-height: 1.8;">
+                <strong>Font:</strong> Arial (MS: Arial)<br>
+                <strong>Size:</strong> <span style="background: #fef3c7; padding: 2px 6px; border-radius: 4px; font-weight: bold;">50px / 38pt</span><br>
+                <strong>Current Value:</strong> <span id="current-lot" style="color: #059669; font-weight: bold;">-</span>
+              </div>
+            </div>
+
+            <!-- Running Number Specifications -->
+            <div style="background: white; border-radius: 12px; padding: 16px; border: 1px solid #e5e7eb;">
+              <h4 style="font-weight: 600; color: #7c3aed; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                🔢 Running Number
+              </h4>
+              <div id="spec-running" style="font-size: 14px; line-height: 1.8;">
+                <strong>Font:</strong> Arial (MS: Arial)<br>
+                <strong>Size:</strong> <span style="background: #fef3c7; padding: 2px 6px; border-radius: 4px; font-weight: bold;">30px / 23pt</span><br>
+                <strong>Current:</strong> <span id="current-running" style="color: #059669; font-weight: bold;">001-06-M</span> (Page-Date-Shift)
+              </div>
+            </div>
+
+            <!-- Print Controls (F/T & L/T) -->
+            <div style="background: white; border-radius: 12px; padding: 16px; border: 1px solid #e5e7eb;">
+              <h4 style="font-weight: 600; color: #7c3aed; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                🏷️ Print Controls
+              </h4>
+              <div id="spec-controls" style="font-size: 14px; line-height: 1.8;">
+                <strong>Font:</strong> Arial (MS: Arial)<br>
+                <strong>Size:</strong> <span style="background: #fef3c7; padding: 2px 6px; border-radius: 4px; font-weight: bold;">50px / 38pt</span><br>
+                <strong>F/T:</strong> <span style="color: #dc2626; background: #fee2e2; padding: 2px 6px; border-radius: 4px; font-weight: bold;">(F/T)</span> หน้าแรก<br>
+                <strong>L/T:</strong> <span style="color: #dc2626; background: #fee2e2; padding: 2px 6px; border-radius: 4px; font-weight: bold;">(L/T)</span> หน้าสุดท้าย
+              </div>
+            </div>
+
+            <!-- Product Description -->
+            <div style="background: white; border-radius: 12px; padding: 16px; border: 1px solid #e5e7eb;">
+              <h4 style="font-weight: 600; color: #7c3aed; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                📋 Description
+              </h4>
+              <div id="spec-description" style="font-size: 14px; line-height: 1.8;">
+                <strong>Title1:</strong> <span style="background: #fef3c7; padding: 2px 6px; border-radius: 4px; font-weight: bold;">60px / 45pt</span><br>
+                <strong>Title2:</strong> <span style="background: #fef3c7; padding: 2px 6px; border-radius: 4px; font-weight: bold;">30px / 23pt</span><br>
+                <strong>Current Unit:</strong> <span id="current-unit" style="color: #059669; font-weight: bold;">HDPE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Close Button -->
+        <button onclick="document.getElementById('helpPanel').classList.add('hidden')" 
+                style="width: 100%; margin-top: 16px; padding: 12px; background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          ✓ เข้าใจแล้ว ปิดคู่มือ
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // F1 shortcut to toggle help panel
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'F1') {
+          e.preventDefault();
+          const panel = document.getElementById('helpPanel');
+          panel.classList.toggle('hidden');
+        }
+      });
+
+      // Tab switching function
+      function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(tab => {
+          tab.style.display = 'none';
+        });
+        document.querySelectorAll('.guide-tab').forEach(btn => {
+          btn.style.background = '#e5e7eb';
+          btn.style.color = '#374151';
+        });
+        document.getElementById(`tab-${tabName}`).style.display = 'block';
+        event.target.style.background = '#7c3aed';
+        event.target.style.color = 'white';
+        
+        // Update dynamic values when switching to specs tab
+        if (tabName === 'specs') {
+          updateSpecsValues();
+        }
+      }
+
+      // Update specs with current form values
+      function updateSpecsValues() {
+        try {
+          // Get form values from App instance or form elements
+          const gradeInput = document.querySelector('input[name="grade"], #grade');
+          const netweightInput = document.querySelector('input[name="netweight"], #netweight');
+          const lotInput = document.querySelector('input[name="lot"], #lot');
+          const fromPageInput = document.querySelector('input[name="fromPage"], #fromPage');
+          const idateInput = document.querySelector('input[name="idate"], #idate');
+          const shiftInput = document.querySelector('select[name="shift"], #shift');
+          
+          // Update Grade
+          if (gradeInput && gradeInput.value) {
+            document.getElementById('current-grade').textContent = gradeInput.value;
+          }
+          
+          // Update Net Weight
+          if (netweightInput && netweightInput.value) {
+            const formatted = parseInt(netweightInput.value).toLocaleString('en-US');
+            document.getElementById('current-netweight').textContent = formatted + ' KG';
+          }
+          
+          // Update Lot
+          if (lotInput && lotInput.value) {
+            document.getElementById('current-lot').textContent = lotInput.value;
+          }
+          
+          // Update Running Number
+          if (fromPageInput && idateInput && shiftInput) {
+            const page = String(fromPageInput.value || '1').padStart(3, '0');
+            const date = String(idateInput.value || '1').padStart(2, '0');
+            const shift = shiftInput.value || 'M';
+            document.getElementById('current-running').textContent = `${page}-${date}-${shift}`;
+          }
+          
+          // Update Current Unit
+          const unitBtns = document.querySelectorAll('[data-unit]');
+          unitBtns.forEach(btn => {
+            if (btn.classList.contains('active') || btn.getAttribute('aria-selected') === 'true') {
+              const unit = btn.getAttribute('data-unit') || btn.textContent.trim();
+              document.getElementById('current-unit').textContent = unit;
+            }
+          });
+          
+        } catch (error) {
+          console.log('Unable to update specs values:', error);
+        }
+      }
+      
+      // Auto-update when help panel opens
+      const helpPanel = document.getElementById('helpPanel');
+      if (helpPanel) {
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'class') {
+              const isVisible = !helpPanel.classList.contains('hidden');
+              if (isVisible && document.getElementById('tab-specs').style.display === 'block') {
+                setTimeout(updateSpecsValues, 100);
+              }
+            }
+          });
+        });
+        observer.observe(helpPanel, { attributes: true });
+      }
+    </script>
+
+    <style>
+      /* Pulse animation */
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.8; }
+      }
+      
+      /* Print button styles */
+      @media print {
+        .super-print-btn, .help-btn, .no-print {
+          display: none !important;
+          visibility: hidden !important;
+        }
+      }
+    </style>
+
+    <!-- External Dependencies (Optional Enhancement Libraries) -->
+    <!-- Uncomment to enable image export functionality -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> -->
+    
+    <!-- Uncomment to enable PDF export functionality -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> -->
+    
+    <!-- Notification System (Load before App.js) -->
+    <script type="module" src="js/notify-template.js"></script>
+    
+    <!-- Main Application - Modern ES6 Module System -->
+    <script type="module" src="js/App.js"></script>
+</body>
+</html>

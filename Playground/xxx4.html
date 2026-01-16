@@ -1,0 +1,322 @@
+การทำงาน ควรจะเป็นเหมือน simple code นี้ครับ ถึงจะถูกต้อง
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจำลองตีนตะขาบ (Caterpillar Track Simulation)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            background: radial-gradient(circle, #2c2c2c 0%, #111 100%);
+            border: 2px solid #444;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 95vw;
+        }
+        .controls {
+            margin-top: 20px;
+            background: #333;
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        input[type="range"] {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="text-2xl font-bold mb-4">ระบบตีนตะขาบจำลอง (OOP Animation)</h1>
+    
+    <canvas id="tankCanvas"></canvas>
+
+    <div class="controls">
+        <div>
+            <label class="block text-sm mb-1">ความเร็ว (Speed): <span id="speedVal">2</span></label>
+            <input type="range" id="speedRange" min="-10" max="10" step="0.5" value="2">
+        </div>
+        <div class="flex items-center gap-2">
+            <input type="checkbox" id="showDebug" checked>
+            <label class="text-sm">แสดงโครงสร้างภายใน (Debug Mode)</label>
+        </div>
+        <button id="resetBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm transition">Reset</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('tankCanvas');
+        const ctx = canvas.getContext('2d');
+        const speedRange = document.getElementById('speedRange');
+        const speedVal = document.getElementById('speedVal');
+        const showDebug = document.getElementById('showDebug');
+        const resetBtn = document.getElementById('resetBtn');
+
+        canvas.width = 800;
+        canvas.height = 400;
+
+        // --- Configuration ---
+        const CONFIG = {
+            centerX: canvas.width / 2,
+            centerY: canvas.height / 2,
+            trackWidth: 540,
+            trackHeight: 140,
+            sprocketRadius: 65,
+            rollerRadius: 28,      // ล้อกดล่าง (Road Rollers)
+            upperRollerRadius: 18, // ล้อประคองบน (Return Rollers)
+            linkSize: 18,
+            linkCount: 56
+        };
+
+        // --- Helper: Calculate Capsule Path ---
+        function getPathPoint(t) {
+            const w = CONFIG.trackWidth - (CONFIG.sprocketRadius * 2);
+            const r = CONFIG.sprocketRadius;
+            const circumference = (2 * Math.PI * r) + (2 * w);
+            const dist = t * circumference;
+
+            let x, y, angle;
+
+            if (dist < w) { // Top straight
+                x = CONFIG.centerX - w/2 + dist;
+                y = CONFIG.centerY - r;
+                angle = 0;
+            } else if (dist < w + Math.PI * r) { // Right curve
+                const arcDist = dist - w;
+                const arcAngle = arcDist / r;
+                x = CONFIG.centerX + w/2 + Math.sin(arcAngle) * r;
+                y = CONFIG.centerY - r + r - Math.cos(arcAngle) * r;
+                angle = arcAngle;
+            } else if (dist < 2 * w + Math.PI * r) { // Bottom straight
+                const straightDist = dist - w - Math.PI * r;
+                x = CONFIG.centerX + w/2 - straightDist;
+                y = CONFIG.centerY + r;
+                angle = Math.PI;
+            } else { // Left curve
+                const arcDist = dist - 2 * w - Math.PI * r;
+                const arcAngle = arcDist / r + Math.PI;
+                x = CONFIG.centerX - w/2 + Math.sin(arcAngle) * r;
+                y = CONFIG.centerY + r - r - Math.cos(arcAngle) * r;
+                angle = arcAngle;
+            }
+
+            return { x, y, angle };
+        }
+
+        // --- Class: Wheel ---
+        class Wheel {
+            constructor(x, y, radius, type = "roller", label = "") {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.type = type; // "sprocket", "roller", "upper"
+                this.label = label;
+                this.angle = 0;
+            }
+
+            update(speed) {
+                this.angle += speed / this.radius;
+            }
+
+            draw(ctx, debug) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+
+                let colorBody = '#333';
+                let colorStroke = '#888';
+                let teeth = 6;
+
+                if (this.type === "sprocket") {
+                    colorBody = '#4a4a4a';
+                    colorStroke = '#aaa';
+                    teeth = 14;
+                } else if (this.type === "upper") {
+                    colorBody = '#222';
+                    colorStroke = '#666';
+                    teeth = 4;
+                }
+
+                ctx.beginPath();
+                ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = colorBody;
+                ctx.fill();
+                ctx.strokeStyle = colorStroke;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                for (let i = 0; i < teeth; i++) {
+                    ctx.rotate((Math.PI * 2) / teeth);
+                    ctx.beginPath();
+                    ctx.moveTo(this.radius * 0.6, 0);
+                    ctx.lineTo(this.radius + (this.type === "sprocket" ? 5 : 0), 0);
+                    ctx.strokeStyle = (this.type === "sprocket") ? '#fbbf24' : '#555';
+                    ctx.lineWidth = (this.type === "sprocket") ? 4 : 2;
+                    ctx.stroke();
+                }
+
+                ctx.beginPath();
+                ctx.arc(0, 0, this.radius * 0.25, 0, Math.PI * 2);
+                ctx.fillStyle = '#111';
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.restore();
+
+                if (debug && this.label) {
+                    ctx.fillStyle = "#999";
+                    ctx.font = "10px Arial";
+                    ctx.textAlign = "center";
+                    // ปรับ Offset ของ Label ให้ห่างออกไปอีก (ด้านบนขยับขึ้น ด้านล่างขยับลง)
+                    const labelYOffset = (this.type === "upper" || this.type === "sprocket") ? -this.radius - 25 : this.radius + 35;
+                    ctx.fillText(this.label, this.x, this.y + labelYOffset);
+                }
+            }
+        }
+
+        // --- Class: TrackLink ---
+        class TrackLink {
+            constructor(progress) {
+                this.progress = progress;
+            }
+
+            update(speed) {
+                const w = CONFIG.trackWidth - (CONFIG.sprocketRadius * 2);
+                const r = CONFIG.sprocketRadius;
+                const circumference = (2 * Math.PI * r) + (2 * w);
+                
+                this.progress += speed / circumference;
+                if (this.progress > 1) this.progress -= 1;
+                if (this.progress < 0) this.progress += 1;
+            }
+
+            draw(ctx) {
+                const pos = getPathPoint(this.progress);
+                ctx.save();
+                ctx.translate(pos.x, pos.y);
+                ctx.rotate(pos.angle);
+
+                ctx.fillStyle = '#444';
+                ctx.strokeStyle = '#111';
+                ctx.lineWidth = 1;
+                
+                ctx.beginPath();
+                ctx.roundRect(-CONFIG.linkSize/2, -6, CONFIG.linkSize, 12, 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#222';
+                ctx.fillRect(-CONFIG.linkSize/2 + 3, -3, CONFIG.linkSize - 6, 6);
+
+                ctx.restore();
+            }
+        }
+
+        // --- Class: TankSystem ---
+        class TankSystem {
+            constructor() {
+                this.speed = 2;
+                this.wheels = [
+                    new Wheel(CONFIG.centerX - CONFIG.trackWidth/2 + CONFIG.sprocketRadius, CONFIG.centerY, CONFIG.sprocketRadius, "sprocket", "Drive Sprocket 1"),
+                    new Wheel(CONFIG.centerX + CONFIG.trackWidth/2 - CONFIG.sprocketRadius, CONFIG.centerY, CONFIG.sprocketRadius, "sprocket", "Drive Sprocket 2"),
+                    
+                    new Wheel(CONFIG.centerX - 100, CONFIG.centerY + 45, CONFIG.rollerRadius, "roller", "Road Roller"),
+                    new Wheel(CONFIG.centerX, CONFIG.centerY + 45, CONFIG.rollerRadius, "roller", "Road Roller"),
+                    new Wheel(CONFIG.centerX + 100, CONFIG.centerY + 45, CONFIG.rollerRadius, "roller", "Road Roller"),
+
+                    new Wheel(CONFIG.centerX - 70, CONFIG.centerY - 45, CONFIG.upperRollerRadius, "upper", "Return Roller"),
+                    new Wheel(CONFIG.centerX + 70, CONFIG.centerY - 45, CONFIG.upperRollerRadius, "upper", "Return Roller")
+                ];
+                
+                this.links = [];
+                for (let i = 0; i < CONFIG.linkCount; i++) {
+                    this.links.push(new TrackLink(i / CONFIG.linkCount));
+                }
+            }
+
+            setSpeed(s) {
+                this.speed = s;
+            }
+
+            render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const debug = showDebug.checked;
+
+                ctx.fillStyle = '#252525';
+                ctx.beginPath();
+                ctx.roundRect(CONFIG.centerX - 180, CONFIG.centerY - 55, 360, 110, 5);
+                ctx.fill();
+                ctx.strokeStyle = '#3d3d3d';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                if (debug) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#444';
+                    ctx.lineWidth = 8;
+                    ctx.moveTo(CONFIG.centerX - 150, CONFIG.centerY);
+                    ctx.lineTo(CONFIG.centerX + 150, CONFIG.centerY);
+                    ctx.stroke();
+                }
+
+                this.wheels.forEach(w => {
+                    w.update(this.speed);
+                    w.draw(ctx, debug);
+                });
+
+                this.links.forEach(l => {
+                    l.update(this.speed);
+                    l.draw(ctx);
+                });
+
+                if (debug) {
+                    ctx.beginPath();
+                    ctx.setLineDash([10, 5]);
+                    for (let t = 0; t <= 1; t += 0.01) {
+                        const p = getPathPoint(t);
+                        if (t === 0) ctx.moveTo(p.x, p.y);
+                        else ctx.lineTo(p.x, p.y);
+                    }
+                    ctx.strokeStyle = 'rgba(0, 255, 200, 0.2)';
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+        }
+
+        const tank = new TankSystem();
+
+        function animate() {
+            tank.render();
+            requestAnimationFrame(animate);
+        }
+
+        speedRange.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            tank.setSpeed(val);
+            speedVal.textContent = val;
+        });
+
+        resetBtn.addEventListener('click', () => {
+            speedRange.value = 2;
+            tank.setSpeed(2);
+            speedVal.textContent = "2";
+        });
+
+        window.onload = animate;
+    </script>
+</body>
+</html>

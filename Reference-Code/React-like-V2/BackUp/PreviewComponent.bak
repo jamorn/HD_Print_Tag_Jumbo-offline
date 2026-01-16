@@ -1,0 +1,677 @@
+/**
+ * Preview Component - Modern Tag Printing System V2
+ * Interactive preview area with print configuration and page management
+ */
+
+import { BaseComponent } from './BaseComponent.js';
+import { PageFactory } from './PageFactory.js';
+import { TemplateConfig } from './TemplateConfig.js';
+
+export class PreviewComponent extends BaseComponent {
+  constructor(options = {}) {
+    super({
+      showControls: true,
+      allowPrint: true,
+      allowExport: true,
+      defaultConfig: {
+        paperSize: 'a4',
+        layout: 'single',
+        template: 'standard',
+        quantity: 1
+      },
+      ...options
+    });
+
+    this.pageFactory = new PageFactory();
+    this.currentPages = [];
+    this.previewConfig = { ...this.props.defaultConfig };
+    this.productData = {};
+    this.unitConfig = null;
+  }
+
+  /**
+   * Render the preview component
+   */
+  render() {
+    const container = this.createElement('div', {
+      className: 'preview-component',
+      'data-component': 'preview'
+    });
+
+    // Preview header with controls
+    if (this.props.showControls) {
+      const header = this.renderPreviewHeader();
+      container.appendChild(header);
+    }
+
+    // Preview container
+    const previewContainer = this.renderPreviewContainer();
+    container.appendChild(previewContainer);
+
+    // Preview footer with info
+    const footer = this.renderPreviewFooter();
+    container.appendChild(footer);
+
+    return container;
+  }
+
+  /**
+   * Render preview header with controls
+   */
+  renderPreviewHeader() {
+    const header = this.createElement('div', {
+      className: 'preview-header'
+    });
+
+    const title = this.createElement('h2', {
+      textContent: 'Tag Preview'
+    });
+
+    const controls = this.createElement('div', {
+      className: 'preview-controls'
+    });
+
+    // Configuration controls
+    const configControls = this.renderConfigControls();
+    controls.appendChild(configControls);
+
+    // Action buttons
+    const actionButtons = this.renderActionButtons();
+    controls.appendChild(actionButtons);
+
+    header.appendChild(title);
+    header.appendChild(controls);
+
+    return header;
+  }
+
+  /**
+   * Render configuration controls
+   */
+  renderConfigControls() {
+    const controls = this.createElement('div', {
+      className: 'config-controls'
+    });
+
+    // Paper size selector
+    const paperSizeGroup = this.createElement('div', {
+      className: 'control-group'
+    });
+
+    const paperSizeLabel = this.createElement('label', {
+      textContent: 'Paper Size',
+      className: 'control-label'
+    });
+
+    const paperSizeSelect = this.createElement('select', {
+      className: 'form-control control-select',
+      onchange: (e) => this.updateConfig({ paperSize: e.target.value })
+    });
+
+    TemplateConfig.getAllPaperSizes().forEach(size => {
+      const option = this.createElement('option', {
+        value: size.id,
+        textContent: size.name,
+        selected: size.id === this.previewConfig.paperSize
+      });
+      paperSizeSelect.appendChild(option);
+    });
+
+    paperSizeGroup.appendChild(paperSizeLabel);
+    paperSizeGroup.appendChild(paperSizeSelect);
+    controls.appendChild(paperSizeGroup);
+
+    // Layout selector
+    const layoutGroup = this.createElement('div', {
+      className: 'control-group'
+    });
+
+    const layoutLabel = this.createElement('label', {
+      textContent: 'Layout',
+      className: 'control-label'
+    });
+
+    const layoutSelect = this.createElement('select', {
+      className: 'form-control control-select',
+      onchange: (e) => this.updateConfig({ layout: e.target.value })
+    });
+
+    TemplateConfig.getAllLayouts().forEach(layout => {
+      const option = this.createElement('option', {
+        value: layout.id,
+        textContent: layout.name,
+        selected: layout.id === this.previewConfig.layout
+      });
+      layoutSelect.appendChild(option);
+    });
+
+    layoutGroup.appendChild(layoutLabel);
+    layoutGroup.appendChild(layoutSelect);
+    controls.appendChild(layoutGroup);
+
+    // Template selector
+    const templateGroup = this.createElement('div', {
+      className: 'control-group'
+    });
+
+    const templateLabel = this.createElement('label', {
+      textContent: 'Template',
+      className: 'control-label'
+    });
+
+    const templateSelect = this.createElement('select', {
+      className: 'form-control control-select',
+      onchange: (e) => this.updateConfig({ template: e.target.value })
+    });
+
+    TemplateConfig.getAllTemplates().forEach(template => {
+      const option = this.createElement('option', {
+        value: template.id,
+        textContent: template.name,
+        selected: template.id === this.previewConfig.template
+      });
+      templateSelect.appendChild(option);
+    });
+
+    templateGroup.appendChild(templateLabel);
+    templateGroup.appendChild(templateSelect);
+    controls.appendChild(templateGroup);
+
+    // Quantity control
+    const quantityGroup = this.createElement('div', {
+      className: 'control-group'
+    });
+
+    const quantityLabel = this.createElement('label', {
+      textContent: 'Quantity',
+      className: 'control-label'
+    });
+
+    const quantityInput = this.createElement('input', {
+      type: 'number',
+      className: 'form-control control-input',
+      min: '1',
+      max: '100',
+      value: this.previewConfig.quantity,
+      oninput: (e) => this.updateConfig({ quantity: parseInt(e.target.value) })
+    });
+
+    quantityGroup.appendChild(quantityLabel);
+    quantityGroup.appendChild(quantityInput);
+    controls.appendChild(quantityGroup);
+
+    return controls;
+  }
+
+  /**
+   * Render action buttons
+   */
+  renderActionButtons() {
+    const buttons = this.createElement('div', {
+      className: 'action-buttons'
+    });
+
+    if (this.props.allowPrint) {
+      const printBtn = this.createElement('button', {
+        className: 'btn btn-primary',
+        textContent: '🖨️ Print',
+        onclick: () => this.handlePrint()
+      });
+      buttons.appendChild(printBtn);
+    }
+
+    if (this.props.allowExport) {
+      const exportBtn = this.createElement('button', {
+        className: 'btn btn-secondary',
+        textContent: '📄 Export PDF',
+        onclick: () => this.handleExport('pdf')
+      });
+      buttons.appendChild(exportBtn);
+
+      const exportImageBtn = this.createElement('button', {
+        className: 'btn btn-secondary',
+        textContent: '🖼️ Export Image',
+        onclick: () => this.handleExport('image')
+      });
+      buttons.appendChild(exportImageBtn);
+    }
+
+    const refreshBtn = this.createElement('button', {
+      className: 'btn btn-secondary',
+      textContent: '🔄 Refresh',
+      onclick: () => this.refreshPreview()
+    });
+    buttons.appendChild(refreshBtn);
+
+    return buttons;
+  }
+
+  /**
+   * Render preview container
+   */
+  renderPreviewContainer() {
+    const container = this.createElement('div', {
+      className: 'preview-container',
+      id: 'preview-container'
+    });
+
+    // Show placeholder initially
+    const placeholder = this.renderPlaceholder();
+    container.appendChild(placeholder);
+
+    return container;
+  }
+
+  /**
+   * Render placeholder when no preview is available
+   */
+  renderPlaceholder() {
+    return this.createElement('div', {
+      className: 'preview-placeholder',
+      innerHTML: `
+        <div class="placeholder-icon">📄</div>
+        <div class="placeholder-text">Configure form data to generate preview</div>
+        <div class="placeholder-subtext">Fill out the form on the left and click "Generate Preview"</div>
+      `
+    });
+  }
+
+  /**
+   * Render preview footer
+   */
+  renderPreviewFooter() {
+    const footer = this.createElement('div', {
+      className: 'preview-footer'
+    });
+
+    const info = this.createElement('div', {
+      className: 'preview-info',
+      id: 'preview-info'
+    });
+
+    this.updatePreviewInfo();
+
+    footer.appendChild(info);
+    return footer;
+  }
+
+  /**
+   * Update preview configuration
+   */
+  updateConfig(newConfig) {
+    this.previewConfig = { ...this.previewConfig, ...newConfig };
+    
+    if (this.hasValidData()) {
+      this.generatePreview();
+    }
+
+    this.emit('config-change', { config: this.previewConfig });
+  }
+
+  /**
+   * Set product data for preview
+   */
+  setProductData(data, unitConfig) {
+    this.productData = { ...data };
+    this.unitConfig = unitConfig;
+    
+    if (this.hasValidData()) {
+      this.generatePreview();
+    }
+  }
+
+  /**
+   * Check if we have valid data for preview generation
+   */
+  hasValidData() {
+    return (
+      this.productData &&
+      this.productData.lotNumber &&
+      this.productData.productCode &&
+      this.unitConfig
+    );
+  }
+
+  /**
+   * Generate preview pages
+   */
+  generatePreview() {
+    if (!this.hasValidData()) {
+      this.showPlaceholder();
+      return;
+    }
+
+    try {
+      // Clear existing pages
+      this.clearPreview();
+
+      // Calculate pages needed
+      const layout = TemplateConfig.getLayout(this.previewConfig.layout);
+      const tagsPerPage = layout.columns * layout.rows;
+      const totalPages = Math.ceil(this.previewConfig.quantity / tagsPerPage);
+
+      // Generate pages
+      for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+        const remainingQuantity = this.previewConfig.quantity - (pageIndex * tagsPerPage);
+        const pageQuantity = Math.min(remainingQuantity, tagsPerPage);
+
+        const pageConfig = {
+          ...this.previewConfig,
+          quantity: pageQuantity,
+          unitConfig: this.unitConfig,
+          productData: this.productData
+        };
+
+        const page = this.pageFactory.createPage(pageConfig);
+        this.currentPages.push(page);
+
+        // Mount page to preview container
+        const previewContainer = this.querySelector('#preview-container');
+        page.mount(previewContainer);
+      }
+
+      // Update info
+      this.updatePreviewInfo();
+      
+      // Emit preview generated event
+      this.emit('preview-generated', {
+        pages: this.currentPages.length,
+        totalTags: this.previewConfig.quantity
+      });
+
+    } catch (error) {
+      console.error('Failed to generate preview:', error);
+      this.showError('Failed to generate preview: ' + error.message);
+    }
+  }
+
+  /**
+   * Clear current preview
+   */
+  clearPreview() {
+    // Cleanup existing pages
+    this.currentPages.forEach(page => {
+      page.cleanup();
+    });
+    this.currentPages = [];
+
+    // Clear preview container
+    const previewContainer = this.querySelector('#preview-container');
+    if (previewContainer) {
+      previewContainer.innerHTML = '';
+    }
+  }
+
+  /**
+   * Show placeholder
+   */
+  showPlaceholder() {
+    this.clearPreview();
+    const previewContainer = this.querySelector('#preview-container');
+    if (previewContainer) {
+      const placeholder = this.renderPlaceholder();
+      previewContainer.appendChild(placeholder);
+    }
+    this.updatePreviewInfo();
+  }
+
+  /**
+   * Show error message
+   */
+  showError(message) {
+    this.clearPreview();
+    const previewContainer = this.querySelector('#preview-container');
+    if (previewContainer) {
+      const error = this.createElement('div', {
+        className: 'preview-error',
+        innerHTML: `
+          <div class="error-icon">⚠️</div>
+          <div class="error-message">${message}</div>
+        `
+      });
+      previewContainer.appendChild(error);
+    }
+  }
+
+  /**
+   * Refresh preview
+   */
+  refreshPreview() {
+    if (this.hasValidData()) {
+      this.generatePreview();
+    } else {
+      this.showPlaceholder();
+    }
+  }
+
+  /**
+   * Update preview info display
+   */
+  updatePreviewInfo() {
+    const infoEl = this.querySelector('#preview-info');
+    if (!infoEl) return;
+
+    if (this.currentPages.length > 0) {
+      const layout = TemplateConfig.getLayout(this.previewConfig.layout);
+      const paperSize = TemplateConfig.getPaperSize(this.previewConfig.paperSize);
+      const template = TemplateConfig.getTemplate(this.previewConfig.template);
+
+      infoEl.innerHTML = `
+        <div class="info-item">
+          <span class="info-label">Pages:</span>
+          <span class="info-value">${this.currentPages.length}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Total Tags:</span>
+          <span class="info-value">${this.previewConfig.quantity}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Layout:</span>
+          <span class="info-value">${layout.name} (${layout.columns}×${layout.rows})</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Paper:</span>
+          <span class="info-value">${paperSize.name}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Template:</span>
+          <span class="info-value">${template.name}</span>
+        </div>
+      `;
+    } else {
+      infoEl.innerHTML = `
+        <div class="info-item">
+          <span class="info-label">Status:</span>
+          <span class="info-value">No preview available</span>
+        </div>
+      `;
+    }
+  }
+
+  /**
+   * Handle print action
+   */
+  async handlePrint() {
+    if (this.currentPages.length === 0) {
+      alert('No pages to print. Generate a preview first.');
+      return;
+    }
+
+    try {
+      // Prepare all pages for printing
+      const printPromises = this.currentPages.map(page => page.preparePrint());
+      await Promise.all(printPromises);
+
+      // Add print styles
+      const printStyleId = 'print-styles-temp';
+      const existingPrintStyles = document.getElementById(printStyleId);
+      if (existingPrintStyles) {
+        existingPrintStyles.remove();
+      }
+
+      const printStyles = document.createElement('style');
+      printStyles.id = printStyleId;
+      printStyles.textContent = `
+        @media print {
+          body * { visibility: hidden; }
+          .preview-container, .preview-container * { visibility: visible; }
+          .preview-container { position: absolute; top: 0; left: 0; }
+          .preview-header, .preview-footer { display: none !important; }
+        }
+      `;
+      document.head.appendChild(printStyles);
+
+      // Trigger print
+      window.print();
+
+      // Clean up print styles after a delay
+      setTimeout(() => {
+        const tempStyles = document.getElementById(printStyleId);
+        if (tempStyles) {
+          tempStyles.remove();
+        }
+      }, 1000);
+
+      this.emit('print-initiated', { pages: this.currentPages.length });
+
+    } catch (error) {
+      console.error('Print failed:', error);
+      alert('Print failed: ' + error.message);
+    }
+  }
+
+  /**
+   * Handle export action
+   */
+  async handleExport(format) {
+    if (this.currentPages.length === 0) {
+      alert('No pages to export. Generate a preview first.');
+      return;
+    }
+
+    try {
+      this.showLoadingState('Exporting...');
+
+      if (format === 'pdf') {
+        await this.exportPDF();
+      } else if (format === 'image') {
+        await this.exportImage();
+      }
+
+      this.hideLoadingState();
+      this.emit('export-completed', { format, pages: this.currentPages.length });
+
+    } catch (error) {
+      console.error('Export failed:', error);
+      this.hideLoadingState();
+      alert('Export failed: ' + error.message);
+    }
+  }
+
+  /**
+   * Export as PDF
+   */
+  async exportPDF() {
+    // This would require a PDF library like jsPDF or Puppeteer
+    // For now, we'll use the browser's print to PDF functionality
+    
+    const printStyleId = 'pdf-export-styles';
+    const printStyles = document.createElement('style');
+    printStyles.id = printStyleId;
+    printStyles.textContent = `
+      @media print {
+        body * { visibility: hidden; }
+        .preview-container, .preview-container * { visibility: visible; }
+        .preview-container { position: absolute; top: 0; left: 0; }
+        .preview-header, .preview-footer { display: none !important; }
+        @page { margin: 0; }
+      }
+    `;
+    document.head.appendChild(printStyles);
+
+    // Prepare pages
+    const printPromises = this.currentPages.map(page => page.preparePrint());
+    await Promise.all(printPromises);
+
+    // Trigger print dialog with PDF option
+    window.print();
+
+    // Cleanup
+    setTimeout(() => {
+      const tempStyles = document.getElementById(printStyleId);
+      if (tempStyles) {
+        tempStyles.remove();
+      }
+    }, 1000);
+  }
+
+  /**
+   * Export as image
+   */
+  async exportImage() {
+    if (typeof html2canvas === 'undefined') {
+      throw new Error('html2canvas library is required for image export');
+    }
+
+    const previewContainer = this.querySelector('#preview-container');
+    const canvas = await html2canvas(previewContainer, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff'
+    });
+
+    // Download image
+    const link = document.createElement('a');
+    link.download = `tags-${new Date().toISOString().split('T')[0]}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+  }
+
+  /**
+   * Show loading state
+   */
+  showLoadingState(message = 'Loading...') {
+    const previewContainer = this.querySelector('#preview-container');
+    const overlay = this.createElement('div', {
+      className: 'loading-overlay',
+      innerHTML: `
+        <div class="loading-content">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">${message}</div>
+        </div>
+      `
+    });
+
+    previewContainer.appendChild(overlay);
+  }
+
+  /**
+   * Hide loading state
+   */
+  hideLoadingState() {
+    const overlay = this.querySelector('.loading-overlay');
+    if (overlay) {
+      overlay.remove();
+    }
+  }
+
+  /**
+   * Get current preview state
+   */
+  getPreviewState() {
+    return {
+      config: { ...this.previewConfig },
+      productData: { ...this.productData },
+      unitConfig: this.unitConfig,
+      pages: this.currentPages.length,
+      hasValidData: this.hasValidData()
+    };
+  }
+
+  /**
+   * Component lifecycle - cleanup
+   */
+  onBeforeUnmount() {
+    this.clearPreview();
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "grade_history_HDPE": {
+    "P901BK": {
+      "lot": "7257896524",
+      "netweight": "750",
+      "fromPage": "1",
+      "toPage": "10",
+      "shift": "กลางวัน",
+      "idate": "11",
+      "tis": "Y",
+      "controlPrint": 7,
+      "timestamp": "2025-12-11T10:00:00.000Z"
+    },
+    "P921BK": {
+      "lot": "7257896525", 
+      "netweight": "800",
+      "fromPage": "1",
+      "toPage": "5",
+      "shift": "กลางคืน",
+      "idate": "10",
+      "tis": "Y",
+      "controlPrint": 7,
+      "timestamp": "2025-12-10T22:30:00.000Z"
+    },
+    "P921NT": {
+      "lot": "7257896526",
+      "netweight": "750", 
+      "fromPage": "1",
+      "toPage": "8",
+      "shift": "กลางวัน",
+      "idate": "9",
+      "tis": "Y",
+      "controlPrint": 7,
+      "timestamp": "2025-12-09T08:15:00.000Z"
+    },
+    "AM3245PC": {
+      "lot": "7257896527",
+      "netweight": "750",
+      "fromPage": "1", 
+      "toPage": "3",
+      "shift": "กลางวัน",
+      "idate": "8",
+      "tis": "Y",
+      "controlPrint": 0,
+      "timestamp": "2025-12-08T14:20:00.000Z"
+    },
+    "AM3245PC SUB/800": {
+      "lot": "7257896528",
+      "netweight": "800",
+      "fromPage": "1", 
+      "toPage": "2",
+      "shift": "กลางคืน",
+      "idate": "7",
+      "tis": "N",
+      "controlPrint": 0,
+      "timestamp": "2025-12-07T19:45:00.000Z"
+    }
+  },
+  
+  "grade_history_PP": {
+    "1032L": {
+      "lot": "7257896530",
+      "netweight": "750",
+      "fromPage": "1",
+      "toPage": "12", 
+      "shift": "กลางวัน",
+      "idate": "11",
+      "tis": "Y",
+      "controlPrint": 5,
+      "timestamp": "2025-12-11T09:30:00.000Z"
+    },
+    "1102H": {
+      "lot": "7257896531",
+      "netweight": "16500",
+      "fromPage": "1",
+      "toPage": "20",
+      "shift": "กลางคืน", 
+      "idate": "10",
+      "tis": "Y",
+      "controlPrint": 5,
+      "timestamp": "2025-12-10T21:45:00.000Z"
+    },
+    "1105SC": {
+      "lot": "7257896532",
+      "netweight": "18000",
+      "fromPage": "1",
+      "toPage": "15",
+      "shift": "กลางวัน",
+      "idate": "9", 
+      "tis": "Y",
+      "controlPrint": 5,
+      "timestamp": "2025-12-09T11:10:00.000Z"
+    },
+    "1140H": {
+      "lot": "7257896533",
+      "netweight": "900",
+      "fromPage": "1",
+      "toPage": "7",
+      "shift": "กลางคืน",
+      "idate": "8",
+      "tis": "Y",
+      "controlPrint": 5,
+      "timestamp": "2025-12-08T23:20:00.000Z"
+    }
+  },
+  
+  "grade_history_PPC": {
+    "B1101": {
+      "lot": "72578540",
+      "netweight": "750",
+      "fromPage": "1",
+      "toPage": "6",
+      "shift": "กลางวัน", 
+      "idate": "11",
+      "tis": "Y",
+      "controlPrint": 5,
+      "timestamp": "2025-12-11T13:15:00.000Z"
+    },
+    "K4510B": {
+      "lot": "72578541",
+      "netweight": "16500",
+      "fromPage": "1",
+      "toPage": "18",
+      "shift": "กลางคืน",
+      "idate": "10",
+      "tis": "Y",
+      "controlPrint": 5,
+      "timestamp": "2025-12-10T20:30:00.000Z"
+    },
+    "BC03B": {
+      "lot": "72578542",
+      "netweight": "800",
+      "fromPage": "1", 
+      "toPage": "4",
+      "shift": "กลางวัน",
+      "idate": "9",
+      "tis": "Y",
+      "controlPrint": 5,
+      "timestamp": "2025-12-09T15:40:00.000Z"
+    },
+    "FL203D": {
+      "lot": "72578543",
+      "netweight": "800",
+      "fromPage": "1",
+      "toPage": "9",
+      "shift": "กลางคืน",
+      "idate": "8", 
+      "tis": "Y",
+      "controlPrint": 5,
+      "timestamp": "2025-12-08T22:10:00.000Z"
+    }
+  },
+  
+  "selectedTheme": "purple",
+  
+  "_metadata": {
+    "version": "1.0.0",
+    "created": "2025-12-11T16:00:00.000Z",
+    "description": "Default grade history data for HD Print Tag Jumbo system",
+    "totalGrades": {
+      "HDPE": 4,
+      "PP": 4, 
+      "PPC": 4
+    },
+    "note": "This data provides initial grade history to new users. Users can modify or clear this data through the application interface."
+  }
+}

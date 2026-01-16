@@ -1,0 +1,820 @@
+/**
+ * Form Component - React-like component for handling form input (Simple Version)
+ * Matches the original React-like architecture
+ */
+
+class FormComponent {
+  constructor(config) {
+    this.config = config;
+    
+    // Initialize state without calling getInitialFormData first
+    this.state = {
+      unit: config.defaultUnit || 'HDPE',
+      theme: config.defaultTheme || 'blue', 
+      template: config.defaultTemplate || 'template3',
+      formData: {},
+      errors: {},
+      isCollapsed: false
+    };
+    
+    // Now get initial form data after state is initialized
+    this.state.formData = this.getInitialFormData();
+    
+    // Grade autocomplete data
+    this.allGrades = [];
+    this.selectedGradeData = null;
+    this.isAutocompleteSelection = false;
+    this.loadGradeData();
+    
+    this.listeners = [];
+  }
+  
+  /**
+   * Load grade data from unitConfig.js - unified format for all units
+   */
+  loadGradeData() {
+    this.allGrades = [];
+    
+    // Generate expanded grade list from all units using netweightArray
+    Object.keys(this.config.units).forEach(unitKey => {
+      const unit = this.config.units[unitKey];
+      
+      if (unit.gradeData) {
+        unit.gradeData.forEach(gradeItem => {
+          // For HDPE (no status property) or active grades (status: true)
+          if (gradeItem.netweightArray && (gradeItem.status !== false)) {
+            gradeItem.netweightArray.forEach(netweight => {
+              let gradeDisplay;
+              
+              // Extract base grade name (remove existing /netweight if present)
+              const baseGrade = gradeItem.grade.split('/')[0];
+              
+              // Build grade display based on unit and netweight
+              if (unitKey === 'HDPE') {
+                gradeDisplay = `${baseGrade}/${netweight}`;
+              } else if (unitKey === 'PP') {
+                gradeDisplay = `${baseGrade}/${netweight}`;
+              } else if (unitKey === 'PPC') {
+                gradeDisplay = `${baseGrade}/${netweight}`;
+              } else {
+                gradeDisplay = gradeItem.grade;
+              }
+              
+              this.allGrades.push({
+                display: gradeDisplay,
+                unit: unitKey,
+                baseGrade: baseGrade,
+                netweight: netweight,
+                originalGrade: gradeItem.grade,
+                gradeData: gradeItem
+              });
+            });
+          }
+        });
+      }
+    });
+    
+    console.log(`📊 Loaded ${this.allGrades.length} grades for autocomplete`);
+  }
+
+  /**
+   * Get initial form data - matches original React-like behavior
+   */
+  getInitialFormData() {
+    // Try to get last used grade from Grade History (localStorage)
+    const lastGrade = this.getLastUsedGrade(this.state.unit);
+    
+    if (lastGrade) {
+      console.log(`📝 Using last grade for ${this.state.unit}:`, lastGrade);
+      return {
+        grade: lastGrade.grade || '',
+        netweight: lastGrade.netweight || '',
+        lot: lastGrade.lot || '',
+        fromPage: lastGrade.fromPage || '1',
+        toPage: lastGrade.toPage || '1',
+        shift: this.getDefaultShift(),
+        idate: new Date().getDate().toString(),
+        controlprint: lastGrade.controlprint || { ft: false, lt: false }
+      };
+    }
+    
+    // No grade history - use unit defaults from config
+    const unitConfig = this.config.units[this.state.unit];
+    const defaults = unitConfig?.defaults || {};
+    
+    console.log(`📝 No grade history for ${this.state.unit}, using unit defaults`);
+    
+    // Generate lot prefix from init netweight
+    let lotPrefix = '';
+    if (defaults.netweight) {
+      const netweight = parseInt(defaults.netweight);
+      const currentYear = new Date().getFullYear();
+      const twoDigitYear = currentYear.toString().slice(-2);
+      const lotStartWithNine = [1650, 1800, 16500, 18000];
+      
+      // SB grades always start with 9
+      const isSBGrade = defaults.grade && defaults.grade.includes('/SB/');
+      
+      if (isSBGrade || lotStartWithNine.includes(netweight)) {
+        lotPrefix = '9' + twoDigitYear;
+      } else {
+        lotPrefix = netweight.toString().charAt(0) + twoDigitYear;
+      }
+      console.log(`🔢 Generated lot prefix from init: ${lotPrefix}`);
+    }
+    
+    return {
+      grade: defaults.grade || '',
+      netweight: defaults.netweight || '',
+      lot: lotPrefix,
+      fromPage: '1',
+      toPage: '1',
+      shift: this.getDefaultShift(),
+      idate: new Date().getDate().toString(),
+      controlprint: { ft: false, lt: false }
+    };
+  }
+
+  /**
+   * Get last used grade for a specific unit from Grade History
+   */
+  getLastUsedGrade(unit) {
+    try {
+      const gradeHistoryKey = `gradeHistory_${unit}`;
+      const history = localStorage.getItem(gradeHistoryKey);
+      if (history) {
+        const gradeHistory = JSON.parse(history);
+        if (gradeHistory && gradeHistory.length > 0) {
+          return gradeHistory[gradeHistory.length - 1];
+        }
+      }
+    } catch (error) {
+      console.warn('Error reading grade history:', error);
+    }
+    return null;
+  }
+
+  /**
+   * Get default shift based on current time
+   */
+  getDefaultShift() {
+    const now = new Date();
+    const hour = now.getHours();
+    
+    if (hour >= 8 && hour < 20) {
+      return 'Morning (M)';
+    } else {
+      return 'Night (N)';
+    }
+  }
+
+  /**
+   * Initialize form after rendering
+   */
+  initializeForm() {
+    // This will be called after render to set up event listeners
+    setTimeout(() => {
+      this.attachEventListeners();
+      this.populateDateDropdowns();
+      this.populateShiftDropdown();
+      this.setupGradeAutocomplete();
+      this.applyFormData();
+    }, 100);
+  }
+
+  /**
+   * Render the form component
+   */
+  render() {
+    return `
+      <div class="form-panel" id="formPanel">
+        <div class="form-header">
+          <h2>ฟอร์มข้อมูลการพิมพ์</h2>
+          <button class="collapse-btn" onclick="window.formComponent.toggleCollapse()">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="form-content" ${this.state.isCollapsed ? 'style="display:none"' : ''}>
+          ${this.renderUnitSelector()}
+          ${this.renderThemeSelector()}
+          ${this.renderTemplateSelector()}
+          ${this.renderFormFields()}
+          ${this.renderPrintControls()}
+          ${this.renderActionButtons()}
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Render unit selector
+   */
+  renderUnitSelector() {
+    return `
+      <div class="unit-selector">
+        <label class="section-label">Unit Selection:</label>
+        <div class="unit-buttons">
+          <button class="unit-btn ${this.state.unit === 'HDPE' ? 'active' : ''}" onclick="window.formComponent.changeUnit('HDPE')">HDPE</button>
+          <button class="unit-btn ${this.state.unit === 'PP' ? 'active' : ''}" onclick="window.formComponent.changeUnit('PP')">PP</button>
+          <button class="unit-btn ${this.state.unit === 'PPC' ? 'active' : ''}" onclick="window.formComponent.changeUnit('PPC')">PPC</button>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Render theme selector
+   */
+  renderThemeSelector() {
+    const themes = [
+      { id: 'blue', color: '#667eea', label: 'Blue' },
+      { id: 'green', color: '#4ade80', label: 'Green' },
+      { id: 'pink', color: '#f472b6', label: 'Pink' },
+      { id: 'purple', color: '#c084fc', label: 'Purple' },
+      { id: 'dark', color: '#374151', label: 'Dark' }
+    ];
+
+    return `
+      <div class="theme-selector">
+        <label class="section-label">🎨 Theme:</label>
+        <div class="theme-buttons">
+          ${themes.map(theme => `
+            <button class="theme-btn ${this.state.theme === theme.id ? 'active' : ''}" 
+                    style="background-color: ${theme.color}" 
+                    onclick="window.formComponent.changeTheme('${theme.id}')"
+                    title="${theme.label}">
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Render template selector
+   */
+  renderTemplateSelector() {
+    return `
+      <div class="template-selector">
+        <label class="section-label">Template:</label>
+        <div class="template-buttons">
+          <button class="template-btn ${this.state.template === 'template1' ? 'active' : ''}" 
+                  onclick="window.formComponent.changeTemplate('template1')">
+            <div class="template-icon">📄</div>
+            <span>Description<br>Only</span>
+          </button>
+          <button class="template-btn ${this.state.template === 'template2' ? 'active' : ''}" 
+                  onclick="window.formComponent.changeTemplate('template2')">
+            <div class="template-icon">📋</div>
+            <span>Description +<br>Logos</span>
+          </button>
+          <button class="template-btn ${this.state.template === 'template3' ? 'active' : ''}" 
+                  onclick="window.formComponent.changeTemplate('template3')">
+            <div class="template-icon">🎯</div>
+            <span>Full<br>Certifications</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Render form fields
+   */
+  renderFormFields() {
+    return `
+      <div class="form-fields">
+        <div class="field-row">
+          <div class="field-group">
+            <label for="grade">Grade *</label>
+            <input type="text" 
+                   id="grade" 
+                   name="grade" 
+                   value="${this.state.formData.grade || ''}"
+                   placeholder="e.g., P901BK/SB"
+                   autocomplete="off"
+                   onchange="window.formComponent.handleFieldChange('grade', this.value)">
+            <div id="grade-autocomplete" class="autocomplete-dropdown"></div>
+          </div>
+          <div class="field-group">
+            <label for="netweight">Net Weight (KG) *</label>
+            <input type="text" 
+                   id="netweight" 
+                   name="netweight" 
+                   value="${this.state.formData.netweight || ''}"
+                   placeholder="18000"
+                   onchange="window.formComponent.handleFieldChange('netweight', this.value)">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="lot">Lot *</label>
+            <input type="text" 
+                   id="lot" 
+                   name="lot" 
+                   value="${this.state.formData.lot || ''}"
+                   placeholder="10 digits"
+                   maxlength="10"
+                   onchange="window.formComponent.handleFieldChange('lot', this.value)">
+            <small>0/10 characters</small>
+          </div>
+          <div class="field-group">
+            <label for="fromPage">From Page *</label>
+            <input type="number" 
+                   id="fromPage" 
+                   name="fromPage" 
+                   value="${this.state.formData.fromPage || '1'}"
+                   min="1"
+                   onchange="window.formComponent.handleFieldChange('fromPage', this.value)">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="toPage">To Page *</label>
+            <input type="number" 
+                   id="toPage" 
+                   name="toPage" 
+                   value="${this.state.formData.toPage || '1'}"
+                   min="1"
+                   onchange="window.formComponent.handleFieldChange('toPage', this.value)">
+          </div>
+          <div class="field-group">
+            <label for="idate">Date</label>
+            <select id="idate" 
+                    name="idate"
+                    onchange="window.formComponent.handleFieldChange('idate', this.value)">
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="shift">Shift</label>
+            <select id="shift" 
+                    name="shift"
+                    onchange="window.formComponent.handleFieldChange('shift', this.value)">
+              <option value="Morning (M)">Morning (M)</option>
+              <option value="Night (N)">Night (N)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Render print controls
+   */
+  renderPrintControls() {
+    return `
+      <div class="print-controls">
+        <label class="section-label">Print Controls:</label>
+        <div class="control-checkboxes">
+          <label class="checkbox-label">
+            <input type="checkbox" 
+                   id="controlprint-ft"
+                   ${this.state.formData.controlprint?.ft ? 'checked' : ''}
+                   onchange="window.formComponent.handleControlPrintChange('ft', this.checked)">
+            First Tag (FT)
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" 
+                   id="controlprint-lt"
+                   ${this.state.formData.controlprint?.lt ? 'checked' : ''}
+                   onchange="window.formComponent.handleControlPrintChange('lt', this.checked)">
+            Last Tag (LT)
+          </label>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Render action buttons
+   */
+  renderActionButtons() {
+    return `
+      <div class="action-buttons">
+        <button id="generateBtn" class="btn btn-primary" onclick="window.formComponent.generatePreview()">
+          📄 Generate Preview
+        </button>
+        <button id="clearBtn" class="btn btn-secondary" onclick="window.formComponent.clearForm()">
+          🗑️ Clear Form
+        </button>
+      </div>
+    `;
+  }
+
+  /**
+   * Apply form data to inputs
+   */
+  applyFormData() {
+    Object.keys(this.state.formData).forEach(key => {
+      const element = document.getElementById(key);
+      if (element && key !== 'controlprint') {
+        element.value = this.state.formData[key] || '';
+      }
+    });
+
+    // Apply control print checkboxes
+    if (this.state.formData.controlprint) {
+      const ftCheckbox = document.getElementById('controlprint-ft');
+      const ltCheckbox = document.getElementById('controlprint-lt');
+      
+      if (ftCheckbox) ftCheckbox.checked = this.state.formData.controlprint.ft || false;
+      if (ltCheckbox) ltCheckbox.checked = this.state.formData.controlprint.lt || false;
+    }
+
+    // Update lot character counter
+    this.updateLotCounter();
+  }
+
+  /**
+   * Populate date dropdown with current month dates
+   */
+  populateDateDropdowns() {
+    const select = document.getElementById('idate');
+    if (!select) return;
+
+    select.innerHTML = '';
+    
+    const currentDate = new Date().getDate();
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    for (let i = 1; i <= daysInMonth; i++) {
+      const option = document.createElement('option');
+      option.value = i.toString();
+      option.textContent = i.toString().padStart(2, '0');
+      if (i === currentDate) {
+        option.selected = true;
+      }
+      select.appendChild(option);
+    }
+  }
+
+  /**
+   * Populate shift dropdown and auto-select based on current time
+   */
+  populateShiftDropdown() {
+    const select = document.getElementById('shift');
+    if (!select) return;
+    
+    const currentShift = this.getDefaultShift();
+    select.value = currentShift;
+  }
+
+  /**
+   * Setup grade autocomplete functionality
+   */
+  setupGradeAutocomplete() {
+    const gradeInput = document.getElementById('grade');
+    const dropdown = document.getElementById('grade-autocomplete');
+    
+    if (!gradeInput || !dropdown) return;
+
+    gradeInput.addEventListener('input', (e) => {
+      this.handleGradeInput(e.target.value);
+    });
+
+    gradeInput.addEventListener('blur', () => {
+      setTimeout(() => {
+        dropdown.style.display = 'none';
+      }, 200);
+    });
+
+    gradeInput.addEventListener('focus', () => {
+      if (gradeInput.value) {
+        this.handleGradeInput(gradeInput.value);
+      }
+    });
+  }
+
+  /**
+   * Handle grade input for autocomplete
+   */
+  handleGradeInput(value) {
+    const dropdown = document.getElementById('grade-autocomplete');
+    if (!dropdown) return;
+
+    if (!value || value.length < 1) {
+      dropdown.style.display = 'none';
+      return;
+    }
+
+    // Filter grades for current unit and matching search
+    const filteredGrades = this.allGrades
+      .filter(grade => 
+        grade.unit === this.state.unit &&
+        grade.display.toLowerCase().includes(value.toLowerCase())
+      )
+      .slice(0, 10); // Limit to 10 results
+
+    if (filteredGrades.length === 0) {
+      dropdown.style.display = 'none';
+      return;
+    }
+
+    dropdown.innerHTML = filteredGrades
+      .map(grade => `
+        <div class="autocomplete-item" onclick="window.formComponent.selectGrade('${grade.display}', ${grade.netweight})">
+          <strong>${grade.display}</strong>
+          <small>Net: ${grade.netweight}kg</small>
+        </div>
+      `).join('');
+
+    dropdown.style.display = 'block';
+  }
+
+  /**
+   * Select grade from autocomplete
+   */
+  selectGrade(gradeDisplay, netweight) {
+    this.isAutocompleteSelection = true;
+    
+    // Update form data
+    this.state.formData.grade = gradeDisplay;
+    this.state.formData.netweight = netweight.toString();
+    
+    // Update UI
+    const gradeInput = document.getElementById('grade');
+    const netweightInput = document.getElementById('netweight');
+    const dropdown = document.getElementById('grade-autocomplete');
+    
+    if (gradeInput) gradeInput.value = gradeDisplay;
+    if (netweightInput) netweightInput.value = netweight.toString();
+    if (dropdown) dropdown.style.display = 'none';
+
+    // Generate lot prefix if needed
+    this.generateLotPrefix(netweight);
+    
+    // Notify listeners
+    this.notifyListeners({
+      type: 'grade-selected',
+      grade: gradeDisplay,
+      netweight: netweight
+    });
+
+    setTimeout(() => {
+      this.isAutocompleteSelection = false;
+    }, 100);
+  }
+
+  /**
+   * Generate lot prefix based on netweight and grade
+   */
+  generateLotPrefix(netweight) {
+    const currentYear = new Date().getFullYear();
+    const twoDigitYear = currentYear.toString().slice(-2);
+    const lotStartWithNine = [1650, 1800, 16500, 18000];
+    
+    // Check if this is SB grade
+    const currentGrade = this.state.formData.grade || '';
+    const isSBGrade = currentGrade.includes('/SB/');
+    
+    let lotPrefix = '';
+    if (isSBGrade || lotStartWithNine.includes(parseInt(netweight))) {
+      lotPrefix = '9' + twoDigitYear;
+    } else {
+      lotPrefix = netweight.toString().charAt(0) + twoDigitYear;
+    }
+    
+    // Update lot field
+    const lotInput = document.getElementById('lot');
+    if (lotInput && !lotInput.value) {
+      lotInput.value = lotPrefix;
+      this.state.formData.lot = lotPrefix;
+      this.updateLotCounter();
+    }
+  }
+
+  /**
+   * Handle field changes
+   */
+  handleFieldChange(fieldName, value) {
+    this.state.formData[fieldName] = value;
+    
+    // Special handling for lot counter
+    if (fieldName === 'lot') {
+      this.updateLotCounter();
+    }
+    
+    // Notify listeners
+    this.notifyListeners({
+      type: 'field-change',
+      fieldName,
+      value,
+      formData: { ...this.state.formData }
+    });
+  }
+
+  /**
+   * Handle control print checkbox changes
+   */
+  handleControlPrintChange(type, checked) {
+    if (!this.state.formData.controlprint) {
+      this.state.formData.controlprint = { ft: false, lt: false };
+    }
+    
+    this.state.formData.controlprint[type] = checked;
+    
+    this.notifyListeners({
+      type: 'controlprint-change',
+      controlType: type,
+      checked,
+      formData: { ...this.state.formData }
+    });
+  }
+
+  /**
+   * Update lot character counter
+   */
+  updateLotCounter() {
+    const lotInput = document.getElementById('lot');
+    const counter = document.querySelector('#lot + small');
+    
+    if (lotInput && counter) {
+      const length = lotInput.value.length;
+      counter.textContent = `${length}/10 characters`;
+    }
+  }
+
+  /**
+   * Change unit
+   */
+  changeUnit(newUnit) {
+    if (this.state.unit === newUnit) return;
+    
+    this.state.unit = newUnit;
+    this.state.formData = this.getInitialFormData();
+    
+    // Re-render and reinitialize
+    this.rerender();
+    
+    this.notifyListeners({
+      type: 'unit-change',
+      unit: newUnit,
+      formData: { ...this.state.formData }
+    });
+  }
+
+  /**
+   * Change theme
+   */
+  changeTheme(newTheme) {
+    this.state.theme = newTheme;
+    
+    // Apply theme immediately
+    document.documentElement.style.setProperty('--theme-primary', this.getThemeColor(newTheme));
+    
+    this.notifyListeners({
+      type: 'theme-change',
+      theme: newTheme
+    });
+  }
+
+  /**
+   * Get theme color
+   */
+  getThemeColor(theme) {
+    const themes = {
+      blue: '#667eea',
+      green: '#4ade80', 
+      pink: '#f472b6',
+      purple: '#c084fc',
+      dark: '#374151'
+    };
+    return themes[theme] || themes.blue;
+  }
+
+  /**
+   * Change template
+   */
+  changeTemplate(newTemplate) {
+    this.state.template = newTemplate;
+    
+    this.notifyListeners({
+      type: 'template-change',
+      template: newTemplate
+    });
+  }
+
+  /**
+   * Toggle collapse
+   */
+  toggleCollapse() {
+    this.state.isCollapsed = !this.state.isCollapsed;
+    const content = document.querySelector('.form-content');
+    if (content) {
+      content.style.display = this.state.isCollapsed ? 'none' : 'block';
+    }
+  }
+
+  /**
+   * Generate preview
+   */
+  generatePreview() {
+    // Validate required fields
+    const requiredFields = ['grade', 'netweight', 'lot', 'fromPage', 'toPage'];
+    let hasErrors = false;
+    
+    requiredFields.forEach(field => {
+      if (!this.state.formData[field]) {
+        hasErrors = true;
+        // Add error styling
+        const element = document.getElementById(field);
+        if (element) {
+          element.style.borderColor = '#ef4444';
+        }
+      } else {
+        // Remove error styling
+        const element = document.getElementById(field);
+        if (element) {
+          element.style.borderColor = '';
+        }
+      }
+    });
+    
+    if (hasErrors) {
+      alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
+    
+    this.notifyListeners({
+      type: 'generate-preview',
+      formData: { ...this.state.formData },
+      unit: this.state.unit,
+      theme: this.state.theme,
+      template: this.state.template
+    });
+  }
+
+  /**
+   * Clear form
+   */
+  clearForm() {
+    if (confirm('ต้องการล้างข้อมูลทั้งหมดใช่หรือไม่?')) {
+      this.state.formData = this.getInitialFormData();
+      this.applyFormData();
+      
+      this.notifyListeners({
+        type: 'form-cleared'
+      });
+    }
+  }
+
+  /**
+   * Re-render component
+   */
+  rerender() {
+    const container = document.getElementById('formContainer');
+    if (container) {
+      container.innerHTML = this.render();
+      this.initializeForm();
+    }
+  }
+
+  /**
+   * Attach event listeners
+   */
+  attachEventListeners() {
+    // Event listeners are handled via onclick attributes in render methods
+    console.log('✅ Form Component event listeners attached');
+  }
+
+  /**
+   * Subscribe to events
+   */
+  subscribe(listener) {
+    this.listeners.push(listener);
+  }
+
+  /**
+   * Notify listeners of events
+   */
+  notifyListeners(event) {
+    this.listeners.forEach(listener => {
+      try {
+        listener(event);
+      } catch (error) {
+        console.error('Error in form listener:', error);
+      }
+    });
+  }
+
+  /**
+   * Get current form state
+   */
+  getState() {
+    return {
+      ...this.state,
+      formData: { ...this.state.formData }
+    };
+  }
+}
