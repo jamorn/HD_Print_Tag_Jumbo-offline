@@ -1,0 +1,166 @@
+/* Index Page Styles */
+
+* { 
+    box-sizing: border-box; 
+}
+
+body {
+    padding-top: 0px !important; 
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Navbar */
+.modern-navbar {
+    background: var(--bg-card);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Unit Buttons */
+.unit-btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.unit-btn:hover:not(.active) {
+    background: var(--bg-hover);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.unit-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+}
+
+/* Icon Buttons */
+.icon-btn {
+    background: var(--bg-secondary);
+    border-radius: 50%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+}
+
+.icon-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--text-primary);
+}
+
+/* Modal */
+.modal-card {
+    background-color: var(--bg-card);
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+}
+
+.modal-icon {
+    background: var(--primary-color);
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+/* Tabs */
+.tab-border { 
+    border-color: var(--border-color); 
+}
+
+.help-tab.active { 
+    background: var(--primary-color); 
+    color: white; 
+}
+
+.help-tab:not(.active) { 
+    background: var(--bg-secondary); 
+    color: var(--text-primary); 
+}
+
+/* Content Boxes */
+.usage-box { 
+    background: var(--bg-secondary); 
+}
+
+.step-number { 
+    background: var(--primary-color); 
+}
+
+.spec-card-bg { 
+    background: var(--bg-secondary); 
+    border: 1px solid var(--border-color); 
+}
+
+.spec-title { 
+    color: var(--primary-color); 
+}
+
+.spec-size-badge { 
+    background: #fef3c7; 
+}
+
+.spec-value { 
+    color: #059669; 
+}
+
+.spec-marker { 
+    color: #dc2626; 
+    background: #fee2e2; 
+}
+
+/* Theme Gradients */
+.theme-gradient-purple { 
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9); 
+}
+
+.theme-gradient-blue { 
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8); 
+}
+
+.theme-gradient-green { 
+    background: linear-gradient(135deg, #10b981, #059669); 
+}
+
+.theme-gradient-pink { 
+    background: linear-gradient(135deg, #ec4899, #db2777); 
+}
+
+.theme-gradient-dark { 
+    background: linear-gradient(135deg, #374151, #1f2937); 
+}
+
+/* Sub grade styling */
+.sub-grade {
+    color: #ef4444 !important;
+}

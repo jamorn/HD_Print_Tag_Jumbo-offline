@@ -1,0 +1,124 @@
+/* ===================================
+   HDPE Print Tag Jumbo - Styles
+   SPA Standalone Version
+   =================================== */
+
+/* Base Layout */
+body {
+    padding-top: 80px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ===================================
+   NAVBAR STYLES
+   =================================== */
+
+.modern-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: var(--nav-bg, rgba(255, 255, 255, 0.95));
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+    box-shadow: 0 2px 8px var(--shadow-color, rgba(0, 0, 0, 0.06));
+    transition: all 0.3s ease;
+}
+
+/* Unit Buttons */
+.unit-btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    background: var(--btn-inactive-bg, rgba(100, 116, 139, 0.1));
+    color: var(--btn-inactive-color, #475569);
+}
+
+.unit-btn:hover:not(.active) {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    transform: translateY(-1px);
+}
+
+.unit-btn.active {
+    background: #ef4444;
+    color: white;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+}
+
+/* Icon Buttons */
+.icon-btn {
+    background: var(--icon-btn-bg, #f1f5f9);
+    border-radius: 50%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.06));
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    background: var(--icon-btn-hover, #e2e8f0);
+    box-shadow: 0 2px 8px var(--shadow-color, rgba(0, 0, 0, 0.12));
+    transform: translateY(-1px);
+}
+
+.icon-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--icon-color, #334155);
+}
+
+/* ===================================
+   THEME SYSTEM
+   =================================== */
+
+/* Theme Variables - Light (Default) */
+:root {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #f1f5f9;
+    --bg-card: #ffffff;
+    --bg-card-header: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --shadow-color: rgba(0, 0, 0, 0.06);
+    --nav-bg: rgba(255, 255, 255, 0.95);
+    --btn-inactive-bg: rgba(100, 116, 139, 0.1);
+    --btn-inactive-color: #475569;
+    --icon-btn-bg: #f1f5f9;
+    --icon-btn-hover: #e2e8f0;
+    --icon-color: #334155;
+    --input-bg: #ffffff;
+    --input-border: #cbd5e1;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-card: #1e293b;
+    --bg-card-header: linear-gradient(135deg, #334155 0%, #475569 100%);
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --nav-bg: rgba(30, 41, 59, 0.95);
+    --btn-inactive-bg: rgba(148, 163, 184, 0.1);
+    --btn-inactive-color: #94a3b8;
+    --icon-btn-bg: #334155;
+    --icon-btn-hover: #475569;
+    --icon-color: #cbd5e1;
+    --input-bg: #334155;
+    --input-border: #475569;
+}
+
+/* Truncated rest to keep file concise in this copy */

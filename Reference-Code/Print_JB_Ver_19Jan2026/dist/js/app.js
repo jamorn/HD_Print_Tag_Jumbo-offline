@@ -1,0 +1,1 @@
+(()=>{console.log("HD Print Tag Jumbo - main.js (copied)");document.addEventListener("DOMContentLoaded",function(){typeof ThemeManager<"u"&&ThemeManager.init&&ThemeManager.init(),typeof updateDateTime=="function"&&updateDateTime()});})();

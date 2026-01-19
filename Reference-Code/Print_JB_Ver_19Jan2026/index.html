@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Tag Jumbo - Multi-Unit System</title>
+    <!-- Local compiled Tailwind (build step will produce dist/css/tailwind.css) -->
+    <link href="./dist/css/tailwind.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="#">
+    <link href="./css/theme.css" rel="stylesheet">
+    <link id="theme-stylesheet" rel="stylesheet" href="./css/themes/purple.css">
+    <link href="./css/index.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="modern-navbar fixed top-0 left-0 right-0 z-50">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex gap-2">
+                    <button type="button" data-unit="HDPE" class="unit-btn active">HDPE</button>
+                    <button type="button" data-unit="PP" class="unit-btn">PP</button>
+                    <button type="button" data-unit="PPC" class="unit-btn">PPC</button>
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" id="specs-btn" class="icon-btn" title="คู่มือและรายละเอียด">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </button>
+                    <button type="button" id="theme-switcher-btn" class="icon-btn" title="เปลี่ยนธีม">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="theme-card rounded-2xl shadow-2xl max-w-4xl w-full p-6 modal-card">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="modal-icon">📘</div>
+                    <div>
+                        <h2 class="text-2xl font-bold theme-text-primary">คู่มือการใช้งาน</h2>
+                        <p class="text-sm theme-text-secondary">Tag Printing System Guide</p>
+                    </div>
+                </div>
+                <button type="button" id="close-help-modal" class="text-gray-500 hover:text-gray-700" title="ปิดคู่มือ">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex gap-2 mb-4 border-b pb-2 tab-border">
+                <button type="button" class="help-tab active px-4 py-2 rounded-lg font-semibold text-sm transition-all" data-tab="usage">การใช้งาน</button>
+                <button type="button" class="help-tab px-4 py-2 rounded-lg font-semibold text-sm transition-all" data-tab="templates">Templates</button>
+                <button type="button" class="help-tab px-4 py-2 rounded-lg font-semibold text-sm transition-all" data-tab="specs">รายละเอียด</button>
+                <button type="button" class="help-tab px-4 py-2 rounded-lg font-semibold text-sm transition-all" data-tab="data">จัดการข้อมูล</button>
+            </div>
+            <div id="tab-usage" class="tab-content">
+                <div class="rounded-xl p-5 mb-4 usage-box">
+                    <h3 class="text-lg font-semibold mb-4 theme-text-primary">🎯 ขั้นตอนการใช้งาน</h3>
+                    <ol class="space-y-3">
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm step-number">1</span>
+                            <span class="theme-text-primary"><strong>เลือก Unit</strong> - คลิก HDPE, PP, หรือ PPC ที่ navbar ด้านบน</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm step-number">2</span>
+                            <span class="theme-text-primary"><strong>เลือก Grade</strong> - คลิกที่ตารางเพื่อเลือก Grade</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm step-number">3</span>
+                            <span class="theme-text-primary"><strong>กรอกข้อมูล</strong> - Lot, หน้า, กะ, วันที่</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm step-number">4</span>
+                            <span class="theme-text-primary"><strong>Generate</strong> - คลิกปุ่ม "ยืนยันและแสดงตัวอย่างหน้าพิมพ์"</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-sm step-number">5</span>
+                            <span class="theme-text-primary"><strong>Print</strong> - กด Ctrl+P และตั้งค่า: Margins = None, Scale = 100%, Background graphics = เปิด</span>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <!-- Rest of content copied from original -->
+        </div>
+    </div>
+
+    <div id="app" class="container mx-auto px-4 py-6 max-w-7xl mt-20">
+        <!-- App content -->
+    </div>
+
+    <!-- Load scripts in order (these are local files copied into js/ directory) -->
+    <script src="./js/unitConfig.js"></script>
+    <script src="./js/dataInitializer.js"></script>
+    <script src="./js/gradeHistoryManager.js"></script>
+    <script src="./js/tableComponent.js"></script>
+    <script src="./js/formComponent.js"></script>
+    <script src="./js/hdpe_pellet.js"></script>
+    <script src="./js/shift_compare.js"></script>
+    <script src="./js/sweetalert2.all.min.js"></script>
+    <script src="./js/theme.js"></script>
+    <script src="./js/main.js"></script>
+</body>
+</html>
