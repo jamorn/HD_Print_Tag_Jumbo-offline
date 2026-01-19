@@ -119,6 +119,41 @@
             </div>
         </div>
     </div>
+    <!-- Theme Modal -->
+    <div id="theme-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="theme-card rounded-2xl shadow-2xl max-w-2xl w-full p-6 modal-card">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold theme-text-primary">🎨 เลือกธีม</h2>
+                <button type="button" id="close-theme-modal" class="text-gray-500 hover:text-gray-700" title="ปิดหน้าต่างเลือกธีม">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <button type="button" data-theme="purple" class="theme-option-btn p-4 rounded-lg border-2 border-transparent hover:border-purple-500 transition-all">
+                    <div class="w-full h-20 rounded-md mb-3 theme-gradient-purple"></div>
+                    <p class="font-semibold text-center">Purple</p>
+                </button>
+                <button type="button" data-theme="blue" class="theme-option-btn p-4 rounded-lg border-2 border-transparent hover:border-blue-500 transition-all">
+                    <div class="w-full h-20 rounded-md mb-3 theme-gradient-blue"></div>
+                    <p class="font-semibold text-center">Blue</p>
+                </button>
+                <button type="button" data-theme="green" class="theme-option-btn p-4 rounded-lg border-2 border-transparent hover:border-green-500 transition-all">
+                    <div class="w-full h-20 rounded-md mb-3 theme-gradient-green"></div>
+                    <p class="font-semibold text-center">Green</p>
+                </button>
+                <button type="button" data-theme="pink" class="theme-option-btn p-4 rounded-lg border-2 border-transparent hover:border-pink-500 transition-all">
+                    <div class="w-full h-20 rounded-md mb-3 theme-gradient-pink"></div>
+                    <p class="font-semibold text-center">Pink</p>
+                </button>
+                <button type="button" data-theme="dark" class="theme-option-btn p-4 rounded-lg border-2 border-transparent hover:border-gray-500 transition-all">
+                    <div class="w-full h-20 rounded-md mb-3 theme-gradient-dark"></div>
+                    <p class="font-semibold text-center">Dark</p>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Load scripts in order (these are local files copied into js/ directory) -->
     <script src="./js/unitConfig.js"></script>

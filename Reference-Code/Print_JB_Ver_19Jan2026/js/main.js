@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ThemeManager.init();
     }
     if (typeof updateDateTime === 'function') updateDateTime();
+    if (typeof setupModals === 'function') setupModals();
 
     // Ensure global AppState
     if (!window.AppState) window.AppState = {};
