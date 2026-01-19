@@ -90,6 +90,12 @@ body {
     box-shadow: 0 0 0 2px var(--primary-color) !important;
 }
 
+/* Theme background helper for headers (e.g., modal/table headers) */
+.theme-bg-secondary {
+    background: var(--bg-card-header) !important;
+    color: #ffffff !important;
+}
+
 .theme-label {
     color: var(--text-label) !important;
 }

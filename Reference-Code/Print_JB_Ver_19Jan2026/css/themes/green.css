@@ -9,7 +9,8 @@
     --bg-primary: #d1f7d3;
     --bg-secondary: #a5d6a7;
     --bg-card: #ffffff;
-    --bg-card-header: #4CAF50;
+    /* Use Dec15-style gradient for card headers to match original */
+    --bg-card-header: linear-gradient(135deg, #166534 0%, #15803d 100%);
     --bg-input: #f1f8e9;
     --border-color: #66bb6a;
     --border-input: #66bb6a;
@@ -32,7 +33,7 @@ body {
 }
 
 .card-header-bg {
-    background: #4CAF50;
+    background: linear-gradient(135deg, #166534 0%, #15803d 100%);
     color: #ffffff;
 }
 

@@ -3,7 +3,9 @@
  * Configuration for different product units (HDPE, PP, PPC)
  */
 
-const UNIT_CONFIG = {
+// Ensure we don't redeclare UNIT_CONFIG if this file is loaded multiple times
+if (!window.UNIT_CONFIG) {
+    window.UNIT_CONFIG = {
     HDPE: {
         id: 'HDPE',
         name: 'HDPE',
@@ -179,17 +181,18 @@ const UNIT_CONFIG = {
             requiredFields: ['grade', 'netweight', 'lot', 'fromPage', 'toPage', 'shift', 'idate']
         }
     }
-};
+    };
+} // window.UNIT_CONFIG
 
 // Helper functions
 function getUnitConfig(unit) {
     const upperUnit = unit?.toUpperCase();
-    return UNIT_CONFIG[upperUnit] || UNIT_CONFIG.HDPE;
+    return (window.UNIT_CONFIG && window.UNIT_CONFIG[upperUnit]) ? window.UNIT_CONFIG[upperUnit] : window.UNIT_CONFIG.HDPE;
 }
 
 function isValidUnit(unit) {
     const upperUnit = unit?.toUpperCase();
-    return upperUnit in UNIT_CONFIG;
+    return !!(window.UNIT_CONFIG && upperUnit in window.UNIT_CONFIG);
 }
 
 function generateGradeOptions(unit) {
