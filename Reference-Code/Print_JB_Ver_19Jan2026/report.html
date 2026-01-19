@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Print Tag Jumbo - Multi Unit</title>
+    <link rel="shortcut icon" href="#" />
+
+    <!-- Paper CSS for printing -->
+    <link rel="stylesheet" href="./css/paper.css" />
+
+    <!-- Report CSS -->
+    <link rel="stylesheet" href="./css/report.css" />
+
+    <!-- QRCode Library -->
+    <script src="./js/qrcode.min.js"></script>
+</head>
+
+<body class="A4 landscape">
+    <!-- Control Panel (Hidden on print) -->
+    <!-- Help Button -->
+    <button class="help-btn no-print" id="helpBtn" title="คู่มือการใช้งาน">📘</button>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal hidden no-print">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-header-icon-wrapper">
+                    <div class="modal-header-icon">
+                        📘
+                    </div>
+                    <div>
+                        <h2 class="modal-title">คู่มือการใช้งาน</h2>
+                        <p class="modal-subtitle">Tag Printing System Guide</p>
+                    </div>
+                </div>
+                <button class="modal-close" id="closeModal">✕</button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tab-nav">
+                <button class="tab-btn active" data-tab="usage">การใช้งาน</button>
+                <button class="tab-btn" data-tab="templates">Templates</button>
+                <button class="tab-btn" data-tab="specs">รายละเอียด</button>
+            </div>
+
+            <!-- Tab: Usage -->
+            <div id="tab-usage" class="tab-content active">
+                <div class="usage-container">
+                    <h3 class="usage-title">🎯 ขั้นตอนการพิมพ์</h3>
+                    <ol class="usage-list">
+                        <li class="usage-item">
+                            <span class="usage-number">1</span>
+                            <span class="usage-text"><strong>ตรวจสอบข้อมูล</strong> - ตรวจสอบ Grade, Lot, Net
+                                Weight</span>
+                        </li>
+                        <li class="usage-item">
+                            <span class="usage-number">2</span>
+                            <span class="usage-text"><strong>ตั้งค่าเครื่องพิมพ์</strong> - Margins = None, Scale =
+                                100%</span>
+                        </li>
+                        <li class="usage-item">
+                            <span class="usage-number">3</span>
+                            <span class="usage-text"><strong>เปิด Background Graphics</strong> - สำคัญมาก!</span>
+                        </li>
+                        <li class="usage-item">
+                            <span class="usage-number">4</span>
+                            <span class="usage-text"><strong>Print</strong> - กด 🖨️ หรือ Ctrl+P</span>
+                        </li>
+                    </ol>
+                </div>
+                <div class="shortcuts-box">
+                    <strong>⚡ Shortcuts:</strong> Ctrl+P = พิมพ์ | Esc = ปิดคู่มือ
+                </div>
+            </div>
+
+            <!-- Tab: Templates -->
+            <div id="tab-templates" class="tab-content">
+                <div class="template-grid">
+                    <div class="spec-card">
+                        <h4>📄 Template 1: ไม่มี QR Code + มาตร.</h4>
+                        <p class="template-description">แสดงเฉพาะข้อมูลพื้นฐาน (สำหรับ SUB grades)</p>
+                    </div>
+                    <div class="spec-card">
+                        <h4>📄 Template 2: มี QR Code + Logo</h4>
+                        <p class="template-description">พร้อมโลโก้ MFG + QR Code (PP/PPC)</p>
+                    </div>
+                    <div class="spec-card">
+                        <h4>📄 Template 3: มี QR Code + มาตร. + SIRIM</h4>
+                        <p class="template-description">ครบทุกรายละเอียด รวม Sirim Certification (HDPE)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Specs -->
+            <div id="tab-specs" class="tab-content">
+                <div class="specs-grid">
+                    <div class="spec-card">
+                        <h4>📄 Grade</h4>
+                        <div class="spec-info">
+                            <strong>Font:</strong> Arial (MS: Arial)<br>
+                            <strong>Size:</strong> <span class="spec-size-badge">60px / 45pt</span><br>
+                            <strong>Current Value:</strong> <span id="current-grade" class="spec-value">-</span>
+                        </div>
+                    </div>
+                    <div class="spec-card">
+                        <h4>⚖️ Net Weight</h4>
+                        <div class="spec-info">
+                            <strong>Font:</strong> Arial (MS: Arial)<br>
+                            <strong>Size:</strong> <span class="spec-size-badge">50px / 38pt</span><br>
+                            <strong>Current Value:</strong> <span id="current-netweight" class="spec-value">-</span>
+                        </div>
+                    </div>
+                    <div class="spec-card">
+                        <h4>🔖 Lot Number</h4>
+                        <div class="spec-info">
+                            <strong>Font:</strong> Arial (MS: Arial)<br>
+                            <strong>Size:</strong> <span class="spec-size-badge">50px / 38pt</span><br>
+                            <strong>Current Value:</strong> <span id="current-lot" class="spec-value">-</span>
+                        </div>
+                    </div>
+                    <div class="spec-card">
+                        <h4>🔢 Running Number</h4>
+                        <div class="spec-info">
+                            <strong>Font:</strong> Arial (MS: Arial)<br>
+                            <strong>Size:</strong> <span class="spec-size-badge">30px / 23pt</span><br>
+                            <strong>Current:</strong> <span id="current-running" class="spec-value">001-10-M</span>
+                            (Page-Date-Shift)
+                        </div>
+                    </div>
+                    <div class="spec-card">
+                        <h4>🏷️ Print Controls</h4>
+                        <div class="spec-info">
+                            <strong>Font:</strong> Arial (MS: Arial)<br>
+                            <strong>Size:</strong> <span class="spec-size-badge">50px / 38pt</span><br>
+                            <strong>F/T:</strong> <span class="spec-marker">(F/T)</span> หน้าแรก<br>
+                            <strong>L/T:</strong> <span class="spec-marker">(L/T)</span> หน้าสุดท้าย
+                        </div>
+                    </div>
+                    <div class="spec-card">
+                        <h4>📋 Description</h4>
+                        <div class="spec-info">
+                            <strong>Title1:</strong> <span class="spec-size-badge">60px / 45pt</span><br>
+                            <strong>Title2:</strong> <span class="spec-size-badge">30px / 23pt</span><br>
+                            <strong>Current Unit:</strong> <span id="current-unit" class="spec-value">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="control-panel no-print">
+        <button class="btn btn-primary" onclick="window.print()">🖨️ Print (Ctrl+P)</button>
+        <button class="btn" onclick="window.close()">❌ Close</button>
+    </div>
+
+    <!-- Report Container -->
+    <main id="report-main">
+        <!-- Pages will be generated here -->
+    </main>
+
+    <script>
+        // Minimal version uses the reference implementation from Print_JB_Ver_15Dec2025
+        // (full logic copied from reference if needed). Here we include a small loader
+        // to read sessionStorage and render pages; the full implementation is in the
+        // original reference and can be extended as needed.
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                const sessionData = sessionStorage.getItem('recent_hd_print');
+                if (!sessionData) {
+                    // nothing to render; leave page blank for now
+                    console.log('No recent_hd_print in sessionStorage');
+                    return;
+                }
+                // If you need full rendering, copy the script from the reference report.html
+            } catch (e) {
+                console.error(e);
+            }
+        });
+    </script>
+</body>
+
+</html>
