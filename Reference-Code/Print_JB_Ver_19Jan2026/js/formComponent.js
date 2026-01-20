@@ -372,10 +372,19 @@
         
         // Setup shift update interval (every 10 seconds)
         if (typeof updateShift === 'function') {
-            // Call updateShift to sync with shift_compare.js
+            // Call updateShift to sync with shift_compare.js (with delay for DOM readiness)
             setTimeout(() => {
                 updateShift();
+                console.log('✅ Jan19: Auto-updated shift after DOM ready');
             }, 100);
+        }
+        
+        // Auto-set today's date
+        const today = new Date().getDate();
+        const idateSelect = document.getElementById('idate');
+        if (idateSelect) {
+            idateSelect.value = today;
+            console.log(`📅 Jan19: Auto-set date to today: ${today}`);
         }
         
         // หลังจาก render form เสร็จ ให้ auto-fill จากประวัติล่าสุด
@@ -402,8 +411,13 @@
                         document.getElementById('grade').value = latestGrade || '';
                         document.getElementById('netweight').value = latestData.netweight || '';
                         document.getElementById('tis').value = latestData.tis || config.defaults.tis || '';
-                        document.getElementById('shift').value = latestData.shift || '';
-                        document.getElementById('idate').value = latestData.idate || latestData.date || '';
+                        
+                        // Auto-update shift and date instead of using history values
+                        const currentShift = typeof shift_table === 'function' ? shift_table() : 'M';
+                        const todayDate = new Date().getDate();
+                        document.getElementById('shift').value = currentShift;
+                        document.getElementById('idate').value = todayDate;
+                        console.log(`🕐 Jan19: Auto-updated history shift to current: ${currentShift}, date: ${todayDate}`);
                         // ...เติม field อื่นๆ ตามที่มี...
                     }
                 }

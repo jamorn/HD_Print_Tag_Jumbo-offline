@@ -681,8 +681,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Mustache functionality removed - using only HTML report
 
-    // เรียกใช้ updateShift เมื่อโหลดหน้า
-    updateShift(); // อัปเดต Shift อัตโนมัติเมื่อโหลดหน้า
+    // เรียกใช้ updateShift เมื่อโหลดหน้า (delay to ensure DOM is ready)
+    setTimeout(() => {
+        if (typeof updateShift === 'function') {
+            updateShift(); // อัปเดต Shift อัตโนมัติเมื่อโหลดหน้า
+        } else {
+            console.warn('updateShift function not found - checking shift_compare.js loading');
+        }
+    }, 100);
 
     // ตั้งค่า id="idate" ให้เลือกวันที่ปัจจุบันอัตโนมัติ
     const today = new Date().getDate();
@@ -690,15 +696,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (idateSelect) {
         const options = idateSelect.options;
+        console.log(`🗓️ Setting date to today: ${today}`);
         for (let i = 0; i < options.length; i++) {
             if (parseInt(options[i].value) === today) {
                 options[i].selected = true;
+                console.log(`✅ Date auto-selected: ${today}`);
                 break;
             }
         }
+        // Trigger change event to ensure any listeners are notified
+        idateSelect.dispatchEvent(new Event('change'));
+    } else {
+        console.warn('❌ Date select element (id="idate") not found');
     }
     console.log("idateSelect:", idateSelect);
-    console.log("Options:", idateSelect ? idateSelect.options : "idateSelect not found");
+    console.log("Options:", idateSelect ? idateSelect.options.length : "idateSelect not found");
 
     // เพิ่ม Two-way Data Binding เพื่อแสดงจำนวนตัวอักษรที่ป้อนใน lot
     const lotInput = document.getElementById('lot');

@@ -534,12 +534,32 @@ export class FormComponent {
         if (finalData.grade) document.getElementById('grade').value = finalData.grade;
         if (finalData.netweight) document.getElementById('netweight').value = finalData.netweight;
         if (finalData.tis) document.getElementById('tis').value = finalData.tis;
-        if (finalData.shift) document.getElementById('shift').value = finalData.shift;
+        // Auto-update shift to current shift (override history)
+        if (typeof shift_table === 'function') {
+            const currentShift = shift_table();
+            document.getElementById('shift').value = currentShift;
+            console.log(`🕐 Auto-updated shift to current: ${currentShift}`);
+            
+            // Update shift status message
+            const statusMessages = {
+                M: "ตอนนี้คือเวลาทำงานของกะเช้า",
+                E: "ตอนนี้คือเวลาทำงานของกะบ่าย",
+                N: "ตอนนี้คือเวลาทำงานของกะดึก"
+            };
+            const currentShiftDisplay = document.getElementById('currentShiftDisplay');
+            if (currentShiftDisplay) {
+                currentShiftDisplay.textContent = statusMessages[currentShift] || '';
+            }
+        } else if (finalData.shift) {
+            document.getElementById('shift').value = finalData.shift;
+        }
         
-        // Set idate: use saved value or current date
+        // Auto-update date to today (override history)
         const idateElement = document.getElementById('idate');
         if (idateElement) {
-            idateElement.value = finalData.idate || new Date().getDate();
+            const today = new Date().getDate();
+            idateElement.value = today;
+            console.log(`📅 Auto-updated date to today: ${today}`);
         }
         
         // Handle fromPage/toPage (check both camelCase and lowercase)
@@ -1151,11 +1171,19 @@ export class FormComponent {
         if (data) {
             console.log(`📂 Loading grade from history: ${gradeName}`, data);
             
+            // Auto-update date and shift to current values when loading from history
+            const currentShift = typeof shift_table === 'function' ? shift_table() : 'M';
+            const today = new Date().getDate();
+            
             this.populateForm({
                 ...data,
                 grade: gradeName,
-                unit: this.currentUnit
+                unit: this.currentUnit,
+                shift: currentShift, // Override with current shift
+                idate: today // Override with today's date
             });
+            
+            console.log(`🕐 Grade history loaded with current shift: ${currentShift} and date: ${today}`);
             
             if (window.Swal) {
                 window.Swal.fire({

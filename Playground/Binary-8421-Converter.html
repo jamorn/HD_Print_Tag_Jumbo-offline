@@ -1,0 +1,145 @@
+{<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bagout Order - Binary 8421 Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+        <!-- Header -->
+        <div class="bg-indigo-600 p-6">
+            <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2008/svg" class="h-8 w-8" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Bagout Order Checkbox
+            </h1>
+            <p class="text-indigo-100 text-sm mt-1">Binary 8421 Logic Converter (9-bit System)</p>
+        </div>
+
+        <div class="p-6">
+            <!-- Form Grid -->
+            <div id="checkboxContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <!-- Checkboxes will be generated here -->
+            </div>
+
+            <!-- Results Section -->
+            <div class="bg-slate-100 rounded-xl p-6 space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-300 pb-3">
+                    <span class="text-slate-600 font-medium">Binary Sequence (9-bit):</span>
+                    <span id="binaryString" class="text-2xl font-mono font-bold text-indigo-600 tracking-widest">000000000</span>
+                </div>
+                
+                <div class="flex justify-between items-center border-b border-slate-300 pb-3">
+                    <span class="text-slate-600 font-medium">Decimal Value (Base 10):</span>
+                    <span id="decimalValue" class="text-4xl font-bold text-slate-800">0</span>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-600 font-medium">Convert back to Binary:</span>
+                    <span id="reverseBinary" class="text-xl font-mono text-emerald-600 font-semibold tracking-widest">000000000</span>
+                </div>
+            </div>
+
+            <!-- Info Alert -->
+            <div class="mt-6 flex items-start gap-3 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <svg xmlns="http://www.w3.org/2008/svg" class="h-5 w-5 text-blue-500 mt-0.5" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="text-sm text-blue-700">
+                    ระบบคำนวณโดยใช้ค่าน้ำหนัก 2<sup>n</sup> เรียงจากขวาไปซ้าย (LSB ไป MSB) โดยอ้างอิงจากลำดับ Checkbox 1-9
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const items = [
+            "Bottom", "Label", "Print", "Gusset", "Folding", 
+            "Punch", "Wicket", "Handle", "Double Sealing"
+        ];
+
+        const checkboxContainer = document.getElementById('checkboxContainer');
+        const binaryDisplay = document.getElementById('binaryString');
+        const decimalDisplay = document.getElementById('decimalValue');
+        const reverseDisplay = document.getElementById('reverseBinary');
+
+        // Initialize Form
+        function initForm() {
+            items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = "relative flex items-center p-3 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all cursor-pointer group";
+                
+                div.innerHTML = `
+                    <div class="flex items-center h-5">
+                        <input id="check-${index}" name="bagout" type="checkbox" 
+                            class="focus:ring-indigo-500 h-5 w-5 text-indigo-600 border-slate-300 rounded cursor-pointer"
+                            onchange="calculateBinary()">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="check-${index}" class="font-medium text-slate-700 cursor-pointer group-hover:text-indigo-700">
+                            ${item}
+                        </label>
+                        <p class="text-slate-400 text-xs">Bit: ${index} (Weight: ${Math.pow(2, index)})</p>
+                    </div>
+                `;
+                
+                div.onclick = (e) => {
+                    if (e.target.tagName !== 'INPUT') {
+                        const cb = div.querySelector('input');
+                        cb.checked = !cb.checked;
+                        calculateBinary();
+                    }
+                };
+                
+                checkboxContainer.appendChild(div);
+            });
+        }
+
+        function calculateBinary() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            let binaryArr = [];
+            let decimalSum = 0;
+
+            // Step 1: Binary to Decimal (Logic 8421 etc.)
+            // Note: We treat the first checkbox as bit 0 (2^0)
+            checkboxes.forEach((cb, index) => {
+                const bitValue = cb.checked ? 1 : 0;
+                binaryArr.push(bitValue);
+                
+                if (cb.checked) {
+                    decimalSum += Math.pow(2, index);
+                }
+            });
+
+            // Display Binary String (showing MSB on left for standard reading)
+            const binaryString = [...binaryArr].reverse().join('');
+            binaryDisplay.textContent = binaryString;
+            decimalDisplay.textContent = decimalSum;
+
+            // Step 2: Decimal back to Binary
+            // We'll use the decimal value and convert it back to ensure logic is sound
+            const backToBinary = convertToBinary(decimalSum, 9);
+            reverseDisplay.textContent = backToBinary;
+        }
+
+        // Standard Decimal to Binary Converter (Padding to specified bits)
+        function convertToBinary(number, bits) {
+            let result = (number >>> 0).toString(2);
+            while (result.length < bits) {
+                result = "0" + result;
+            }
+            return result.slice(-bits); // Ensure it only returns the last N bits
+        }
+
+        // Initial setup
+        window.onload = initForm;
+    </script>
+</body>
+</html>}

@@ -648,14 +648,14 @@
       return `
         <section class="sheet">
           <div class="header">
-            ${generateGradeHTML(data.grade)}
+            ${generateGradeHTML(data.grade, data.netweight)}
           </div>
           ${generateLotHTML(data.lot || "N/A", 780, 220)}
           ${generateBoxes(runningNumber, date, shift, 775, 438)}
           ${generateNetWeightHTML(data.netweight || "N/A", 895, 323, data.grade)}
           
-          ${generateTextHTML(data.title1 || "HDPE", 172, 240, 60)}
-          ${generateTextHTML(data.title2 || "HIGH DENSITY POLYETHYLENE", 37, 320, 30)}
+          ${generateTextHTML(data.title1 || "HDPE", 0, 240, 60)}
+          ${generateTextHTML(data.title2 || "HIGH DENSITY POLYETHYLENE", 0, 320, 30)}
           
           ${showTIS ? generateTISLogo(positions.tisLeft, 430, 120, data.unit) : ''}
           ${showQR ? generateQRCode(positions.qrLeft, 430, 110, data.qrCodeUrl) : ''}
@@ -692,13 +692,38 @@
         return best;
     }
 
-    function generateGradeHTML(grade) {
-        let displayGrade = grade;
+    function generateGradeHTML(grade, netweight) {
+      let displayGrade = grade || '';
 
-        if (grade.includes("/SB/")) {
-            const parts = grade.split("/");
-            displayGrade = parts[0] + "/" + parts[1];
+      // If grade doesn't already include a slash and netweight is provided, combine them.
+      // Use '/SB' for seabulk packages (netweight >= 16000), otherwise append the numeric weight.
+      if ((!displayGrade.includes('/') || displayGrade.match(/^\//)) && netweight) {
+        const nwRaw = String(netweight || '').replace(/,/g, '');
+        const nwNum = parseInt(nwRaw, 10) || 0;
+        if (nwRaw) {
+          if (nwNum >= 16000) {
+            displayGrade = `${displayGrade}/SB`;
+          } else {
+            displayGrade = `${displayGrade}/${nwRaw}`;
+          }
         }
+      }
+
+      // If a full string contains '/SB/' (e.g., P901BK/SB/18000) normalize to 'GRADE/SB'
+      if (displayGrade.includes("/SB/")) {
+        const parts = displayGrade.split("/");
+        displayGrade = parts[0] + "/" + parts[1];
+      }
+
+      // If displayGrade is like 'GRADE/18000' convert to 'GRADE/SB' when numeric weight >= 16000
+      const numericMatch = displayGrade.match(/^([^\/]+)\/(\d+)$/);
+      if (numericMatch) {
+        const base = numericMatch[1];
+        const num = parseInt(numericMatch[2], 10) || 0;
+        if (num >= 16000) {
+          displayGrade = `${base}/SB`;
+        }
+      }
 
         // Page geometry (A4 landscape @96dpi)
         const pageWidth = 1122.5;
