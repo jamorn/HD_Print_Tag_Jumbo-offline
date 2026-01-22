@@ -15,9 +15,14 @@ export function validateLot(lot, unit = 'HDPE') {
     if (!lot || lot.trim() === '') {
         return { valid: false, message: 'กรุณากรอก Lot' };
     }
-    
+
+    // Derive effective unit: prefer UI selection first (so UI tab changes reflect immediately),
+    // then the passed `unit` parameter, then fallback to HDPE.
+    const uiUnit = (typeof document !== 'undefined' && document.querySelector('.unit-btn.active')?.dataset?.unit) || null;
+    const effectiveUnit = (uiUnit && String(uiUnit).toUpperCase()) || (unit && String(unit).toUpperCase()) || 'HDPE';
+
     // Get unit-specific validation rules
-    const unitConfig = getUnitConfig(unit);
+    const unitConfig = getUnitConfig(effectiveUnit);
     const requiredLength = unitConfig.validation.lotLength;
     const pattern = unitConfig.validation.lotPattern;
     
@@ -27,7 +32,7 @@ export function validateLot(lot, unit = 'HDPE') {
     if (cleanLot.length !== requiredLength) {
         return { 
             valid: false, 
-            message: `Lot ต้องมี ${requiredLength} หลัก สำหรับ ${unit} (ปัจจุบัน: ${cleanLot.length} หลัก)` 
+            message: `Lot ต้องมี ${requiredLength} หลัก สำหรับ ${effectiveUnit} (ปัจจุบัน: ${cleanLot.length} หลัก)` 
         };
     }
     
@@ -35,7 +40,7 @@ export function validateLot(lot, unit = 'HDPE') {
     if (!pattern.test(cleanLot)) {
         return { 
             valid: false, 
-            message: `Lot ต้องเป็นตัวเลข ${requiredLength} หลักสำหรับ ${unit}` 
+            message: `Lot ต้องเป็นตัวเลข ${requiredLength} หลักสำหรับ ${effectiveUnit}` 
         };
     }
     

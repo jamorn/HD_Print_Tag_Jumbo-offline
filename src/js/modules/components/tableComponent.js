@@ -535,7 +535,9 @@ export class TableComponent {
             netweight: netweight,
             lot: lot,
             tis: pellet.TIS || 'N', // Use uppercase TIS to match data structure
-            unit: this.detectUnit(pellet.Grade), // Auto-detect unit from grade
+            // Prefer explicit pellet.unit (set when data was generated) so UI selection and
+            // table data remain consistent; fallback to detectUnit only if missing.
+            unit: pellet.unit || this.detectUnit(pellet.Grade), // Auto-detect unit from grade
             title1: pellet.title1 || '',
             title2: pellet.title2 || '',
             sirim_title1: pellet.sirim_title1 || '',
