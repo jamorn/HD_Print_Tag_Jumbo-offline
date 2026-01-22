@@ -654,8 +654,8 @@
           ${generateBoxes(runningNumber, date, shift, 775, 438)}
           ${generateNetWeightHTML(data.netweight || "N/A", 895, 323, data.grade)}
           
-          ${generateTextHTML(data.title1 || "HDPE", 0, 240, 60)}
-          ${generateTextHTML(data.title2 || "HIGH DENSITY POLYETHYLENE", 0, 320, 30)}
+          ${generateTextHTML(data.title1 || "HDPE", 0, 240, 60, "block", "center", "550px")}
+          ${generateTextHTML(data.title2 || "HIGH DENSITY POLYETHYLENE", 0, 320, 30, "block", "center", "550px")}
           
           ${showTIS ? generateTISLogo(positions.tisLeft, 430, 120, data.unit) : ''}
           ${showQR ? generateQRCode(positions.qrLeft, 430, 110, data.qrCodeUrl) : ''}
@@ -779,8 +779,8 @@
         return `<div style="position: absolute; left: ${adjustedLeft}px; top: ${adjustedTop + 8}px; font-size: 50px; color: black; margin: 0; text-align: left; white-space: nowrap;">${formattedWeight}</div>`;
     }
     
-    function generateTextHTML(text, leftOffset, topOffset, fontSize, display = "block") {
-      return `<div style="position: absolute; left: ${leftOffset}px; top: ${topOffset}px; font-size: ${fontSize}px; display: ${display}; text-align: left; white-space: nowrap;">${text}</div>`;
+    function generateTextHTML(text, leftOffset, topOffset, fontSize, display = "block", textAlign = "left", width = "auto") {
+      return `<div style="position: absolute; left: ${leftOffset}px; top: ${topOffset}px; font-size: ${fontSize}px; display: ${display}; text-align: ${textAlign}; width: ${width}; white-space: nowrap;">${text}</div>`;
     }
     
     function generateBoxes(runningNumber, date, shift, leftOffset, topOffset) {
