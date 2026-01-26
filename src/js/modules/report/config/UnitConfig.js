@@ -132,6 +132,13 @@ export const UNIT_CONFIG = {
                 "status": true,
                 "sub": false
             },
+            {
+                "grade": "1105SCN",
+                "netweightArray": [750, 800, 900, 16500, 18000],
+                "description": "PP Standard Grade SC",
+                "status": true,
+                "sub": false
+            },
             { "grade": "1105TC", "netweightArray": [750, 800, 900], "description": "N/A", "status": true, "sub": false },
             { "grade": "1111R", "netweightArray": [750, 800, 900], "description": "N/A", "status": true, "sub": false },
             { "grade": "1120NK", "netweightArray": [750, 800, 900], "description": "N/A", "status": true, "sub": false },
