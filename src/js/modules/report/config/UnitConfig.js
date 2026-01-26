@@ -124,6 +124,12 @@ export const UNIT_CONFIG = {
                 "description": "PP Standard Grade SC",
                 "status": true,
                 "sub": false
+            },{
+                "grade": "1105SCN",
+                "netweightArray": [750, 800, 900, 16500, 18000],
+                "description": "PP Standard Grade SC",
+                "status": true,
+                "sub": false
             },
             {
                 "grade": "1105SC",
