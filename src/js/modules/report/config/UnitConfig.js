@@ -220,6 +220,9 @@ export const UNIT_CONFIG = {
 
         // Grade data
         gradeData: [
+            { "grade": "AP-PP3AB", "netweightArray": [500,750, 800, 900], "description": "PPC Block Copolymer", "status": true, "sub": false },
+            { "grade": "TH4183", "netweightArray": [500,750, 800, 900], "description": "PPC Block Copolymer", "status": true, "sub": false },
+            { "grade": "TH03BSW", "netweightArray": [500,750, 800, 900], "description": "PPC Block Copolymer", "status": true, "sub": false },
             { "grade": "B1101", "netweightArray": [750, 800, 900], "description": "PPC Block Copolymer", "status": true, "sub": false },
             { "grade": "BC03B", "netweightArray": [750, 800], "description": "PPC Block Copolymer", "status": true, "sub": false },
             { "grade": "BC03BS", "netweightArray": [750, 800], "description": "PPC Block Copolymer", "status": true, "sub": false },
@@ -231,13 +234,15 @@ export const UNIT_CONFIG = {
             { "grade": "BC3N", "netweightArray": [750, 800], "description": "PPC Block Copolymer", "status": true, "sub": false },
             { "grade": "BC3NSW", "netweightArray": [750, 800], "description": "PPC Block Copolymer", "status": true, "sub": false },
             { "grade": "F1003B", "netweightArray": [750, 800], "description": "PPC Block Copolymer", "status": true, "sub": false },
+            { "grade": "F6024L", "netweightArray": [750, 800], "description": "PPC Block Copolymer", "status": true, "sub": false },
+            { "grade": "F6035L", "netweightArray": [750, 800], "description": "PPC Block Copolymer", "status": true, "sub": false },
             { "grade": "FL203D", "netweightArray": [750, 800], "description": "PPC Standard Grade", "status": true, "sub": false },
             { "grade": "K1104", "netweightArray": [750, 800], "description": "PPC K Series", "status": true, "sub": false },
             { "grade": "K1111", "netweightArray": [750, 800], "description": "PPC K Series", "status": true, "sub": false },
             { "grade": "K4510B", "netweightArray": [750, 800, 900, 16500, 18000], "description": "PPC K4510 Black", "status": true, "sub": false },
             { "grade": "K4510ET", "netweightArray": [750, 800], "description": "PPC K4510 Enhanced", "status": true, "sub": false },
             { "grade": "K4520UB", "netweightArray": [750, 800], "description": "PPC K4520 Ultra Black", "status": true, "sub": false },
-            { "grade": "K4527B", "netweightArray": [750, 800], "description": "PPC K4527 Black", "status": true, "sub": false },
+            { "grade": "K4527B", "netweightArray": [750, 800, 900, 16500, 18000], "description": "PPC K4527 Black", "status": true, "sub": false },
             { "grade": "K4527ET", "netweightArray": [750, 800], "description": "PPC K4527 Enhanced", "status": true, "sub": false },
             { "grade": "K4527GR", "netweightArray": [750, 800], "description": "PPC K4527 Green", "status": true, "sub": false },
             { "grade": "NBC03HRA", "netweightArray": [750, 800], "description": "PPC Block Copolymer", "status": true, "sub": false },
